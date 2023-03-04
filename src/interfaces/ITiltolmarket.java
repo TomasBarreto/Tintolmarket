@@ -1,4 +1,6 @@
-package interfaces;
+package src.interfaces;
+
+import src.domain.User;
 
 public interface ITiltolmarket {
 	
