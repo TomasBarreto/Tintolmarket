@@ -1,9 +1,10 @@
-package interfaces;
+package src.interfaces;
 
-import src.domain.Wine;
 import src.domain.User;
+import src.domain.Wine;
 
-public interface ITintolmarketServer {
+public interface ITiltolmarketStub {
+	
 	public void addWine(Wine wine, Image image);
 	
 	public void sellWine(Wine wine, int value, int quantity);
