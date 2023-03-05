@@ -8,10 +8,12 @@ public class Rating {
     	this.sum = 0;
     	this.counter = 0;
     }
+    
     public void update(float rating){
     	this.sum += rating;
         this.counter ++;
     }
+    
     public double value() {
     	if (counter==0){
     		return -1;
