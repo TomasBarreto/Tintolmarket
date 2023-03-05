@@ -8,6 +8,6 @@ public class User {
 	public User(String id) {
 		this.id = id;
 		this.wallet = new Wallet();
-		this.mailBox = new MailBox();
+		this.mailBox = new Mailbox();
 	}
 }
