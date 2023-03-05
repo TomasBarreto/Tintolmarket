@@ -1,7 +1,7 @@
 package src.domain;
 
 public class User {
-	private static final String id;
+	private static String id;
 	private Wallet wallet;
 	private Mailbox mailBox;
 	
