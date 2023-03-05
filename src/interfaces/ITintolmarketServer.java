@@ -1,5 +1,8 @@
 package interfaces;
 
+import src.domain.Wine;
+import src.domain.User;
+
 public interface ITintolmarketServer {
 	public void addWine(Wine wine, Image image);
 	

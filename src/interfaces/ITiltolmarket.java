@@ -1,6 +1,7 @@
 package src.interfaces;
 
 import src.domain.User;
+import src.domain.Wine;
 
 public interface ITiltolmarket {
 	
