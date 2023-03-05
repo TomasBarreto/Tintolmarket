@@ -7,7 +7,7 @@ import java.io.ObjectOutputStream;
 import src.domain.User;
 
 public interface ITintolmarketServerStub {
-	public void addWine(Wine wine, Image image, ObjectOutputStream outStream);
+	public void addWine(Wine wine, String image, ObjectOutputStream outStream);
 	
 	public void sellWine(Wine wine, int value, int quantity, ObjectOutputStream outStream);
 	
