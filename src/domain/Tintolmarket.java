@@ -58,26 +58,12 @@ public class Tintolmarket {
 
             if(commandSplit[0].equals("add") || commandSplit[0].equals("a")) {
                 if(commandSplit.length == 3){
-                    Command commandToSend = new Command();
-                    commandToSend.setCommand("add");
-                    // Criar o wine, usar as classes ja feitas, adaptar
-                    Wine wine = new Wine();
-                    commandToSend.setWine(wine);
 
-                    commandToSend.setImage(commandSplit[2]);
                 }
                 System.out.println("Wrong command\n");
 
             } else if(commandSplit[0].equals("sell") || commandSplit[0].equals("s")){
                 if(commandSplit.length == 4){
-                    Command commandToSend = new Command();
-                    commandToSend.setCommand("sell");
-
-                    // Criar o wine, usar as classes ja feitas, adaptar
-                    Wine wine = new Wine();
-                    commandToSend.setWine(wine);
-
-
 
                 }
                 System.out.println("Wrong command\n");
