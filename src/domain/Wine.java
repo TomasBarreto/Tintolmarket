@@ -1,7 +1,5 @@
 package src.domain;
 
-import src.domain.Rating;
-
 public class Wine {
 	
 	private final String name;
@@ -19,8 +17,6 @@ public class Wine {
     public void updateClassification(float rating){
     	this.averageRating.update(rating);
     }
-    
- 
     
     public String wineInfo() {
     	StringBuilder sb = new StringBuilder();

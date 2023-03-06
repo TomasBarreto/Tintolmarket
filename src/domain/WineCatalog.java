@@ -12,6 +12,7 @@ public class WineCatalog {
 	public void addWine(String name, String imageUrl) {
 		Wine newWine = new Wine(name,imageUrl);
 	}
+	
 	public String getInfo(String name) {
 		return wineCat.get(name).wineInfo();
 	}
