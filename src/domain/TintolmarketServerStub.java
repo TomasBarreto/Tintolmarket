@@ -38,7 +38,7 @@ public class TintolmarketServerStub implements ITintolmarketServerStub {
 	@Override
 	public void viewWine(String wine, ObjectOutputStream outStream) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(winCat.getInfo(wine));
+		sb.append(wineCat.getInfo(wine));
 		
 	}
 	
