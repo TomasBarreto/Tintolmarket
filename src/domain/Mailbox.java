@@ -9,4 +9,8 @@ public class Mailbox {
 	public Mailbox() {
 		this.mailBox = new ArrayList<>();
 	}
+
+	public void receiveMessage(Message message) {
+		mailBox.add(message);
+	}
 }
