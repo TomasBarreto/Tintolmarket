@@ -8,11 +8,12 @@ import src.interfaces.ITintolmarketServerStub;
 
 public class TintolmarketServerStub implements ITintolmarketServerStub {
 	
-	private List<User> listUsers;
+	private UserCatalog userCat;
 	private SellerList listSeller;
 	private WineCatalog wineCat;
 	
 	public TintolmarketServerStub() {
+		this.userCat = new UserCatalog();
 		this.listSeller = new SellerList();
 		this.wineCat = new WineCatalog();
 	}
@@ -59,7 +60,7 @@ public class TintolmarketServerStub implements ITintolmarketServerStub {
 	
 	@Override
 	public void sendMessage(String user, String message, ObjectOutputStream outStream) {
-		
+		userCat.sendMessage(user, message, outStream);
 	}
 	
 	@Override
