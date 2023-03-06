@@ -1,6 +1,7 @@
 
 package src.domain;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class TintolmarketServerStub implements ITintolmarketServerStub {
 	
 
 	public void addWine(String wine, String image, ObjectOutputStream outStream) {
-		if(winCat.add(wine,image)) {
+		if(wineCat.add(wine,image)) {
 			listSeller.newWine(wine);
 		}
 		else {
@@ -29,9 +30,14 @@ public class TintolmarketServerStub implements ITintolmarketServerStub {
 		}
 		
 	}
-	
+
+	@Override
+	public void sellWine(String wine, int value, int quantity, ObjectOutputStream outStream) {
+
+	}
+
 	public void sellWine(String wine, int value, int quantity, String seller, ObjectOutputStream outStream) {
-		if(winCat.containsWine(wine)) {
+		if(wineCat.containsWine(wine)) {
 			listSeller.addSeller(wine,value,quantity,seller);
 		}
 		else {
@@ -41,7 +47,7 @@ public class TintolmarketServerStub implements ITintolmarketServerStub {
 
 	public void viewWine(String wine, ObjectOutputStream outStream) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(winCat.getInfo(wine)+"\n");
+		sb.append(wineCat.getInfo(wine)+"\n");
 		
 		
 	}
@@ -59,14 +65,10 @@ public class TintolmarketServerStub implements ITintolmarketServerStub {
 		
 	}
 	
-	public void sendMessage(String user, String message, ObjectOutputStream outStream) {
+	public void sendMessage(String user, String message, ObjectOutputStream outStream) throws IOException {
 		userCat.sendMessage(user, message, outStream);
 	}
 
-	public void sendMessage(String user, String message, ObjectOutputStream outStream) {
-		userCat.sendMessage(user, message, outStream);
-	}
-	
 
 	public void readMessages(ObjectOutputStream outStream) {
 		
