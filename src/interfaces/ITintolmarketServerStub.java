@@ -1,5 +1,6 @@
 package src.interfaces;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 public interface ITintolmarketServerStub {
@@ -15,7 +16,7 @@ public interface ITintolmarketServerStub {
 	
 	public void classifyWine(String wine, int stars, ObjectOutputStream outStream);
 
-	public void sendMessage(String user, String message, ObjectOutputStream outStream);
+	public void sendMessage(String user, String message, ObjectOutputStream outStream) throws IOException;
 	
 	public void readMessages(ObjectOutputStream outStream);
 }
