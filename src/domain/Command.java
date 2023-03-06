@@ -52,7 +52,7 @@ public class Command {
         return command;
     }
 
-    public Wine getWine() {
+    public String getWine() {
         return wine;
     }
 
