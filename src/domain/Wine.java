@@ -1,3 +1,5 @@
+package src.domain;
+
 import src.domain.Rating;
 
 public class Wine {

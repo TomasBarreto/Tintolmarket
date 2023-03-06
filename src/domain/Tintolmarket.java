@@ -1,4 +1,4 @@
-package src.domain;
+package src.domainx;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

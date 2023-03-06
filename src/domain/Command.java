@@ -2,7 +2,7 @@ package src.domain;
 
 public class Command {
     private String command;
-    private Wine wine;
+    private String wine;
     private String image;
 
     private float winePrice;
@@ -12,13 +12,11 @@ public class Command {
     private String userReceiver;
     private String message;
 
-    public Command(){}
-
     public void setCommand(String command){
         this.command = command;
     }
 
-    public void setWine(Wine wine){
+    public void setWine(String wine){
         this.wine = wine;
     }
 
