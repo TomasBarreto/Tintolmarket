@@ -2,12 +2,10 @@ package src.domain;
 
 public class Message {
 	
-	private final User from;
-	private final User to;
+	private final String to;
 	private String message;
 	
-	public Message(User from, User to, String message) {
-		this.from = from;
+	public Message(String to, String message) {
 		this.to = to;
 		this.message = message;
 	}
