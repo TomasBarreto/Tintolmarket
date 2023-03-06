@@ -10,4 +10,8 @@ public class User {
 		this.wallet = new Wallet();
 		this.mailBox = new Mailbox();
 	}
+
+	public void receiveMessage(Message message) {
+		mailBox.receiveMessage(message);
+	}
 }
