@@ -1,10 +1,6 @@
 package src.interfaces;
 
-import src.domain.Wine;
-
 import java.io.ObjectOutputStream;
-
-import src.domain.User;
 
 public interface ITintolmarketServerStub {
 	public void addWine(String wine, String image, ObjectOutputStream outStream);
