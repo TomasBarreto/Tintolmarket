@@ -1,6 +1,5 @@
 package src.domain;
 
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
@@ -15,7 +14,7 @@ public class UserCatalog {
 		users.put(userID, new User(userID));
 	}
 
-	public void sendMessage(String user, String message, ObjectOutputStream outStream) throws IOException {
+	public void sendMessage(String user, String message, ObjectOutputStream outStream) {
 		User target = users.get(user);
 		target.receiveMessage(new Message(user, message));
 		
