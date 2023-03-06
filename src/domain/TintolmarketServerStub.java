@@ -1,3 +1,4 @@
+
 package src.domain;
 
 import java.io.ObjectOutputStream;
@@ -18,12 +19,10 @@ public class TintolmarketServerStub implements ITintolmarketServerStub {
 		this.wineCat = new WineCatalog();
 	}
 	
-	@Override
+
 	public void addWine(String wine, String image, ObjectOutputStream outStream) {
-		if(!wineCat.containsWine(wine)) {
-			List<WineSeller> listSeller= new ArrayList<WineSeller>();
-			listSeller.put(wine, newSeller);
-			wineCat.addWine(wine, image);
+		if(winCat.add(wine,image)) {
+			listSeller.newWine(wine);
 		}
 		else {
 			//erro
@@ -31,39 +30,44 @@ public class TintolmarketServerStub implements ITintolmarketServerStub {
 		
 	}
 	
-	@Override
-	public void sellWine(String wine, int value, int quantity, ObjectOutputStream outStream) {
-		
+	public void sellWine(String wine, int value, int quantity, String seller, ObjectOutputStream outStream) {
+		if(winCat.containsWine(wine)) {
+			listSeller.addSeller(wine,value,quantity,seller);
+		}
+		else {
+			//erro
+		}
 	}
-	
-	@Override
+
 	public void viewWine(String wine, ObjectOutputStream outStream) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(wineCat.getInfo(wine));
+		sb.append(winCat.getInfo(wine)+"\n");
+		
 		
 	}
 	
-	@Override
 	public void buyWine(String wine, String seller, int quantity, ObjectOutputStream outStream) {
 		
 	}
 	
-	@Override
+
 	public void viewWallet(ObjectOutputStream outStream) {
 		
 	}
 	
-	@Override
 	public void classifyWine(String wine, int stars, ObjectOutputStream outStream) {
 		
 	}
 	
-	@Override
+	public void sendMessage(String user, String message, ObjectOutputStream outStream) {
+		userCat.sendMessage(user, message, outStream);
+	}
+
 	public void sendMessage(String user, String message, ObjectOutputStream outStream) {
 		userCat.sendMessage(user, message, outStream);
 	}
 	
-	@Override
+
 	public void readMessages(ObjectOutputStream outStream) {
 		
 	}

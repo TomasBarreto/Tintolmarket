@@ -1,3 +1,4 @@
+
 package src.domain;
 
 import java.util.HashMap;
@@ -20,4 +21,16 @@ public class WineCatalog {
 	public boolean containsWine(String name) {
 		return wineCat.containsKey(name);
 	}
-}
+	
+	public boolean add(String nameWine, String imageUrl) {
+		if(!wineCat.containsKey(nameWine)) {
+			Wine newWine = new Wine (nameWine,imageUrl);
+			wineCat.put(nameWine, newWine);
+			return true;
+		}
+		else {
+			return false;
+		}
+		
+	}
+
