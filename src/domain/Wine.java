@@ -43,5 +43,6 @@ public class Wine {
     	else {
     		//utilizador
     	}
+        return "ola";
     }
 }
