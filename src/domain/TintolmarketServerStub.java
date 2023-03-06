@@ -31,10 +31,6 @@ public class TintolmarketServerStub implements ITintolmarketServerStub {
 		
 	}
 
-	@Override
-	public void sellWine(String wine, int value, int quantity, ObjectOutputStream outStream) {
-
-	}
 
 	public void sellWine(String wine, int value, int quantity, String seller, ObjectOutputStream outStream) {
 		if(wineCat.containsWine(wine)) {
