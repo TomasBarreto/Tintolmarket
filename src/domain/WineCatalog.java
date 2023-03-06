@@ -16,12 +16,7 @@ public class WineCatalog {
 		return wineCat.get(name).wineInfo();
 	}
 	
-	public boolean containWine(String name) {
-		if(wineCat.contains(name)) {
-			return true;
-		}
-		else {
-			return false;
-		}
+	public boolean containsWine(String name) {
+		return wineCat.containsKey(name);
 	}
 }
