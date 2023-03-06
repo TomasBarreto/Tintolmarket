@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 public interface ITintolmarketServerStub {
 	public void addWine(String wine, String image, ObjectOutputStream outStream);
 	
-	public void sellWine(String wine, int value, int quantity, ObjectOutputStream outStream);
+	public void sellWine(String wine, int value, int quantity, String seller, ObjectOutputStream outStream);
 	
 	public void viewWine(String wine, ObjectOutputStream outStream);
 	
