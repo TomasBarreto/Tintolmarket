@@ -17,6 +17,8 @@ public class Tintolmarket {
             port = Integer.parseInt(serverAndPort[1]);
         }
 
+        TintolmarketStub clientStub = new TintolmarketStub(ip, port, userID, passWord);
+
         //Ligar ao server
         Socket clientSocket = new Socket(ip, port);
         ObjectInputStream inStream = new ObjectInputStream(clientSocket.getInputStream());
