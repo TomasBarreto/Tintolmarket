@@ -7,7 +7,7 @@ public class Autentication {
     public Autentication(){}
 
     public boolean autenticate(String userID, String passWord) throws IOException {
-        File file = new File("https://github.com/TOXIK523/Tintolmarket/blob/bceda67b88dcd05a1977496100e391298722ede8/Users");
+        File file = new File("Users");
         Scanner scanner = new Scanner(file);
 
         while(scanner.hasNextLine()){

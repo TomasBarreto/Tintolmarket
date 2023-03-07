@@ -15,7 +15,7 @@ public class UserCatalog {
 		users.put(userID, new User(userID));
 	}
 
-	public void sendMessage(String user, String message, ObjectOutputStream outStream) {
+	public void sendMessage(String user, String message, ObjectOutputStream outStream) throws IOException {
 		User target = users.get(user);
 		target.receiveMessage(new Message(user, message));
 		

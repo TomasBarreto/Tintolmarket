@@ -3,14 +3,14 @@ package src.domain;
 public class Wine {
 	
 	private final String name;
-    private final String imageUrl;
-    private Rating averageRating;
+	private final String imageUrl;
+	private Rating averageRating;
 
-    
-    public Wine(String name, String url){
-        this.name = name;
-        this.imageUrl = url;
-        this.averageRating = new Rating();
+	
+	public Wine(String name, String url){
+		this.name = name;
+		this.imageUrl = url;
+		this.averageRating = new Rating();
 
     }
     

@@ -1,11 +1,12 @@
 package src.interfaces;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 public interface ITintolmarketServerStub {
 	public void addWine(String wine, String image, ObjectOutputStream outStream);
 	
-	public void sellWine(String wine, int value, int quantity, ObjectOutputStream outStream);
+	public void sellWine(String wine, int value, int quantity, String seller, ObjectOutputStream outStream);
 	
 	public void viewWine(String wine, ObjectOutputStream outStream);
 	
@@ -15,7 +16,7 @@ public interface ITintolmarketServerStub {
 	
 	public void classifyWine(String wine, int stars, ObjectOutputStream outStream);
 
-	public void sendMessage(String user, String message, ObjectOutputStream outStream);
+	public void sendMessage(String user, String message, ObjectOutputStream outStream) throws IOException;
 	
 	public void readMessages(ObjectOutputStream outStream);
 }
