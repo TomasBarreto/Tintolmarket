@@ -7,19 +7,19 @@ import src.domain.Wine;
 
 public interface ITintolmarketStub {
 	
-	public void addWine(String wine, String image, ObjectOutputStream outStream);
+	public void addWine(String wine, String image);
 	
-	public void sellWine(String wine, int value, int quantity, ObjectOutputStream outStream);
+	public void sellWine(String wine, int value, int quantity);
 	
-	public void viewWine(String wine, ObjectOutputStream outStream);
+	public void viewWine(String wine);
 	
-	public void buyWine(String wine, String seller, int quantity, ObjectOutputStream outStream);
+	public void buyWine(String wine, String seller, int quantity);
 	
-	public void viewWallet(ObjectOutputStream outStream);
+	public void viewWallet();
 	
-	public void classifyWine(String wine, int stars, ObjectOutputStream outStream);
+	public void classifyWine(String wine, int stars);
 
-	public void sendMessage(String user, String message, ObjectOutputStream outStream);
+	public void sendMessage(String user, String message);
 	
-	public void readMessages(ObjectOutputStream outStream);
+	public void readMessages();
 }

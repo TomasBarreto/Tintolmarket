@@ -33,7 +33,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void addWine(String wine, String image, ObjectOutputStream outStream) {
+	public void addWine(String wine, String image) {
 		Command cmd = new Command();
 		cmd.setCommand("add");
 		cmd.setWine(wine);
@@ -47,7 +47,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void sellWine(String wine, int value, int quantity, ObjectOutputStream outStream) {
+	public void sellWine(String wine, int value, int quantity) {
 		Command cmd = new Command();
 		cmd.setCommand("sell");
 		cmd.setWine(wine);
@@ -62,7 +62,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void viewWine(String wine, ObjectOutputStream outStream) {
+	public void viewWine(String wine) {
 		Command cmd = new Command();
 		cmd.setCommand("view");
 		cmd.setWine(wine);
@@ -75,7 +75,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void buyWine(String wine, String seller, int quantity, ObjectOutputStream outStream) {
+	public void buyWine(String wine, String seller, int quantity) {
 		Command cmd = new Command();
 		cmd.setCommand("buy");
 		cmd.setWine(wine);
@@ -90,7 +90,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void viewWallet(ObjectOutputStream outStream) {
+	public void viewWallet() {
 		Command cmd = new Command();
 		cmd.setCommand("wallet");
 		
@@ -102,7 +102,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void classifyWine(String wine, int stars, ObjectOutputStream outStream) {
+	public void classifyWine(String wine, int stars) {
 		Command cmd = new Command();
 		cmd.setCommand("classify");
 		cmd.setWine(wine);
@@ -116,7 +116,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void sendMessage(String user, String message, ObjectOutputStream outStream) {
+	public void sendMessage(String user, String message) {
 		Command cmd = new Command();
 		cmd.setCommand("talk");
 		cmd.setUserReceiver(user);
@@ -130,7 +130,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void readMessages(ObjectOutputStream outStream) {
+	public void readMessages() {
 		Command cmd = new Command();
 		cmd.setCommand("read");
 		
@@ -139,5 +139,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void stop() throws IOException {
+		inStream.close();
+		outStream.close();
+		clientSocket.close();
 	}
 }
