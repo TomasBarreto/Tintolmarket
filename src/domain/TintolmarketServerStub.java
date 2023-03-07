@@ -11,41 +11,25 @@ import src.interfaces.ITintolmarketServerStub;
 public class TintolmarketServerStub implements ITintolmarketServerStub {
 	
 	private UserCatalog userCat;
-	private SellerList listSeller;
 	private WineCatalog wineCat;
 	
 	public TintolmarketServerStub() {
 		this.userCat = new UserCatalog();
-		this.listSeller = new SellerList();
 		this.wineCat = new WineCatalog();
 	}
 	
 
-	public void addWine(String wine, String image, ObjectOutputStream outStream) {
-		if(wineCat.add(wine,image)) {
-			listSeller.newWine(wine);
-		}
-		else {
-			//erro
-		}
-		
+	public boolean addWine(String wine, String image, ObjectOutputStream outStream) {
+		return wineCat.addWine(wine, image);
 	}
 
 
-	public void sellWine(String wine, int value, int quantity, String seller, ObjectOutputStream outStream) {
-		if(wineCat.containsWine(wine)) {
-			listSeller.addSeller(wine,value,quantity,seller);
-		}
-		else {
-			//erro
-		}
+	public boolean sellWine(String wine, int value, int quantity, String seller, ObjectOutputStream outStream) {
+		return wineCat.sellWine(wine, value, quantity, seller);
 	}
 
-	public void viewWine(String wine, ObjectOutputStream outStream) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(wineCat.getInfo(wine)+"\n");
-		
-		
+	public String viewWine(String wine, ObjectOutputStream outStream) {
+		return wineCat.viewWine(wine);
 	}
 	
 	public void buyWine(String wine, String seller, int quantity, ObjectOutputStream outStream) {
