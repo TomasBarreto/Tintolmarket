@@ -16,6 +16,7 @@ public class Tintolmarket {
 
         TintolmarketStub clientStub = new TintolmarketStub(ip, port);
         boolean autenticated = clientStub.autenticate(userID, passWord);
+        boolean working = true;
 
         //verificar se foi autenticado
         if (autenticated){
@@ -24,12 +25,11 @@ public class Tintolmarket {
             in.close();
             System.out.println("Autentication failed");
             clientStub.stop();
+            working = false;
         }
 
-        boolean working = true;
-        System.out.println("U can call a command by his entire name or by his initial letter");
-
         while(working){
+            System.out.println("U can call a command by his entire name or by his initial letter");
             System.out.println("Commands:\n" +
                     "add <wine> <image>\n" +
                     "sell <wine> <value> <quantity>\n" +
