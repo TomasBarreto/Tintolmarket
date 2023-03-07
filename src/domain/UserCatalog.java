@@ -1,5 +1,6 @@
 package src.domain;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
@@ -18,6 +19,10 @@ public class UserCatalog {
 		User target = users.get(user);
 		target.receiveMessage(new Message(user, message));
 		
-		outStream.writeObject("Message Successfully sent!");
+		try {
+			outStream.writeObject("Message Successfully sent!");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
