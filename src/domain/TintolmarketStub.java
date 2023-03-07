@@ -33,7 +33,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public boolean addWine(String wine, String image) {
+	public boolean addWine(String wine, String image) throws IOException, ClassNotFoundException {
 		Command cmd = new Command();
 		cmd.setCommand("add");
 		cmd.setWine(wine);
@@ -44,11 +44,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return true;
+		return (boolean) inStream.readObject();
 	}
 
 	@Override
-	public boolean sellWine(String wine, int value, int quantity) {
+	public boolean sellWine(String wine, int value, int quantity) throws IOException, ClassNotFoundException {
 		Command cmd = new Command();
 		cmd.setCommand("sell");
 		cmd.setWine(wine);
@@ -61,11 +61,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 			e.printStackTrace();
 		}
 
-		return true;
+		return (boolean) inStream.readObject();
 	}
 
 	@Override
-	public String viewWine(String wine) {
+	public String viewWine(String wine) throws IOException, ClassNotFoundException {
 		Command cmd = new Command();
 		cmd.setCommand("view");
 		cmd.setWine(wine);
@@ -75,11 +75,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return "resposta";
+		return (String) inStream.readObject();
 	}
 
 	@Override
-	public String buyWine(String wine, String seller, int quantity) {
+	public String buyWine(String wine, String seller, int quantity) throws IOException, ClassNotFoundException {
 		Command cmd = new Command();
 		cmd.setCommand("buy");
 		cmd.setWine(wine);
@@ -92,11 +92,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 			e.printStackTrace();
 		}
 
-		return "resposta";
+		return (String) inStream.readObject();
 	}
 
 	@Override
-	public int viewWallet() {
+	public int viewWallet() throws IOException, ClassNotFoundException {
 		Command cmd = new Command();
 		cmd.setCommand("wallet");
 		
@@ -105,11 +105,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return 1;
+		return (int) inStream.readObject();
 	}
 
 	@Override
-	public boolean classifyWine(String wine, int stars) {
+	public boolean classifyWine(String wine, int stars) throws IOException, ClassNotFoundException {
 		Command cmd = new Command();
 		cmd.setCommand("classify");
 		cmd.setWine(wine);
@@ -120,11 +120,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return true;
+		return (boolean) inStream.readObject();
 	}
 
 	@Override
-	public boolean sendMessage(String user, String message) {
+	public boolean sendMessage(String user, String message) throws IOException, ClassNotFoundException {
 		Command cmd = new Command();
 		cmd.setCommand("talk");
 		cmd.setUserReceiver(user);
@@ -135,11 +135,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return true;
+		return (boolean) inStream.readObject();
 	}
 
 	@Override
-	public String readMessages() {
+	public String readMessages() throws IOException, ClassNotFoundException {
 		Command cmd = new Command();
 		cmd.setCommand("read");
 		
@@ -148,7 +148,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return "resposta";
+		return (String) inStream.readObject();
 	}
 
 	public void stop() throws IOException {
