@@ -17,25 +17,16 @@ public class Tintolmarket {
             port = Integer.parseInt(serverAndPort[1]);
         }
 
-        TintolmarketStub clientStub = new TintolmarketStub(ip, port, userID, passWord);
-
-        //Ligar ao server
-        Socket clientSocket = new Socket(ip, port);
-        ObjectInputStream inStream = new ObjectInputStream(clientSocket.getInputStream());
-        ObjectOutputStream outStream = new ObjectOutputStream(clientSocket.getOutputStream());
-
-        //Mandar password e username ao servidor
-        outStream.writeObject(userID);
-        outStream.writeObject(passWord);
+        TintolmarketStub clientStub = new TintolmarketStub(ip, port);
+        boolean autenticated = clientStub.autenticate(userID, passWord);
 
         //verificar se foi autenticado
-        if ((boolean) inStream.readObject() == false){
-            inStream.close();
-            outStream.close();
+        if (autenticated){
+            System.out.println("Autentication completed\n");
+        }else{
+            in.close();
             System.out.println("Autentication failed");
             System.exit(-1);
-        }else{
-            System.out.println("Autentication completed\n");
         }
 
         boolean working = true;
@@ -114,8 +105,6 @@ public class Tintolmarket {
         }
 
         in.close();
-        inStream.close();
-        outStream.close();
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
