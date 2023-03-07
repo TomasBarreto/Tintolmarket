@@ -26,7 +26,7 @@ public class Tintolmarket {
         }else{
             in.close();
             System.out.println("Autentication failed");
-            System.exit(-1);
+            clientStub.stop();
         }
 
         boolean working = true;
@@ -43,7 +43,6 @@ public class Tintolmarket {
                     "talk <user> <message>\n" +
                     "read\n" +
                     "stop\n");
-
 
             System.out.println("Insert a valid command");
             String command = in.nextLine();
@@ -93,13 +92,15 @@ public class Tintolmarket {
 
             } else if (commandSplit[0].equals("read") || commandSplit[0].equals("r")) {
                 if(commandSplit.length == 1){
-
+                    clientStub.readMessages();
                 }
                 System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("stop")) {
                 working = false;
                 System.out.println("Disconnecting");
+                clientStub.stop();
+                System.out.println("Disconnected");
             }
 
         }
