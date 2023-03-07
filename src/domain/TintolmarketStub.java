@@ -33,7 +33,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void addWine(String wine, String image) {
+	public boolean addWine(String wine, String image) {
 		Command cmd = new Command();
 		cmd.setCommand("add");
 		cmd.setWine(wine);
@@ -44,10 +44,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void sellWine(String wine, int value, int quantity) {
+	public boolean sellWine(String wine, int value, int quantity) {
 		Command cmd = new Command();
 		cmd.setCommand("sell");
 		cmd.setWine(wine);
@@ -59,10 +60,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		return true;
 	}
 
 	@Override
-	public void viewWine(String wine) {
+	public String viewWine(String wine) {
 		Command cmd = new Command();
 		cmd.setCommand("view");
 		cmd.setWine(wine);
@@ -72,10 +75,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return "resposta";
 	}
 
 	@Override
-	public void buyWine(String wine, String seller, int quantity) {
+	public String buyWine(String wine, String seller, int quantity) {
 		Command cmd = new Command();
 		cmd.setCommand("buy");
 		cmd.setWine(wine);
@@ -87,10 +91,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		return "resposta";
 	}
 
 	@Override
-	public void viewWallet() {
+	public int viewWallet() {
 		Command cmd = new Command();
 		cmd.setCommand("wallet");
 		
@@ -99,10 +105,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return 1;
 	}
 
 	@Override
-	public void classifyWine(String wine, int stars) {
+	public boolean classifyWine(String wine, int stars) {
 		Command cmd = new Command();
 		cmd.setCommand("classify");
 		cmd.setWine(wine);
@@ -113,10 +120,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void sendMessage(String user, String message) {
+	public boolean sendMessage(String user, String message) {
 		Command cmd = new Command();
 		cmd.setCommand("talk");
 		cmd.setUserReceiver(user);
@@ -127,10 +135,11 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
 	@Override
-	public void readMessages() {
+	public String readMessages() {
 		Command cmd = new Command();
 		cmd.setCommand("read");
 		
@@ -139,6 +148,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return "resposta";
 	}
 
 	public void stop() throws IOException {

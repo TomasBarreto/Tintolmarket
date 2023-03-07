@@ -50,57 +50,67 @@ public class Tintolmarket {
 
             if(commandSplit[0].equals("add") || commandSplit[0].equals("a")) {
                 if(commandSplit.length == 3){
-                    clientStub.addWine(commandSplit[1], commandSplit[2]);
-                    //processar resposta
+                    if(clientStub.addWine(commandSplit[1], commandSplit[2])){
+                        System.out.println("Wine added successfully\n");
+                    }else{
+                        System.out.println("Wine already in system\n");
+                    }
                 }
                 System.out.println("Wrong command\n");
 
             } else if(commandSplit[0].equals("sell") || commandSplit[0].equals("s")){
                 if(commandSplit.length == 4){
-                    clientStub.sellWine(commandSplit[1], Integer.parseInt(commandSplit[2]), Integer.parseInt(commandSplit[3]));
-                    //processar resposta
+                    if(clientStub.sellWine(commandSplit[1], Integer.parseInt(commandSplit[2]), Integer.parseInt(commandSplit[3]))){
+                        System.out.println("Wine is now for sale\n");
+                    }else{
+                        System.out.println("Wine doesnt exist\n");
+                    }
                 }
                 System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("view") || commandSplit[0].equals("v")) {
                 if(commandSplit.length == 2){
-                    clientStub.viewWine(commandSplit[1]);
-                    //processar resposta
+                    String answer = clientStub.viewWine(commandSplit[1]);
+                    System.out.println(answer);
                 }
                 System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("buy") || commandSplit[0].equals("b")) {
                 if(commandSplit.length == 4){
-                    clientStub.buyWine(commandSplit[1], commandSplit[2], Integer.parseInt(commandSplit[3]));
-                    //processar resposta
+                    String answer = clientStub.buyWine(commandSplit[1], commandSplit[2], Integer.parseInt(commandSplit[3]));
+                    System.out.println(answer);
                 }
                 System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("wallet") || commandSplit[0].equals("w")) {
                 if(commandSplit.length == 1){
-                    clientStub.viewWallet();
-                    //processar resposta
+                    System.out.println(clientStub.viewWallet() + "\n");
                 }
                 System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("classify") || commandSplit[0].equals("c")) {
                 if(commandSplit.length == 3){
-                    clientStub.classifyWine(commandSplit[1], Integer.parseInt(commandSplit[2]));
-                    //processar resposta
+                    if(clientStub.classifyWine(commandSplit[1], Integer.parseInt(commandSplit[2]))){
+                        System.out.println("Wine classified successfully\n");
+                    } else{
+                        System.out.println("Wine doesnt exist\n");
+                    }
                 }
                 System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("talk") || commandSplit[0].equals("t")) {
                 if(commandSplit.length == 3){
-                    clientStub.sendMessage(commandSplit[1], commandSplit[2]);
-                    //processar resposta
+                    if(clientStub.sendMessage(commandSplit[1], commandSplit[2])){
+                        System.out.println("Message sent!\n");
+                    } else{
+                        System.out.println("User doesnt exist\n");
+                    }
                 }
                 System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("read") || commandSplit[0].equals("r")) {
                 if(commandSplit.length == 1){
-                    clientStub.readMessages();
-                    //processar resposta
+                    System.out.println(clientStub.readMessages());
                 }
                 System.out.println("Wrong command\n");
 
