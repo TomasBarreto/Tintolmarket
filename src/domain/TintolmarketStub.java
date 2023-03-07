@@ -1,11 +1,24 @@
 package src.domain;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 import src.interfaces.ITintolmarketStub;
 
 public class TintolmarketStub implements ITintolmarketStub {
+
+	Socket clientSocket;
+	ObjectInputStream inStream;
+	ObjectOutputStream outStream;
+
+	public TintolmarketStub(String ip, int port, String userID, String passWord) throws IOException {
+		this.clientSocket = new Socket(ip, port);
+		this.inStream = new ObjectInputStream(clientSocket.getInputStream());
+		this.outStream = new ObjectOutputStream(clientSocket.getOutputStream());
+
+	}
 
 	@Override
 	public void addWine(String wine, String image, ObjectOutputStream outStream) {
