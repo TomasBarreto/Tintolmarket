@@ -13,11 +13,23 @@ public class TintolmarketStub implements ITintolmarketStub {
 	ObjectInputStream inStream;
 	ObjectOutputStream outStream;
 
-	public TintolmarketStub(String ip, int port, String userID, String passWord) throws IOException {
+	public TintolmarketStub(String ip, int port) throws IOException {
 		this.clientSocket = new Socket(ip, port);
 		this.inStream = new ObjectInputStream(clientSocket.getInputStream());
 		this.outStream = new ObjectOutputStream(clientSocket.getOutputStream());
 
+	}
+
+	public boolean autenticate(String userID, String passWord) throws IOException, ClassNotFoundException {
+		outStream.writeObject(userID);
+		outStream.writeObject(passWord);
+
+		if ((boolean) inStream.readObject() == false) {
+			inStream.close();
+			outStream.close();
+			return false;
+		}
+		return true;
 	}
 
 	@Override
