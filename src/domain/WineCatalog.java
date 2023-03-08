@@ -54,4 +54,13 @@ public class WineCatalog {
 		
 		return false;
 	}
+	
+	public String buyWine(String wine, String seller,int quantity, int balance) {
+	    if(!wineCat.containsKey(wine)) {
+	        return "Wine not available...";
+	    }
+	    else {
+	        return wineCat.get(wine).buy(seller, quantity, balance);
+	    }
+	}
 }
