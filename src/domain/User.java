@@ -14,4 +14,9 @@ public class User {
 	public void receiveMessage(Message message) {
 		mailBox.receiveMessage(message);
 	}
+
+	public int getWalletMoney() {
+		return this.wallet.getMoney();
+	}
+	
 }
