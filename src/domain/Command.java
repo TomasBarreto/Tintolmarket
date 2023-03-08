@@ -11,6 +11,7 @@ public class Command {
     private int wineStars;
     private String userReceiver;
     private String message;
+    private String user;
 
     public void setCommand(String command){
         this.command = command;
@@ -47,6 +48,10 @@ public class Command {
     public void setMessage(String message) {
         this.message = message;
     }
+    
+    public void setUser(String user) {
+    	this.user = user;
+    }
 
     public String getCommand() {
         return command;
@@ -82,5 +87,9 @@ public class Command {
 
     public String getMessage() {
         return message;
+    }
+    
+    public String getUser() {
+    	return user;
     }
 }
