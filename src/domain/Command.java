@@ -5,7 +5,7 @@ public class Command {
     private String wine;
     private String image;
 
-    private float winePrice;
+    private int winePrice;
     private int wineQuantity;
     private String wineSeller;
     private int wineStars;
@@ -29,7 +29,7 @@ public class Command {
         this.wineQuantity = wineQuantity;
     }
 
-    public void setWinePrice(float winePrice) {
+    public void setWinePrice(int winePrice) {
         this.winePrice = winePrice;
     }
 
@@ -65,7 +65,7 @@ public class Command {
         return image;
     }
 
-    public float getWinePrice() {
+    public int getWinePrice() {
         return winePrice;
     }
 
