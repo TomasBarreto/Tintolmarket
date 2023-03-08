@@ -5,11 +5,11 @@ public class WineSeller {
 	private int price;
 	private int quantity;
 	
-	public WineSeller(String seller) {
-		this.seller = seller;
-		this.price = 0;
-		this.quantity = 0;
-	}
+	public WineSeller(String seller,int price,int quantity) {
+        this.seller = seller;
+        this.price = price;
+        this.quantity = quantity;
+    }
 
 	public String getSeller() {
 		return seller;
@@ -35,4 +35,7 @@ public class WineSeller {
 		this.quantity = quantity;
 	}
 	
+	public void removeQuantity(int quantity) {
+        this.quantity-=quantity;
+    }
 }
