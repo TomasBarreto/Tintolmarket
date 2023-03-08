@@ -16,9 +16,10 @@ public class UserCatalog {
 	}
 
 	public boolean sendMessage(String user, String userFrom, String message) throws IOException {
-		User target = users.get(user);
-
-		if(target == null) {
+		User target;
+		if (users.containsKey(user)) {
+			target = users.get(user);
+		} else {
 			return false;
 		}
 
