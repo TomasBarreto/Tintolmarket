@@ -9,6 +9,31 @@ import src.interfaces.ITintolmarketStub;
 
 public class TintolmarketStub implements ITintolmarketStub {
 
+	private Socket clientSocket;
+	private ObjectInputStream inStream;
+	private ObjectOutputStream outStream;
+	private String userID;
+
+	public TintolmarketStub(String ip, int port) throws IOException {
+		this.clientSocket = new Socket(ip, port);
+		this.inStream = new ObjectInputStream(clientSocket.getInputStream());
+		this.outStream = new ObjectOutputStream(clientSocket.getOutputStream());
+	}
+
+	public boolean autenticate(String userID, String passWord) throws IOException, ClassNotFoundException {
+		outStream.writeObject(userID);
+		outStream.writeObject(passWord);
+
+		if ((boolean) inStream.readObject() == false) {
+			inStream.close();
+			outStream.close();
+			return false;
+		}
+		this.userID = userID;
+		
+		return true;
+	}
+
 	@Override
 	public boolean addWine(String wine, String image) throws IOException, ClassNotFoundException {
 		Command cmd = new Command();
