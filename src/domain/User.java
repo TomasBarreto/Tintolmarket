@@ -18,5 +18,8 @@ public class User {
 	public int getWalletMoney() {
 		return this.wallet.getMoney();
 	}
-	
+
+	public String readMessages() {
+		return mailBox.readMessages();
+	}
 }

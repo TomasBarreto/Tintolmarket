@@ -15,14 +15,14 @@ public class UserCatalog {
 		users.put(userID, new User(userID));
 	}
 
-	public boolean sendMessage(String user, String message) throws IOException {
+	public boolean sendMessage(String user, String userFrom, String message) throws IOException {
 		User target = users.get(user);
 
 		if(target == null) {
 			return false;
 		}
 
-		target.receiveMessage(new Message(user, message));
+		target.receiveMessage(new Message(user, userFrom, message));
 		return true;
 	}
 
@@ -30,5 +30,10 @@ public class UserCatalog {
 		User target = this.users.get(userID);
 		
 		return target.getWalletMoney();
+	}
+
+	public String readMessages(String userID){
+		User user = users.get(userID);
+		return user.readMessages();
 	}
 }

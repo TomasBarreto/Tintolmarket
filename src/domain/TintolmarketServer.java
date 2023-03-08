@@ -54,7 +54,7 @@ public class TintolmarketServer {
                     } else if (cmd.getCommand().equals("classify")) {
                         outStream.writeObject(serverSkel.classifyWine(cmd.getWine(), cmd.getWineStars()));
                     } else if (cmd.getCommand().equals("talk")) {
-                        outStream.writeObject(serverSkel.sendMessage(cmd.getUserReceiver(),cmd.getMessage()));
+                        outStream.writeObject(serverSkel.sendMessage(cmd.getUserReceiver(), userID, cmd.getMessage()));
                     } else if (cmd.getCommand().equals("read")) {
                         outStream.writeObject(serverSkel.readMessages(userID));
                     } else if (cmd.getCommand().equals("stop")) {
