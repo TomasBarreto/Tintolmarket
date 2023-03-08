@@ -4,19 +4,19 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 public interface ITintolmarketServerSkel {
-	public boolean addWine(String wine, String image, ObjectOutputStream outStream);
+	public boolean addWine(String wine, String image);
 	
-	public boolean sellWine(String wine, int value, int quantity, String seller, ObjectOutputStream outStream);
+	public boolean sellWine(String wine, int value, int quantity, String seller);
 	
-	public String viewWine(String wine, ObjectOutputStream outStream);
+	public String viewWine(String wine);
 	
-	public void buyWine(String wine, String seller, int quantity, ObjectOutputStream outStream);
+	public void buyWine(String wine, String seller, int quantity);
 	
-	public void viewWallet(ObjectOutputStream outStream);
+	public String viewWallet(String userID);
 	
-	public void classifyWine(String wine, int stars, ObjectOutputStream outStream);
+	public void classifyWine(String wine, int stars);
 
-	public void sendMessage(String user, String message, ObjectOutputStream outStream) throws IOException;
+	public void sendMessage(String user, String message) throws IOException;
 	
-	public void readMessages(ObjectOutputStream outStream);
+	public void readMessages(String userID);
 }

@@ -19,38 +19,38 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	}
 	
 
-	public boolean addWine(String wine, String image, ObjectOutputStream outStream) {
+	public boolean addWine(String wine, String image) {
 		return wineCat.addWine(wine, image);
 	}
 
 
-	public boolean sellWine(String wine, int value, int quantity, String seller, ObjectOutputStream outStream) {
+	public boolean sellWine(String wine, int value, int quantity, String seller) {
 		return wineCat.sellWine(wine, value, quantity, seller);
 	}
 
-	public String viewWine(String wine, ObjectOutputStream outStream) {
+	public String viewWine(String wine) {
 		return wineCat.viewWine(wine);
 	}
 	
-	public void buyWine(String wine, String seller, int quantity, ObjectOutputStream outStream) {
+	public void buyWine(String wine, String seller, int quantity) {
 		
 	}
 	
 
-	public void viewWallet(ObjectOutputStream outStream) {
+	public String viewWallet(String userID) {
+		return "Saldo na carteira: " + this.userCat.getWalletMoney(userID);
+	}
+	
+	public void classifyWine(String wine, int stars) {
 		
 	}
 	
-	public void classifyWine(String wine, int stars, ObjectOutputStream outStream) {
-		
-	}
-	
-	public void sendMessage(String user, String message, ObjectOutputStream outStream) throws IOException {
-		userCat.sendMessage(user, message, outStream);
+	public void sendMessage(String user, String message) throws IOException {
+		userCat.sendMessage(user, message);
 	}
 
 
-	public void readMessages(ObjectOutputStream outStream) {
+	public void readMessages(String userID) {
 		
 	}
 }

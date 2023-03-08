@@ -15,7 +15,7 @@ public class UserCatalog {
 		users.put(userID, new User(userID));
 	}
 
-	public void sendMessage(String user, String message, ObjectOutputStream outStream) throws IOException {
+	public void sendMessage(String user, String message) throws IOException {
 		User target = users.get(user);
 		target.receiveMessage(new Message(user, message));
 		
@@ -24,5 +24,11 @@ public class UserCatalog {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String getWalletMoney(String userID) {
+		User target = this.users.get(userID);
+		
+		return String.valueOf(target.getWalletMoney());
 	}
 }
