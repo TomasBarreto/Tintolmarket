@@ -1,6 +1,7 @@
 package src.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Wine {
@@ -8,20 +9,20 @@ public class Wine {
 	private final String name;
 	private final String imageUrl;
 	private Rating averageRating;
-	private List<WineSeller> sellersList;
+	private HashMap<String,WineSeller> sellersList;
 	
 	public Wine(String name, String url){
 		this.name = name;
 		this.imageUrl = url;
 		this.averageRating = new Rating();
-		this.sellersList = new ArrayList<>();
+		this.sellersList = new HashMap<String,WineSeller>();
     }
     
-    public void updateClassification(float rating){
+    public void updateClassification(int rating){
     	this.averageRating.update(rating);
     }
     
-	public void addNewSeller(String seller, int value, int quantity) {
+    public void addNewSeller(String seller, int value, int quantity) {
 		WineSeller target = getSeller(seller);
 		
 		if(target != null) {
@@ -29,24 +30,24 @@ public class Wine {
 			target.setPrice(value);
 		}
 		else {
-			target = new WineSeller(seller);
+			target = new WineSeller(seller,value,quantity);
 			target.setQuantity(quantity);
 			target.setPrice(value);
 			
-			this.sellersList.add(target);
+			this.sellersList.put(seller, target);
 		}
 	}
 	
-	public String wineInfo() {
+    public String wineInfo() {
     	StringBuilder sb = new StringBuilder();
     	sb.append("Wine " + this.name + ":\n");
     	sb.append("	Associated Image: " + this.imageUrl + "\n");
-    	sb.append("	Average Rating: " + this.averageRating.value() + "\n");
+    	sb.append("	Average Rating: " + this.averageRating.getRating() + "\n");
     	
     	if(stockAvailable()) {
     		sb.append("	Sellers: \n");
     		
-    		for(WineSeller target : this.sellersList)
+    		for(WineSeller target : this.sellersList.values())
     			sb.append("	Seller: " + target.getSeller() 
     						+ "	Price: " + target.getPrice() 
     						+ "	Quantity: " + target.getQuantity() 
@@ -56,11 +57,10 @@ public class Wine {
     	return sb.toString();
     }
 
-	private WineSeller getSeller(String seller) {
-		for (WineSeller target : this.sellersList)
-			if(target.getSeller().equals(seller))
-				return target;
-		
+    private WineSeller getSeller(String seller) {
+		if(sellersList.containsKey(seller))
+			return sellersList.get(seller);
+	
 		return null;
 	}
 	
@@ -68,7 +68,7 @@ public class Wine {
 		if(this.sellersList.size() == 0)
 			return false;
 		
-		for(WineSeller target : this.sellersList)
+		for(WineSeller target : this.sellersList.values())
 			if(target.getQuantity() != 0)
 				return false;
 		
@@ -77,5 +77,19 @@ public class Wine {
 
 	public void updateRating(int stars) {
 		this.averageRating.update(stars);
+	}
+	
+	public String buy(String seller, int quantity, int balance) {
+		WineSeller sellerBuy = sellersList.get(seller);
+		if (sellerBuy.getQuantity()<quantity) 
+			return "There is not enough stock at the moment.\n";			
+		else if(sellerBuy.getQuantity()*sellerBuy.getPrice()>balance)
+			return "There is not enough money in your wallet.\n";	
+		else {
+			sellerBuy.removeQuantity(quantity);
+			if (sellerBuy.getQuantity()==quantity)
+				sellersList.remove(seller);
+			return "Success! Your order is completed!\n";
+		}
 	}
 }
