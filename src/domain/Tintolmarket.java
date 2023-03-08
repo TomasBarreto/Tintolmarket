@@ -81,7 +81,7 @@ public class Tintolmarket {
 
             } else if (commandSplit[0].equals("wallet") || commandSplit[0].equals("w")) {
                 if(commandSplit.length == 1){
-                    System.out.println(clientStub.viewWallet() + "\n");
+                    System.out.println("Wallet: " + clientStub.viewWallet() + "\n");
                 }
                 System.out.println("Wrong command\n");
 
