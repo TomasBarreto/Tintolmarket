@@ -35,31 +35,31 @@ public class TintolmarketServer {
                 //fazer a autenticacao e manda ao cliente o valor
                 String userID = (String) inStream.readObject();
                 String passWord = (String) inStream.readObject();
-                outStream.writeObject(autenticator.autenticate(userID, passWord));
+                boolean autenticated = autenticator.autenticate(userID, passWord);
+                outStream.writeObject(autenticated);
 
                 boolean working = true;
-                while (working){
+                while (working && autenticated){
                     Command cmd = (Command) inStream.readObject();
                     if (cmd.getCommand().equals("add")){
                         outStream.writeObject(serverSkel.addWine(cmd.getWine(), cmd.getImage()));
                     } else if (cmd.getCommand().equals("sell")) {
-                        outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(),cmd.getWineQuantity()));
+                        outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(),cmd.getWineQuantity(), userID));
                     } else if (cmd.getCommand().equals("view")) {
                         outStream.writeObject(serverSkel.viewWine(cmd.getWine()));
                     } else if (cmd.getCommand().equals("buy")) {
                         outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(),cmd.getWineQuantity()));
                     } else if (cmd.getCommand().equals("wallet")) {
-                        outStream.writeObject(serverSkel.viewWallet());
+                        outStream.writeObject(serverSkel.viewWallet(userID));
                     } else if (cmd.getCommand().equals("classify")) {
                         outStream.writeObject(serverSkel.classifyWine(cmd.getWine(), cmd.getWineStars()));
                     } else if (cmd.getCommand().equals("talk")) {
                         outStream.writeObject(serverSkel.sendMessage(cmd.getUserReceiver(),cmd.getMessage()));
                     } else if (cmd.getCommand().equals("read")) {
-                        outStream.writeObject(serverSkel.readMessages());
+                        outStream.writeObject(serverSkel.readMessages(userID));
                     } else if (cmd.getCommand().equals("stop")) {
                         working = false;
                     }
-
                 }
 
                 outStream.close();
