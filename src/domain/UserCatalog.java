@@ -15,7 +15,7 @@ public class UserCatalog {
 		users.put(userID, new User(userID));
 	}
 
-	public boolean sendMessage(String user, String userFrom, String message) throws IOException {
+	public boolean sendMessage(String user, String userFrom, String message)  {
 		User target;
 		if (users.containsKey(user)) {
 			target = users.get(user);
