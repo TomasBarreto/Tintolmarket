@@ -16,4 +16,8 @@ public class Rating {
         this.counter ++;
         this.rating = this.starsSum / this.counter;
     }
+    
+    public float getRating() {
+    	return this.rating;
+    }
 }
