@@ -47,7 +47,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return this.wineCat.classifyWine(wine, stars);
 	}
 	
-	public boolean sendMessage(String user, String userFrom,String message){
+	public boolean sendMessage(String user, String userFrom, String message){
 		return userCat.sendMessage(user, userFrom, message);
 	}
 

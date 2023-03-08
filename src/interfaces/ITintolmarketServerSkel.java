@@ -16,7 +16,7 @@ public interface ITintolmarketServerSkel {
 	
 	public boolean classifyWine(String wine, int stars);
 
-	public boolean sendMessage(String user, String message) throws IOException;
+	public boolean sendMessage(String user, String userFrom, String message) ;
 	
 	public String readMessages(String userID);
 }
