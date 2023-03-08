@@ -42,7 +42,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	}
 	
 	public boolean classifyWine(String wine, int stars) {
-		
+		return this.wineCat.classifyWine(wine, stars);
 	}
 	
 	public boolean sendMessage(String user, String message) throws IOException {

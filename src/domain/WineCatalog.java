@@ -42,4 +42,16 @@ public class WineCatalog {
 	private String getInfo(String wine) {
 		return wineCat.get(wine).wineInfo();
 	}
+
+	public boolean classifyWine(String wine, int stars) {
+		Wine target = this.wineCat.get(wine);
+		
+		if(target != null) {
+			target.updateRating(stars);
+			
+			return true;
+		}
+		
+		return false;
+	}
 }
