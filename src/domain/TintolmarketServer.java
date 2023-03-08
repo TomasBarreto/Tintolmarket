@@ -48,7 +48,7 @@ public class TintolmarketServer {
                     } else if (cmd.getCommand().equals("view")) {
                         outStream.writeObject(serverSkel.viewWine(cmd.getWine()));
                     } else if (cmd.getCommand().equals("buy")) {
-                        outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(),cmd.getWineQuantity()));
+                        outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(),cmd.getWineQuantity(), userID));
                     } else if (cmd.getCommand().equals("wallet")) {
                         outStream.writeObject(serverSkel.viewWallet(userID));
                     } else if (cmd.getCommand().equals("classify")) {
