@@ -18,17 +18,11 @@ public class UserCatalog {
 	public void sendMessage(String user, String message) throws IOException {
 		User target = users.get(user);
 		target.receiveMessage(new Message(user, message));
-		
-		try {
-			outStream.writeObject("Message Successfully sent!");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
-	public String getWalletMoney(String userID) {
+	public int getWalletMoney(String userID) {
 		User target = this.users.get(userID);
 		
-		return String.valueOf(target.getWalletMoney());
+		return target.getWalletMoney();
 	}
 }

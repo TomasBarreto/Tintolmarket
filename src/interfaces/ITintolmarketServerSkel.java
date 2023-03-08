@@ -10,13 +10,13 @@ public interface ITintolmarketServerSkel {
 	
 	public String viewWine(String wine);
 	
-	public void buyWine(String wine, String seller, int quantity);
+	public String buyWine(String wine, String seller, int quantity);
 	
-	public String viewWallet(String userID);
+	public int viewWallet(String userID);
 	
-	public void classifyWine(String wine, int stars);
+	public boolean classifyWine(String wine, int stars);
 
-	public void sendMessage(String user, String message) throws IOException;
+	public boolean sendMessage(String user, String message) throws IOException;
 	
-	public void readMessages(String userID);
+	public String readMessages(String userID);
 }

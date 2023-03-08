@@ -32,25 +32,25 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return wineCat.viewWine(wine);
 	}
 	
-	public void buyWine(String wine, String seller, int quantity) {
+	public String buyWine(String wine, String seller, int quantity) {
 		
 	}
 	
 
-	public String viewWallet(String userID) {
-		return "Saldo na carteira: " + this.userCat.getWalletMoney(userID);
+	public int viewWallet(String userID) {
+		return this.userCat.getWalletMoney(userID);
 	}
 	
-	public void classifyWine(String wine, int stars) {
+	public boolean classifyWine(String wine, int stars) {
 		
 	}
 	
-	public void sendMessage(String user, String message) throws IOException {
+	public boolean sendMessage(String user, String message) throws IOException {
 		userCat.sendMessage(user, message);
 	}
 
 
-	public void readMessages(String userID) {
+	public String readMessages(String userID) {
 		
 	}
 }
