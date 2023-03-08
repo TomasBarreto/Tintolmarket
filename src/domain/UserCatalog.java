@@ -15,14 +15,26 @@ public class UserCatalog {
 		users.put(userID, new User(userID));
 	}
 
-	public void sendMessage(String user, String message) throws IOException {
-		User target = users.get(user);
-		target.receiveMessage(new Message(user, message));
+	public boolean sendMessage(String user, String userFrom, String message)  {
+		User target;
+		if (users.containsKey(user)) {
+			target = users.get(user);
+		} else {
+			return false;
+		}
+
+		target.receiveMessage(new Message(user, userFrom, message));
+		return true;
 	}
 
 	public int getWalletMoney(String userID) {
 		User target = this.users.get(userID);
 		
 		return target.getWalletMoney();
+	}
+
+	public String readMessages(String userID){
+		User user = users.get(userID);
+		return user.readMessages();
 	}
 }

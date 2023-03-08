@@ -47,12 +47,12 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return this.wineCat.classifyWine(wine, stars);
 	}
 	
-	public boolean sendMessage(String user, String message) throws IOException {
-		userCat.sendMessage(user, message);
+	public boolean sendMessage(String user, String userFrom,String message){
+		return userCat.sendMessage(user, userFrom, message);
 	}
 
 
 	public String readMessages(String userID) {
-		
+		return userCat.readMessages(userID);
 	}
 }
