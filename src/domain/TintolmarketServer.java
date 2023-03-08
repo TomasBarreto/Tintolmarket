@@ -27,6 +27,7 @@ public class TintolmarketServer {
                 ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
                 Autentication autenticator = new Autentication();
+                TintolmarketServerSkel serverSkel = new TintolmarketServerSkel();
 
                 //CODIGO A EXECUTAR PELO SERVER
                 System.out.println("Connected");
@@ -36,14 +37,33 @@ public class TintolmarketServer {
                 String passWord = (String) inStream.readObject();
                 outStream.writeObject(autenticator.autenticate(userID, passWord));
 
+                boolean working = true;
+                while (working){
+                    Command cmd = (Command) inStream.readObject();
+                    if (cmd.getCommand().equals("add")){
+                        outStream.writeObject(serverSkel.addWine(cmd.getWine(), cmd.getImage()));
+                    } else if (cmd.getCommand().equals("sell")) {
+                        outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(),cmd.getWineQuantity()));
+                    } else if (cmd.getCommand().equals("view")) {
+                        outStream.writeObject(serverSkel.viewWine(cmd.getWine()));
+                    } else if (cmd.getCommand().equals("buy")) {
+                        outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(),cmd.getWineQuantity()));
+                    } else if (cmd.getCommand().equals("wallet")) {
+                        outStream.writeObject(serverSkel.viewWallet());
+                    } else if (cmd.getCommand().equals("classify")) {
+                        outStream.writeObject(serverSkel.classifyWine(cmd.getWine(), cmd.getWineStars()));
+                    } else if (cmd.getCommand().equals("talk")) {
+                        outStream.writeObject(serverSkel.sendMessage(cmd.getUserReceiver(),cmd.getMessage()));
+                    } else if (cmd.getCommand().equals("read")) {
+                        outStream.writeObject(serverSkel.readMessages());
+                    } else if (cmd.getCommand().equals("stop")) {
+                        working = false;
+                    }
 
-
-
-
+                }
 
                 outStream.close();
                 inStream.close();
-
                 socket.close();
 
             } catch (IOException e) {
