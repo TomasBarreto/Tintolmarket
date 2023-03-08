@@ -6,14 +6,14 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import src.interfaces.ITintolmarketServerStub;
+import src.interfaces.ITintolmarketServerSkel;
 
-public class TintolmarketServerStub implements ITintolmarketServerStub {
+public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	
 	private UserCatalog userCat;
 	private WineCatalog wineCat;
 	
-	public TintolmarketServerStub() {
+	public TintolmarketServerSkel() {
 		this.userCat = new UserCatalog();
 		this.wineCat = new WineCatalog();
 	}

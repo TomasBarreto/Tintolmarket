@@ -150,7 +150,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		}
 		return (String) inStream.readObject();
 	}
-
+	
 	public void stop() throws IOException {
 		inStream.close();
 		outStream.close();

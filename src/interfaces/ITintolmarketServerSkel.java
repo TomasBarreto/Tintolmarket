@@ -3,7 +3,7 @@ package src.interfaces;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-public interface ITintolmarketServerStub {
+public interface ITintolmarketServerSkel {
 	public boolean addWine(String wine, String image, ObjectOutputStream outStream);
 	
 	public boolean sellWine(String wine, int value, int quantity, String seller, ObjectOutputStream outStream);
