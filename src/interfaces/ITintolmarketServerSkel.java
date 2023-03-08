@@ -10,7 +10,7 @@ public interface ITintolmarketServerSkel {
 	
 	public String viewWine(String wine);
 	
-	public String buyWine(String wine, String seller, int quantity);
+	public String buyWine(String wine, String seller, int quantity, String userID);
 	
 	public int viewWallet(String userID);
 	
