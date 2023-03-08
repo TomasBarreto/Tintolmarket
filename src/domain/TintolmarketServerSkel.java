@@ -46,7 +46,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	}
 	
 	public boolean sendMessage(String user, String message) throws IOException {
-		userCat.sendMessage(user, message);
+		return userCat.sendMessage(user, message);
 	}
 
 

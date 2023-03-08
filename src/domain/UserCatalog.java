@@ -15,9 +15,15 @@ public class UserCatalog {
 		users.put(userID, new User(userID));
 	}
 
-	public void sendMessage(String user, String message) throws IOException {
+	public boolean sendMessage(String user, String message) throws IOException {
 		User target = users.get(user);
+
+		if(target == null) {
+			return false;
+		}
+
 		target.receiveMessage(new Message(user, message));
+		return true;
 	}
 
 	public int getWalletMoney(String userID) {
