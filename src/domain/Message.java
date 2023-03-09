@@ -14,6 +14,6 @@ public class Message {
 	}
 
 	public String read() {
-		return this.from + ":" + this.message + "\n";
+		return "Message sent by: " + this.from + " text: " + this.message + "\n";
 	}
 }

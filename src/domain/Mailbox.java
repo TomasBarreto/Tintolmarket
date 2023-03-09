@@ -16,6 +16,11 @@ public class Mailbox {
 
     public String readMessages() {
 		String message = "";
+
+		if (mailBox.size() == 0) {
+			return "There are no messages available\n";
+		}
+
 		for (int i = 0; i < mailBox.size(); i++) {
 			message = message + mailBox.get(i).read();
 		}
