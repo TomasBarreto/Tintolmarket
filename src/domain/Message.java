@@ -3,9 +3,8 @@ package src.domain;
 public class Message {
 	
 	private final String to;
-	private String message;
-
 	private final String from;
+	private String message;
 	
 	public Message(String to, String from, String message) {
 		this.to = to;
