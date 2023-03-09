@@ -57,7 +57,6 @@ public class TintolmarketStub implements ITintolmarketStub {
 		cmd.setWine(wine);
 		cmd.setWinePrice(value);
 		cmd.setWineQuantity(quantity);
-		cmd.setUser(userID);
 		
 		try {
 			outStream.writeObject(cmd);
@@ -150,7 +149,6 @@ public class TintolmarketStub implements ITintolmarketStub {
 	public String readMessages() throws IOException, ClassNotFoundException {
 		Command cmd = new Command();
 		cmd.setCommand("read");
-		cmd.setUser(userID);
 		
 		try {
 			outStream.writeObject(cmd);
@@ -161,6 +159,9 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 	
 	public void stop() throws IOException {
+		Command cmd = new Command();
+		cmd.setCommand("stop");
+		outStream.writeObject(cmd);
 		inStream.close();
 		outStream.close();
 		clientSocket.close();

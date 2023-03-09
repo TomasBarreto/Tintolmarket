@@ -22,4 +22,8 @@ public class User {
 	public String readMessages() {
 		return mailBox.readMessages();
 	}
+
+	public void reduceBalance(int winePrice) {
+		this.wallet.reduceBalance(winePrice);
+	}
 }

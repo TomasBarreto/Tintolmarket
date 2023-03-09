@@ -63,4 +63,8 @@ public class WineCatalog {
 	        return wineCat.get(wine).buy(seller, quantity, balance);
 	    }
 	}
+
+	public int getWinePrice(String wine, String seller) {
+		return wineCat.get(wine).getPrice(seller);
+	}
 }
