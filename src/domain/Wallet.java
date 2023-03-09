@@ -18,4 +18,8 @@ public class Wallet {
 	public int getMoney() {
 		return this.credit;
 	}
+
+	public void reduceBalance(int winePrice) {
+		this.credit = this.credit - winePrice;
+	}
 }

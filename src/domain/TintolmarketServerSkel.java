@@ -34,8 +34,12 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	
 	public String buyWine(String wine, String seller, int quantity, String userID) {
 		int balance = userCat.getWalletMoney(userID);
-		
-		return wineCat.buyWine(wine, seller, quantity, balance);
+		String result = wineCat.buyWine(wine, seller, quantity, balance);
+		if(result.equals("Success! Your order is completed!")){
+			int winePrice = wineCat.getWinePrice(wine, seller);
+			this.userCat.reduceBalance(userID, winePrice);
+		}
+		return result + "\n";
 	}
 	
 

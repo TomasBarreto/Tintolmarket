@@ -1,8 +1,6 @@
 package src.domain;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Wine {
 	
@@ -82,14 +80,18 @@ public class Wine {
 	public String buy(String seller, int quantity, int balance) {
 		WineSeller sellerBuy = sellersList.get(seller);
 		if (sellerBuy.getQuantity()<quantity) 
-			return "There is not enough stock at the moment.\n";			
+			return "There is not enough stock at the moment.";
 		else if(sellerBuy.getQuantity()*sellerBuy.getPrice()>balance)
-			return "There is not enough money in your wallet.\n";	
+			return "There is not enough money in your wallet.";
 		else {
 			sellerBuy.removeQuantity(quantity);
 			if (sellerBuy.getQuantity()==quantity)
 				sellersList.remove(seller);
-			return "Success! Your order is completed!\n";
+			return "Success! Your order is completed!";
 		}
+	}
+
+	public int getPrice(String seller) {
+		return this.sellersList.get(seller).getPrice();
 	}
 }
