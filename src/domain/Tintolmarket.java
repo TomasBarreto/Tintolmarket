@@ -24,8 +24,8 @@ public class Tintolmarket {
         }else{
             in.close();
             System.out.println("Autentication failed");
-            clientStub.stop();
             working = false;
+            clientStub.stop();
         }
 
         while(working){

@@ -33,38 +33,45 @@ public class TintolmarketServer {
 
 
                 //CODIGO A EXECUTAR PELO SERVER
-                System.out.println("Connected");
+
 
                 //fazer a autenticacao e manda ao cliente o valor
                 String userID = (String) inStream.readObject();
                 String passWord = (String) inStream.readObject();
                 boolean autenticated = autenticator.autenticate(userID, passWord);
                 outStream.writeObject(autenticated);
+                if(autenticated){
+                    System.out.println("Client connected");
+                }
 
                 boolean working = true;
                 while (working && autenticated) {
+                    try{
+                        Command cmd = (Command) inStream.readObject();
 
-                    Command cmd = (Command) inStream.readObject();
-
-                    if (cmd.getCommand().equals("add")) {
-                        outStream.writeObject(serverSkel.addWine(cmd.getWine(), cmd.getImage()));
-                    } else if (cmd.getCommand().equals("sell")) {
-                        outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(), cmd.getWineQuantity(), userID));
-                    } else if (cmd.getCommand().equals("view")) {
-                        outStream.writeObject(serverSkel.viewWine(cmd.getWine()));
-                    } else if (cmd.getCommand().equals("buy")) {
-                        outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(), cmd.getWineQuantity(), userID));
-                    } else if (cmd.getCommand().equals("wallet")) {
-                        outStream.writeObject(serverSkel.viewWallet(userID));
-                    } else if (cmd.getCommand().equals("classify")) {
-                        outStream.writeObject(serverSkel.classifyWine(cmd.getWine(), cmd.getWineStars()));
-                    } else if (cmd.getCommand().equals("talk")) {
-                        outStream.writeObject(serverSkel.sendMessage(cmd.getUserReceiver(), userID, cmd.getMessage()));
-                    } else if (cmd.getCommand().equals("read")) {
-                        outStream.writeObject(serverSkel.readMessages(userID));
-                    } else if (cmd.getCommand().equals("stop")) {
-                        working = false;
+                        if (cmd.getCommand().equals("add")) {
+                            outStream.writeObject(serverSkel.addWine(cmd.getWine(), cmd.getImage()));
+                        } else if (cmd.getCommand().equals("sell")) {
+                            outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(), cmd.getWineQuantity(), userID));
+                        } else if (cmd.getCommand().equals("view")) {
+                            outStream.writeObject(serverSkel.viewWine(cmd.getWine()));
+                        } else if (cmd.getCommand().equals("buy")) {
+                            outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(), cmd.getWineQuantity(), userID));
+                        } else if (cmd.getCommand().equals("wallet")) {
+                            outStream.writeObject(serverSkel.viewWallet(userID));
+                        } else if (cmd.getCommand().equals("classify")) {
+                            outStream.writeObject(serverSkel.classifyWine(cmd.getWine(), cmd.getWineStars()));
+                        } else if (cmd.getCommand().equals("talk")) {
+                            outStream.writeObject(serverSkel.sendMessage(cmd.getUserReceiver(), userID, cmd.getMessage()));
+                        } else if (cmd.getCommand().equals("read")) {
+                            outStream.writeObject(serverSkel.readMessages(userID));
+                        } else if (cmd.getCommand().equals("stop")) {
+                            working = false;
+                            System.out.println("Client disconnected");
+                        }
+                    } catch(SocketException e){
                         System.out.println("Client disconnected");
+                        working = false;
                     }
                 }
 

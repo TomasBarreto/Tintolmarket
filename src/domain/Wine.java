@@ -81,7 +81,7 @@ public class Wine {
 		WineSeller sellerBuy = sellersList.get(seller);
 		if (sellerBuy.getQuantity()<quantity) 
 			return "There is not enough stock at the moment.";
-		else if(sellerBuy.getQuantity()*sellerBuy.getPrice()>balance)
+		else if(quantity*sellerBuy.getPrice()>balance)
 			return "There is not enough money in your wallet.";
 		else {
 			sellerBuy.removeQuantity(quantity);
