@@ -3,14 +3,17 @@ package src.domain;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class TintolmarketServer {
 
+    private final TintolmarketServerSkel serverSkel = new TintolmarketServerSkel();
+
     public static void main(String[] args) {
-        if(args.length > 0){
+        if (args.length > 0) {
             int port = Integer.parseInt(args[0]);
             TintolmarketServer server = new TintolmarketServer(port);
-        }else{
+        } else {
             TintolmarketServer server = new TintolmarketServer(12345);
         }
     }
@@ -22,12 +25,12 @@ public class TintolmarketServer {
             socket = inSoc;
         }
 
-        public void run(){
+        public void run() {
             try {
                 ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
                 Autentication autenticator = new Autentication();
-                TintolmarketServerSkel serverSkel = new TintolmarketServerSkel();
+
 
                 //CODIGO A EXECUTAR PELO SERVER
                 System.out.println("Connected");
@@ -39,16 +42,19 @@ public class TintolmarketServer {
                 outStream.writeObject(autenticated);
 
                 boolean working = true;
-                while (working && autenticated){
+                while (working && autenticated) {
+                    System.out.println("ola");
+
                     Command cmd = (Command) inStream.readObject();
-                    if (cmd.getCommand().equals("add")){
+
+                    if (cmd.getCommand().equals("add")) {
                         outStream.writeObject(serverSkel.addWine(cmd.getWine(), cmd.getImage()));
                     } else if (cmd.getCommand().equals("sell")) {
-                        outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(),cmd.getWineQuantity(), userID));
+                        outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(), cmd.getWineQuantity(), userID));
                     } else if (cmd.getCommand().equals("view")) {
                         outStream.writeObject(serverSkel.viewWine(cmd.getWine()));
                     } else if (cmd.getCommand().equals("buy")) {
-                        outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(),cmd.getWineQuantity(), userID));
+                        outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(), cmd.getWineQuantity(), userID));
                     } else if (cmd.getCommand().equals("wallet")) {
                         outStream.writeObject(serverSkel.viewWallet(userID));
                     } else if (cmd.getCommand().equals("classify")) {
@@ -59,6 +65,7 @@ public class TintolmarketServer {
                         outStream.writeObject(serverSkel.readMessages(userID));
                     } else if (cmd.getCommand().equals("stop")) {
                         working = false;
+                        System.out.println("Client disconnected");
                     }
                 }
 
