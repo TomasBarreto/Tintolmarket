@@ -159,6 +159,9 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 	
 	public void stop() throws IOException {
+		Command cmd = new Command();
+		cmd.setCommand("stop");
+		outStream.writeObject(cmd);
 		inStream.close();
 		outStream.close();
 		clientSocket.close();
