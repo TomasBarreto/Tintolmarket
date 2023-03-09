@@ -9,6 +9,8 @@ public class UserCatalog {
 	
 	public UserCatalog() {
 		this.users = new HashMap<>();
+		addUser("user1");
+		addUser("user2");
 	}
 	
 	public void addUser(String userID) {
@@ -36,5 +38,9 @@ public class UserCatalog {
 	public String readMessages(String userID){
 		User user = users.get(userID);
 		return user.readMessages();
+	}
+
+	public void reduceBalance(String userID, int winePrice) {
+		this.users.get(userID).reduceBalance(winePrice);
 	}
 }
