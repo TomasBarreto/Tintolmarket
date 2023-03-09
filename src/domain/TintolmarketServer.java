@@ -43,8 +43,7 @@ public class TintolmarketServer {
 
                 boolean working = true;
                 while (working && autenticated) {
-                    System.out.println("ola");
-
+                    
                     Command cmd = (Command) inStream.readObject();
 
                     if (cmd.getCommand().equals("add")) {
