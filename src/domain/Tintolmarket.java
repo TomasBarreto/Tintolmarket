@@ -52,8 +52,9 @@ public class Tintolmarket {
                     }else{
                         System.out.println("Wine already in system\n");
                     }
+                } else {
+                    System.out.println("Wrong command\n");
                 }
-                System.out.println("Wrong command\n");
 
             } else if(commandSplit[0].equals("sell") || commandSplit[0].equals("s")){
                 if(commandSplit.length == 4){
@@ -62,28 +63,32 @@ public class Tintolmarket {
                     }else{
                         System.out.println("Wine doesnt exist\n");
                     }
+                } else {
+                    System.out.println("Wrong command\n");
                 }
-                System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("view") || commandSplit[0].equals("v")) {
                 if(commandSplit.length == 2){
                     String answer = clientStub.viewWine(commandSplit[1]);
                     System.out.println(answer);
+                } else {
+                    System.out.println("Wrong command\n");
                 }
-                System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("buy") || commandSplit[0].equals("b")) {
                 if(commandSplit.length == 4){
                     String answer = clientStub.buyWine(commandSplit[1], commandSplit[2], Integer.parseInt(commandSplit[3]));
                     System.out.println(answer);
+                } else {
+                    System.out.println("Wrong command\n");
                 }
-                System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("wallet") || commandSplit[0].equals("w")) {
                 if(commandSplit.length == 1){
                     System.out.println("Wallet: " + clientStub.viewWallet() + "\n");
+                } else{
+                    System.out.println("Wrong command\n");
                 }
-                System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("classify") || commandSplit[0].equals("c")) {
                 if(commandSplit.length == 3){
@@ -92,30 +97,35 @@ public class Tintolmarket {
                     } else{
                         System.out.println("Wine doesnt exist\n");
                     }
+                } else {
+                    System.out.println("Wrong command\n");
                 }
-                System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("talk") || commandSplit[0].equals("t")) {
                 if(commandSplit.length == 3){
                     if(clientStub.sendMessage(commandSplit[1], commandSplit[2])){
                         System.out.println("Message sent!\n");
-                    } else{
+                    } else {
                         System.out.println("User doesnt exist\n");
                     }
+                } else {
+                    System.out.println("Wrong command\n");
                 }
-                System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("read") || commandSplit[0].equals("r")) {
                 if(commandSplit.length == 1){
                     System.out.println(clientStub.readMessages());
+                } else {
+                    System.out.println("Wrong command\n");
                 }
-                System.out.println("Wrong command\n");
 
             } else if (commandSplit[0].equals("stop")) {
                 working = false;
                 System.out.println("Disconnecting");
                 clientStub.stop();
                 System.out.println("Disconnected");
+            } else {
+                System.out.println("Wrong command\n");
             }
         }
         in.close();
