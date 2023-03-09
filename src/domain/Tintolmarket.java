@@ -102,8 +102,14 @@ public class Tintolmarket {
                 }
 
             } else if (commandSplit[0].equals("talk") || commandSplit[0].equals("t")) {
-                if(commandSplit.length == 3){
-                    if(clientStub.sendMessage(commandSplit[1], commandSplit[2])){
+                if(commandSplit.length >= 3){
+                    String message = "";
+                    for (int i = 2; i < commandSplit.length; i++) {
+                        message = message + commandSplit[i] + " ";
+                    }
+                    message = message + "\n";
+                    boolean sent = clientStub.sendMessage(commandSplit[1], message);
+                    if(sent){
                         System.out.println("Message sent!\n");
                     } else {
                         System.out.println("User doesnt exist\n");
