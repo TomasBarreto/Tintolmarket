@@ -1,6 +1,8 @@
 package src.domain;
 
-public class Command {
+import java.io.Serializable;
+
+public class Command implements Serializable {
     private String command;
     private String wine;
     private String image;
