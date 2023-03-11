@@ -151,6 +151,7 @@ public class Tintolmarket {
         if(args.length == 2){
             System.out.println("Insira a sua password");
             String password = in.next();
+            in.nextLine();
             new Tintolmarket(args[0], args[1], password);
 
         }else{
