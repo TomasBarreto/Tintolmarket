@@ -1,11 +1,6 @@
 
 package src.domain;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import src.interfaces.ITintolmarketServerSkel;
 
 public class TintolmarketServerSkel implements ITintolmarketServerSkel {
@@ -17,14 +12,12 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		this.userCat = new UserCatalog();
 		this.wineCat = new WineCatalog();
 	}
-	
 
-	public boolean addWine(String wine, String image) {
+	public synchronized boolean addWine(String wine, String image) {
 		return wineCat.addWine(wine, image);
 	}
 
-
-	public boolean sellWine(String wine, int value, int quantity, String seller) {
+	public synchronized boolean sellWine(String wine, int value, int quantity, String seller) {
 		return wineCat.sellWine(wine, value, quantity, seller);
 	}
 
@@ -32,27 +25,25 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return wineCat.viewWine(wine);
 	}
 	
-	public String buyWine(String wine, String seller, int quantity, String userID) {
+	public synchronized String buyWine(String wine, String seller, int quantity, String userID) {
 		int balance = userCat.getWalletMoney(userID);
 		
 		return wineCat.buyWine(wine, seller, quantity, balance);
 	}
-	
 
 	public int viewWallet(String userID) {
 		return this.userCat.getWalletMoney(userID);
 	}
 	
-	public boolean classifyWine(String wine, int stars) {
+	public synchronized boolean classifyWine(String wine, int stars) {
 		return this.wineCat.classifyWine(wine, stars);
 	}
 	
-	public boolean sendMessage(String user, String userFrom, String message){
+	public synchronized boolean sendMessage(String user, String userFrom, String message){
 		return userCat.sendMessage(user, userFrom, message);
 	}
 
-
-	public String readMessages(String userID) {
+	public synchronized String readMessages(String userID) {
 		return userCat.readMessages(userID);
 	}
 }

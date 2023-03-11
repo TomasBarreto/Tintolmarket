@@ -1,7 +1,5 @@
 package src.interfaces;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 public interface ITintolmarketServerSkel {
 	public boolean addWine(String wine, String image);
