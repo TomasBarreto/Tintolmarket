@@ -68,6 +68,7 @@ public class TintolmarketServer {
                             outStream.writeObject(serverSkel.readMessages(userID));
                         } else if (cmd.getCommand().equals("stop")) {
                             working = false;
+                            autenticator.remove(userID);
                             System.out.println("Client disconnected");
                         }
                     } catch(SocketException e){
