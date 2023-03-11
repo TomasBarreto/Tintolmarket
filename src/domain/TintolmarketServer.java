@@ -4,10 +4,12 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
 
 public class TintolmarketServer {
 
     private final TintolmarketServerSkel serverSkel = new TintolmarketServerSkel();
+    private final Autentication autenticator = new Autentication();
 
     public static void main(String[] args) {
         if (args.length > 0) {
@@ -19,19 +21,18 @@ public class TintolmarketServer {
     }
 
     class ServerThread extends Thread {
-        private Socket socket = null;
+        private Socket socket;
+        private ArrayList<ServerThread> threadList;
 
-        ServerThread(Socket inSoc) {
-            socket = inSoc;
+        ServerThread(Socket inSoc, ArrayList<ServerThread> threadList) {
+            this.socket = inSoc;
+            this.threadList = threadList;
         }
 
         public void run() {
             try {
                 ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
-                Autentication autenticator = new Autentication();
-
-
                 //CODIGO A EXECUTAR PELO SERVER
 
 
@@ -88,23 +89,17 @@ public class TintolmarketServer {
     }
 
     public TintolmarketServer(int port) {
-        ServerSocket sSoc = null;
+        ArrayList<ServerThread> threadList = new ArrayList<>();
 
-        try {
-            sSoc = new ServerSocket(port);
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            System.exit(-1);
-        }
-
-        while (true) {
-            try {
-                Socket inSoc = sSoc.accept();
-                ServerThread newServerThread = new ServerThread(inSoc);
-                newServerThread.start();
-            } catch (IOException e) {
-                e.printStackTrace();
+        try(ServerSocket serverSocket = new ServerSocket(port)){
+            while (true){
+                Socket socket = serverSocket.accept();
+                ServerThread serverThread = new ServerThread(socket, threadList);
+                threadList.add(serverThread);
+                serverThread.start();
             }
+        }catch (IOException e){
+            System.out.print("Error Connecting");
         }
     }
 }

@@ -1,9 +1,32 @@
 package src.domain;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.Scanner;
 
 public class Tintolmarket {
+
+    class ClientThread extends Thread{
+        private ObjectInputStream inStream;
+
+        public ClientThread(ObjectInputStream in) throws IOException{
+            this.inStream = in;
+        }
+
+        public void run(){
+            try{
+                while(true){
+                    String response = (String) inStream.readObject();
+                }
+            }catch (IOException | ClassNotFoundException e){
+                System.out.println("Disconnected");
+            }
+        }
+
+    }
+
     private static Scanner in = new Scanner(System.in);
 
     public Tintolmarket(String serverAdress, String userID, String passWord) throws IOException, ClassNotFoundException {
@@ -14,13 +37,18 @@ public class Tintolmarket {
             port = Integer.parseInt(serverAndPort[1]);
         }
 
-        TintolmarketStub clientStub = new TintolmarketStub(ip, port);
-        boolean autenticated = clientStub.autenticate(userID, passWord);
+        Socket socket = new Socket(ip, port);
+        ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
+
+        TintolmarketStub clientStub = new TintolmarketStub(socket);
+        boolean autenticated = clientStub.autenticate(userID, passWord, inStream);
         boolean working = true;
 
         //verificar se foi autenticado
         if (autenticated){
             System.out.println("Autentication completed\n");
+            ClientThread clientThread = new ClientThread(inStream);
+            clientThread.start();
         }else{
             in.close();
             System.out.println("Autentication failed");
@@ -47,56 +75,42 @@ public class Tintolmarket {
 
             if(commandSplit[0].equals("add") || commandSplit[0].equals("a")) {
                 if(commandSplit.length == 3){
-                    if(clientStub.addWine(commandSplit[1], commandSplit[2])){
-                        System.out.println("Wine added successfully\n");
-                    }else{
-                        System.out.println("Wine already in system\n");
-                    }
+                    clientStub.addWine(commandSplit[1], commandSplit[2]);
                 } else {
                     System.out.println("Wrong command\n");
                 }
 
             } else if(commandSplit[0].equals("sell") || commandSplit[0].equals("s")){
                 if(commandSplit.length == 4){
-                    if(clientStub.sellWine(commandSplit[1], Integer.parseInt(commandSplit[2]), Integer.parseInt(commandSplit[3]))){
-                        System.out.println("Wine is now for sale\n");
-                    }else{
-                        System.out.println("Wine doesnt exist\n");
-                    }
+                    clientStub.sellWine(commandSplit[1], Integer.parseInt(commandSplit[2]), Integer.parseInt(commandSplit[3]));
                 } else {
                     System.out.println("Wrong command\n");
                 }
 
             } else if (commandSplit[0].equals("view") || commandSplit[0].equals("v")) {
                 if(commandSplit.length == 2){
-                    String answer = clientStub.viewWine(commandSplit[1]);
-                    System.out.println(answer);
+                    clientStub.viewWine(commandSplit[1]);
                 } else {
                     System.out.println("Wrong command\n");
                 }
 
             } else if (commandSplit[0].equals("buy") || commandSplit[0].equals("b")) {
                 if(commandSplit.length == 4){
-                    String answer = clientStub.buyWine(commandSplit[1], commandSplit[2], Integer.parseInt(commandSplit[3]));
-                    System.out.println(answer);
+                    clientStub.buyWine(commandSplit[1], commandSplit[2], Integer.parseInt(commandSplit[3]));
                 } else {
                     System.out.println("Wrong command\n");
                 }
 
             } else if (commandSplit[0].equals("wallet") || commandSplit[0].equals("w")) {
                 if(commandSplit.length == 1){
-                    System.out.println("Wallet: " + clientStub.viewWallet() + "\n");
+                    clientStub.viewWallet();
                 } else{
                     System.out.println("Wrong command\n");
                 }
 
             } else if (commandSplit[0].equals("classify") || commandSplit[0].equals("c")) {
                 if(commandSplit.length == 3){
-                    if(clientStub.classifyWine(commandSplit[1], Integer.parseInt(commandSplit[2]))){
-                        System.out.println("Wine classified successfully\n");
-                    } else{
-                        System.out.println("Wine doesnt exist\n");
-                    }
+                    clientStub.classifyWine(commandSplit[1], Integer.parseInt(commandSplit[2]));
                 } else {
                     System.out.println("Wrong command\n");
                 }
@@ -108,19 +122,14 @@ public class Tintolmarket {
                         message = message + commandSplit[i] + " ";
                     }
                     message = message + "\n";
-                    boolean sent = clientStub.sendMessage(commandSplit[1], message);
-                    if(sent){
-                        System.out.println("Message sent!\n");
-                    } else {
-                        System.out.println("User doesnt exist\n");
-                    }
+                    clientStub.sendMessage(commandSplit[1], message);
                 } else {
                     System.out.println("Wrong command\n");
                 }
 
             } else if (commandSplit[0].equals("read") || commandSplit[0].equals("r")) {
                 if(commandSplit.length == 1){
-                    System.out.println(clientStub.readMessages());
+                    clientStub.readMessages();
                 } else {
                     System.out.println("Wrong command\n");
                 }
@@ -129,7 +138,7 @@ public class Tintolmarket {
                 working = false;
                 System.out.println("Disconnecting");
                 clientStub.stop();
-                System.out.println("Disconnected");
+                inStream.close();
             } else {
                 System.out.println("Wrong command\n");
             }
