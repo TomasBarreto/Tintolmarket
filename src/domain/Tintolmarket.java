@@ -19,6 +19,7 @@ public class Tintolmarket {
             try{
                 while(true){
                     String response = (String) inStream.readObject();
+                    System.out.println(response);
                 }
             }catch (IOException | ClassNotFoundException e){
                 System.out.println("Disconnected");
