@@ -20,12 +20,21 @@ public class Wine {
     	this.averageRating.update(rating);
     }
     
-    public void addNewSeller(String seller, int value, int quantity) {
+    public void addNewSeller(String seller, int value, int quantity, WineFileHandler wineFH) {
 		WineSeller target = getSeller(seller);
+		Command cmd = new Command();
 		
 		if(target != null) {
 			target.setQuantity(target.getQuantity() + quantity);
 			target.setPrice(value);
+			
+			cmd.setCommand("updateSeller");
+			cmd.setWine(this.name);
+			cmd.setWineSeller(seller);
+			cmd.setWineQuantity(quantity);
+			cmd.setWinePrice(value);
+			
+			wineFH.alterFile(cmd);
 		}
 		else {
 			target = new WineSeller(seller,value,quantity);
@@ -33,6 +42,14 @@ public class Wine {
 			target.setPrice(value);
 			
 			this.sellersList.put(seller, target);
+			
+			cmd.setCommand("addSeller");
+			cmd.setWine(this.name);
+			cmd.setWineSeller(seller);
+			cmd.setWineQuantity(quantity);
+			cmd.setWinePrice(value);
+			
+			wineFH.alterFile(cmd);
 		}
 	}
 	
@@ -79,16 +96,31 @@ public class Wine {
 	
 	public String buy(String seller, int quantity, int balance) {
 		WineSeller sellerBuy = sellersList.get(seller);
+		Command cmd = new Command();
+		
 		if (sellerBuy.getQuantity()<quantity) 
 			return "There is not enough stock at the moment.";
 		else if(quantity*sellerBuy.getPrice()>balance)
 			return "There is not enough money in your wallet.";
-		else {
-			sellerBuy.removeQuantity(quantity);
-			if (sellerBuy.getQuantity()==quantity)
-				sellersList.remove(seller);
+		
+		if (sellerBuy.getQuantity()==quantity) {
+			sellersList.remove(seller);
+			
+			cmd.setCommand("deleteSeller");
+			cmd.setWine(this.name);
+			cmd.setWineSeller(seller);
+			
 			return "Success! Your order is completed!";
 		}
+		
+		sellerBuy.removeQuantity(quantity);
+		
+		cmd.setCommand("updateQuantity");
+		cmd.setWine(this.name);
+		cmd.setWineSeller(seller);
+		cmd.setWineQuantity(quantity);
+			
+		return "Success! Your order is completed!";
 	}
 
 	public int getPrice(String seller) {

@@ -5,9 +5,11 @@ import java.util.HashMap;
 
 public class WineCatalog {
 	private HashMap<String, Wine> wineCat;
+	private WineFileHandler wineFH;
 
 	public WineCatalog() {
 		this.wineCat = new HashMap<String, Wine>();
+		this.wineFH = new WineFileHandler();
 	}
 
 	public boolean addWine(String wineName, String imageUrl) {
@@ -17,13 +19,20 @@ public class WineCatalog {
 		Wine newWine = new Wine(wineName, imageUrl);
 		wineCat.put(wineName, newWine);
 		
+		Command cmd = new Command();
+		cmd.setCommand("addWine");
+		cmd.setWine(wineName);
+		cmd.setImage(imageUrl);
+		
+		wineFH.alterFile(cmd);
+		
 		return true;
 	}
 
 	public boolean sellWine(String wine, int value, int quantity, String seller) {
 		if(wineCat.containsKey(wine)) {
 			Wine target = wineCat.get(wine);
-			target.addNewSeller(seller, value, quantity);
+			target.addNewSeller(seller, value, quantity, this.wineFH);
 			
 			return true;
 		}
@@ -48,6 +57,12 @@ public class WineCatalog {
 		
 		if(target != null) {
 			target.updateRating(stars);
+			
+			Command cmd = new Command();
+			
+			cmd.setCommand("updateRating");
+			cmd.setWine(wine);
+			cmd.setWineStars(stars);
 			
 			return true;
 		}
