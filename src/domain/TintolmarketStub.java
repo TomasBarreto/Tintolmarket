@@ -11,14 +11,16 @@ public class TintolmarketStub implements ITintolmarketStub {
 
 	private Socket clientSocket;
 	private ObjectOutputStream outStream;
+	private ObjectInputStream inStream;
 	private String userID;
 
-	public TintolmarketStub(Socket socket) throws IOException {
+	public TintolmarketStub(Socket socket, ObjectOutputStream outStream, ObjectInputStream inStream) {
 		this.clientSocket = socket;
-		this.outStream = new ObjectOutputStream(clientSocket.getOutputStream());
+		this.outStream = outStream;
+		this.inStream = inStream;
 	}
 
-	public boolean autenticate(String userID, String passWord, ObjectInputStream inStream) throws IOException, ClassNotFoundException {
+	public boolean autenticate(String userID, String passWord) throws IOException, ClassNotFoundException {
 		outStream.writeObject(userID);
 		outStream.writeObject(passWord);
 		if ((boolean) inStream.readObject() == false) {
@@ -143,7 +145,5 @@ public class TintolmarketStub implements ITintolmarketStub {
 		Command cmd = new Command();
 		cmd.setCommand("stop");
 		outStream.writeObject(cmd);
-		outStream.close();
-		clientSocket.close();
 	}
 }

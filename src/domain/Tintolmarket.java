@@ -40,9 +40,10 @@ public class Tintolmarket {
 
         Socket socket = new Socket(ip, port);
         ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
+        ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 
-        TintolmarketStub clientStub = new TintolmarketStub(socket);
-        boolean autenticated = clientStub.autenticate(userID, passWord, inStream);
+        TintolmarketStub clientStub = new TintolmarketStub(socket, outStream, inStream);
+        boolean autenticated = clientStub.autenticate(userID, passWord);
         boolean working = true;
 
         //verificar se foi autenticado
@@ -54,7 +55,9 @@ public class Tintolmarket {
             in.close();
             System.out.println("Autentication failed");
             working = false;
-            clientStub.stop();
+            inStream.close();
+            outStream.close();
+            socket.close();
         }
 
         while(working){
