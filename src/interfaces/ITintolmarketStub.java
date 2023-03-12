@@ -8,19 +8,19 @@ import src.domain.Wine;
 
 public interface ITintolmarketStub {
 	
-	public boolean addWine(String wine, String image) throws IOException, ClassNotFoundException;
+	public void addWine(String wine, String image);
 	
-	public boolean sellWine(String wine, int value, int quantity) throws IOException, ClassNotFoundException;
+	public void sellWine(String wine, int value, int quantity);
 	
-	public String viewWine(String wine) throws IOException, ClassNotFoundException;
+	public void viewWine(String wine);
 	
-	public String buyWine(String wine, String seller, int quantity) throws IOException, ClassNotFoundException;
+	public void buyWine(String wine, String seller, int quantity);
 	
-	public int viewWallet() throws IOException, ClassNotFoundException;
+	public void viewWallet();
 	
-	public boolean classifyWine(String wine, int stars) throws IOException, ClassNotFoundException;
+	public void classifyWine(String wine, int stars);
 
-	public boolean sendMessage(String user, String message) throws IOException, ClassNotFoundException;
+	public void sendMessage(String user, String message);
 	
-	public String readMessages() throws IOException, ClassNotFoundException;
+	public void readMessages();
 }
