@@ -92,4 +92,8 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 
 	}
+
+	public void addUser(String userID) {
+		this.userCat.addUser(userID);
+	}
 }

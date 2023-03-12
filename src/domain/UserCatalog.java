@@ -9,12 +9,11 @@ public class UserCatalog {
 	
 	public UserCatalog() {
 		this.users = new HashMap<>();
-		addUser("user1");
-		addUser("user2");
 	}
 	
 	public void addUser(String userID) {
-		users.put(userID, new User(userID));
+		if(!users.containsKey(userID))
+			users.put(userID, new User(userID));
 	}
 
 	public boolean sendMessage(String user, String userFrom, String message)  {
