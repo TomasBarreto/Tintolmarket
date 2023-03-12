@@ -3,6 +3,10 @@ package src.domain;
 
 import src.interfaces.ITintolmarketServerSkel;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	
 	private UserCatalog userCat;
@@ -11,6 +15,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	public TintolmarketServerSkel() {
 		this.userCat = new UserCatalog();
 		this.wineCat = new WineCatalog();
+		loadUsers();
 	}
 
 	public synchronized String addWine(String wine, String image) {
@@ -59,7 +64,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 	
-	public synchronized String sendMessage(String user, String userFrom, String message){
+	public synchronized String sendMessage(String user, String userFrom, String message) {
 		boolean value = userCat.sendMessage(user, userFrom, message);
 		if(value){
 			return "Message sent!\n";
@@ -70,5 +75,21 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 
 	public synchronized String readMessages(String userID) {
 		return userCat.readMessages(userID);
+	}
+
+	private void loadUsers() {
+		try{
+			File file = new File("Users");
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				String userAndPass [] = line.split(":");
+
+				this.userCat.addUser(userAndPass[0]);
+			}
+		} catch (FileNotFoundException e){
+			System.out.println("Users file not found\n");
+		}
+
 	}
 }
