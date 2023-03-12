@@ -13,12 +13,23 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		this.wineCat = new WineCatalog();
 	}
 
-	public synchronized boolean addWine(String wine, String image) {
-		return wineCat.addWine(wine, image);
+	public synchronized String addWine(String wine, String image) {
+		boolean value = wineCat.addWine(wine, image);
+		if(value){
+			return "Wine added successfully\n";
+		}else {
+			return "Wine already in system\n";
+		}
 	}
 
-	public synchronized boolean sellWine(String wine, int value, int quantity, String seller) {
-		return wineCat.sellWine(wine, value, quantity, seller);
+
+	public synchronized String sellWine(String wine, int value, int quantity, String seller) {
+		boolean bool = wineCat.sellWine(wine, value, quantity, seller);
+		if (bool){
+			return "Wine is now for sale\n";
+		}else{
+			return "Wine doesnt exist\n";
+		}
 	}
 
 	public String viewWine(String wine) {
@@ -35,16 +46,26 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return result + "\n";
 	}
 
-	public int viewWallet(String userID) {
-		return this.userCat.getWalletMoney(userID);
+	public String viewWallet(String userID) {
+		return "Wallet: " + this.userCat.getWalletMoney(userID) + "\n";
 	}
 	
-	public synchronized boolean classifyWine(String wine, int stars) {
-		return this.wineCat.classifyWine(wine, stars);
+	public synchronized String classifyWine(String wine, int stars) {
+		boolean value = this.wineCat.classifyWine(wine, stars);
+		if(value){
+			return "Wine classified successfully\n";
+		} else{
+			return "Wine doesnt exist\n";
+		}
 	}
 	
-	public synchronized boolean sendMessage(String user, String userFrom, String message){
-		return userCat.sendMessage(user, userFrom, message);
+	public synchronized String sendMessage(String user, String userFrom, String message){
+		boolean value = userCat.sendMessage(user, userFrom, message);
+		if(value){
+			return "Message sent!\n";
+		} else{
+			return "User not found\n";
+		}
 	}
 
 	public synchronized String readMessages(String userID) {
