@@ -28,10 +28,10 @@ public class Wine {
 			target.setQuantity(target.getQuantity() + quantity);
 			target.setPrice(value);
 			
-			cmd.setCommand("updateSeller");
+			cmd.setCommand("updateQuantity");
 			cmd.setWine(this.name);
 			cmd.setWineSeller(seller);
-			cmd.setWineQuantity(quantity);
+			cmd.setWineQuantity(quantity + target.getQuantity());
 			cmd.setWinePrice(value);
 			
 			wineFH.alterFile(cmd);
@@ -118,7 +118,7 @@ public class Wine {
 		cmd.setCommand("updateQuantity");
 		cmd.setWine(this.name);
 		cmd.setWineSeller(seller);
-		cmd.setWineQuantity(quantity);
+		cmd.setWineQuantity(sellerBuy.getQuantity() - quantity);
 			
 		return "Success! Your order is completed!";
 	}
