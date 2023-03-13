@@ -10,8 +10,8 @@ import java.util.Scanner;
 
 public class WineFileHandler {
 	
-	private static final String WINE_CAT_FILE = "wine_cat.txt";
-	private static final String WINE_SELLERS_FILE = "wine_sellers.txt";
+	private static final String WINE_CAT_FILE = "wine_cat";
+	private static final String WINE_SELLERS_FILE = "wine_seller";
 	private File wineCat;
 	private File wineSellers;
 
