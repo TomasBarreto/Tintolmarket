@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class WineFileHandler {
 	
 	private static final String WINE_CAT_FILE = "wine_cat";
-	private static final String WINE_SELLERS_FILE = "wine_seller";
+	private static final String WINE_SELLERS_FILE = "wine_sellers";
 	private File wineCat;
 	private File wineSellers;
 
@@ -79,7 +79,9 @@ public class WineFileHandler {
                 	
                 						bw4.write(cmd.getWine() + ":" + cmd.getWineSeller() + 
                 						":" + cmd.getWineQuantity() + ":" + cmd.getWinePrice() + "\n");
-                
+
+										bw4.close();
+										fw4.close();
                     					break;
                     					
                 case "updateRating":	Scanner sc5 = new Scanner(this.wineCat);
