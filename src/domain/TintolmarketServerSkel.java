@@ -84,7 +84,6 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
 				String userAndPass [] = line.split(":");
-
 				this.userCat.addUser(userAndPass[0]);
 			}
 		} catch (FileNotFoundException e){

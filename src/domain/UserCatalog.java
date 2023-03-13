@@ -12,8 +12,9 @@ public class UserCatalog {
 	}
 	
 	public void addUser(String userID) {
-		if(!users.containsKey(userID))
+		if(!users.containsKey(userID)) {
 			users.put(userID, new User(userID));
+		}
 	}
 
 	public boolean sendMessage(String user, String userFrom, String message)  {

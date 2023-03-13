@@ -47,8 +47,8 @@ public class WineFileHandler {
                 							
                 							if(tokens[0].equals(cmd.getWine()) && 
                 							   tokens[1].equals(cmd.getWineSeller())) {
-                								tokens[2] = "" + cmd.getWineQuantity();
-                								tokens[3] = "" + cmd.getWinePrice();
+                								tokens[2] = "" + cmd.getWinePrice();
+                								tokens[3] = "" + cmd.getWineQuantity();
                 								
                 								lines.add(tokens[0] + ":" + tokens[1] + ":" + tokens[2] + ":" + tokens[3]);
                 							} 
@@ -78,7 +78,7 @@ public class WineFileHandler {
 						                BufferedWriter bw4 = new BufferedWriter(fw4);
                 	
                 						bw4.write(cmd.getWine() + ":" + cmd.getWineSeller() + 
-                						":" + cmd.getWineQuantity() + ":" + cmd.getWinePrice() + "\n");
+                						":" + cmd.getWinePrice() + ":" + cmd.getWineQuantity()  + "\n");
 
 										bw4.close();
 										fw4.close();
@@ -120,39 +120,6 @@ public class WineFileHandler {
 							            
 							            bw6.close();
 							            fw6.close();
-							            
-										break;
-                    					
-                case "deleteSeller":	Scanner sc7 = new Scanner(this.wineSellers);
-						                FileWriter fw7 = new FileWriter(WINE_SELLERS_FILE, true);
-						                BufferedWriter bw7 = new BufferedWriter(fw7);
-						                
-						                List<String> lines3 = new ArrayList<>();
-						
-										while(sc7.hasNextLine()) {
-											String line = sc7.nextLine();
-											
-											String[] tokens = line.split(":");
-											
-											if(!tokens[0].equals(cmd.getWine()))
-												lines3.add(line);
-										}
-										
-										sc7.close();
-										bw7.close();
-										fw7.close();
-										wineSellers.delete();
-										
-										this.wineSellers = new File(WINE_SELLERS_FILE);
-										
-							            FileWriter fw8 = new FileWriter(WINE_SELLERS_FILE, true);
-							            BufferedWriter bw8 = new BufferedWriter(fw8);
-							            
-							            for(int i = 0; i < lines3.size(); i++)
-							            	bw8.write(lines3.get(i) + "\n");
-							            
-							            bw8.close();
-							            fw8.close();
 							            
 										break;
                     					

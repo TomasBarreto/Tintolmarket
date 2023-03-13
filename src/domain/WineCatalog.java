@@ -18,7 +18,7 @@ public class WineCatalog {
 		
 		Wine newWine = new Wine(wineName, imageUrl);
 		wineCat.put(wineName, newWine);
-		
+
 		Command cmd = new Command();
 		cmd.setCommand("addWine");
 		cmd.setWine(wineName);
@@ -33,7 +33,7 @@ public class WineCatalog {
 		if(wineCat.containsKey(wine)) {
 			Wine target = wineCat.get(wine);
 			target.addNewSeller(seller, value, quantity, this.wineFH);
-			
+
 			return true;
 		}
 		
@@ -80,6 +80,7 @@ public class WineCatalog {
 	}
 
 	public int getWinePrice(String wine, String seller) {
-		return wineCat.get(wine).getPrice(seller);
+
+			return wineCat.get(wine).getPrice(seller);
 	}
 }

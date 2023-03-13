@@ -38,9 +38,7 @@ public class Wine {
 		}
 		else {
 			target = new WineSeller(seller,value,quantity);
-			target.setQuantity(quantity);
-			target.setPrice(value);
-			
+
 			this.sellersList.put(seller, target);
 			
 			cmd.setCommand("addSeller");
@@ -95,6 +93,9 @@ public class Wine {
 	}
 	
 	public String buy(String seller, int quantity, int balance) {
+		if(!sellersList.containsKey(seller))
+			return "This seller is not selling this wine";
+
 		WineSeller sellerBuy = sellersList.get(seller);
 		Command cmd = new Command();
 		
@@ -102,13 +103,17 @@ public class Wine {
 			return "There is not enough stock at the moment.";
 		else if(quantity*sellerBuy.getPrice()>balance)
 			return "There is not enough money in your wallet.";
-		
+
+
+
 		if (sellerBuy.getQuantity()==quantity) {
-			sellersList.remove(seller);
-			
-			cmd.setCommand("deleteSeller");
+
+			sellerBuy.removeQuantity(quantity);
+
+			cmd.setCommand("updateQuantity");
 			cmd.setWine(this.name);
 			cmd.setWineSeller(seller);
+			cmd.setWineQuantity(sellerBuy.getQuantity() - quantity);
 			
 			return "Success! Your order is completed!";
 		}
@@ -119,6 +124,7 @@ public class Wine {
 		cmd.setWine(this.name);
 		cmd.setWineSeller(seller);
 		cmd.setWineQuantity(sellerBuy.getQuantity() - quantity);
+
 			
 		return "Success! Your order is completed!";
 	}
