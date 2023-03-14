@@ -16,6 +16,8 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		this.userCat = new UserCatalog();
 		this.wineCat = new WineCatalog();
 		loadUsers();
+		loadWine();
+		loadSellers();
 	}
 
 	public synchronized String addWine(String wine, String image) {
@@ -94,5 +96,33 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 
 	public void addUser(String userID) {
 		this.userCat.addUser(userID);
+	}
+
+	private void loadWine() {
+		try{
+			File file = new File("wine_cat");
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				String wine [] = line.split(":");
+				this.wineCat.loadWine(wine[0], wine[1], wine[2], wine[3]);
+			}
+		} catch (FileNotFoundException e){
+			System.out.println("Users file not found\n");
+		}
+	}
+
+	private void loadSellers() {
+		try{
+			File file = new File("wine_sellers");
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				String seller [] = line.split(":");
+				this.wineCat.loadSeller(seller);
+			}
+		} catch (FileNotFoundException e){
+			System.out.println("Users file not found\n");
+		}
 	}
 }

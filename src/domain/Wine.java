@@ -15,6 +15,13 @@ public class Wine {
 		this.averageRating = new Rating();
 		this.sellersList = new HashMap<String,WineSeller>();
     }
+
+	public Wine(String name, String url, Rating rating){
+		this.name = name;
+		this.imageUrl = url;
+		this.averageRating = rating;
+		this.sellersList = new HashMap<String,WineSeller>();
+	}
     
     public void updateClassification(int rating){
     	this.averageRating.update(rating);
@@ -131,5 +138,11 @@ public class Wine {
 
 	public int getPrice(String seller) {
 		return this.sellersList.get(seller).getPrice();
+	}
+
+	public void loadSeller(String seller, String value, String quantity) {
+		WineSeller wineSeller = new WineSeller(seller, Integer.parseInt(value), Integer.parseInt(quantity));
+		this.sellersList.put(seller, wineSeller);
+		System.out.println("Added " + this.sellersList.get(seller));
 	}
 }

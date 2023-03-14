@@ -83,4 +83,19 @@ public class WineCatalog {
 
 			return wineCat.get(wine).getPrice(seller);
 	}
+
+    public void loadWine(String wine, String image, String avNumber, String avTotal) {
+		Rating rating = new Rating();
+		rating.setCounter(Integer.parseInt(avNumber));
+		rating.setStarsSum(Integer.parseInt(avTotal));
+		Wine newWine = new Wine(wine, image, rating);
+		this.wineCat.put(wine, newWine);
+		System.out.println("Added " + this.wineCat.get(wine));
+
+	}
+
+	public void loadSeller(String[] seller) {
+		Wine target = this.wineCat.get(seller[0]);
+		target.loadSeller(seller[1], seller[2], seller[3]);
+	}
 }
