@@ -18,7 +18,9 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		loadUsers();
 		loadWine();
 		loadSellers();
+		loadMessages();
 	}
+
 
 	public synchronized String addWine(String wine, String image) {
 		boolean value = wineCat.addWine(wine, image);
@@ -128,4 +130,22 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			System.out.println("Users file not found\n");
 		}
 	}
+
+	private void loadMessages() {
+		try{
+			File file = new File("messages");
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				String msg [] = line.split(":");
+				if (msg.length > 1){
+					this.userCat.loadMessage(msg[1], msg[3], msg[5]);
+				}
+
+			}
+		} catch (FileNotFoundException e){
+			System.out.println("Users file not found\n");
+		}
+	}
+
 }

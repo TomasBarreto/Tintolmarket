@@ -26,4 +26,8 @@ public class User {
 	public void reduceBalance(int winePrice) {
 		this.wallet.reduceBalance(winePrice);
 	}
+
+	public void loadMessage(Message newMessage) {
+		this.mailBox.loadMessage(newMessage);
+	}
 }

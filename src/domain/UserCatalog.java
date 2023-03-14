@@ -6,9 +6,11 @@ import java.util.HashMap;
 
 public class UserCatalog {
 	private HashMap<String, User> users;
+	private UserMessagesFileHandler msgFH;
 	
 	public UserCatalog() {
 		this.users = new HashMap<>();
+		this.msgFH = new UserMessagesFileHandler();
 	}
 	
 	public void addUser(String userID) {
@@ -25,7 +27,15 @@ public class UserCatalog {
 			return false;
 		}
 
-		target.receiveMessage(new Message(user, userFrom, message));
+		Message newMessage = new Message(user, userFrom, message);
+		target.receiveMessage(newMessage);
+
+		Command cmd = new Command();
+		cmd.setCommand("addMsg");
+		cmd.setUser(userFrom);
+		cmd.setUserReceiver(user);
+		cmd.setMessage(message);
+		this.msgFH.alterFile(cmd);
 		return true;
 	}
 
@@ -37,10 +47,20 @@ public class UserCatalog {
 
 	public String readMessages(String userID){
 		User user = users.get(userID);
+		Command cmd = new Command();
+		cmd.setCommand("removeMsg");
+		cmd.setUserReceiver(userID);
+		this.msgFH.alterFile(cmd);
 		return user.readMessages();
 	}
 
 	public void reduceBalance(String userID, int winePrice) {
 		this.users.get(userID).reduceBalance(winePrice);
+	}
+
+	public void loadMessage(String userFrom, String userReceiver, String message) {
+		User target = this.users.get(userReceiver);
+		Message newMessage = new Message(userReceiver, userFrom, message);
+		target.loadMessage(newMessage);
 	}
 }
