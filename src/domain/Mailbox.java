@@ -27,4 +27,9 @@ public class Mailbox {
 		this.mailBox.clear();
 		return message;
     }
+
+	public void loadMessage(Message newMessage) {
+		this.mailBox.add(newMessage);
+		System.out.println("added");
+	}
 }

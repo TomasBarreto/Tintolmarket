@@ -32,15 +32,15 @@ public class Wine {
 		Command cmd = new Command();
 		
 		if(target != null) {
-			target.setQuantity(target.getQuantity() + quantity);
-			target.setPrice(value);
-			
-			cmd.setCommand("updateQuantity");
+
+			cmd.setCommand("updateSellerStats");
 			cmd.setWine(this.name);
 			cmd.setWineSeller(seller);
-			cmd.setWineQuantity(quantity + target.getQuantity());
+			cmd.setWineQuantity(target.getQuantity() + quantity);
 			cmd.setWinePrice(value);
-			
+
+			target.setPrice(value);
+			target.setQuantity(target.getQuantity() + quantity);
 			wineFH.alterFile(cmd);
 		}
 		else {
@@ -68,10 +68,11 @@ public class Wine {
     		sb.append("	Sellers: \n");
     		
     		for(WineSeller target : this.sellersList.values())
-    			sb.append("	Seller: " + target.getSeller() 
-    						+ "	Price: " + target.getPrice() 
-    						+ "	Quantity: " + target.getQuantity() 
-    						+ "\n");
+				if(target.getQuantity() != 0)
+    				sb.append("\tSeller: " + target.getSeller()
+    							+ "	Price: " + target.getPrice()
+    							+ "	Quantity: " + target.getQuantity()
+    							+ "\n");
     	}
     
     	return sb.toString();
@@ -87,11 +88,7 @@ public class Wine {
 	private boolean stockAvailable() {
 		if(this.sellersList.size() == 0)
 			return false;
-		
-		for(WineSeller target : this.sellersList.values())
-			if(target.getQuantity() != 0)
-				return false;
-		
+
 		return true;
 	}
 
@@ -99,7 +96,7 @@ public class Wine {
 		this.averageRating.update(stars);
 	}
 	
-	public String buy(String seller, int quantity, int balance) {
+	public String buy(String seller, int quantity, int balance, WineFileHandler wineFH) {
 		if(!sellersList.containsKey(seller))
 			return "This seller is not selling this wine";
 
@@ -114,24 +111,25 @@ public class Wine {
 
 
 		if (sellerBuy.getQuantity()==quantity) {
-
-			sellerBuy.removeQuantity(quantity);
-
-			cmd.setCommand("updateQuantity");
+			cmd.setCommand("updateSellerStats");
 			cmd.setWine(this.name);
 			cmd.setWineSeller(seller);
+			cmd.setWinePrice(sellerBuy.getPrice());
 			cmd.setWineQuantity(sellerBuy.getQuantity() - quantity);
-			
+			sellerBuy.removeQuantity(quantity);
+			wineFH.alterFile(cmd);
 			return "Success! Your order is completed!";
 		}
 		
-		sellerBuy.removeQuantity(quantity);
+
 		
-		cmd.setCommand("updateQuantity");
+		cmd.setCommand("updateSellerStats");
 		cmd.setWine(this.name);
 		cmd.setWineSeller(seller);
 		cmd.setWineQuantity(sellerBuy.getQuantity() - quantity);
-
+		cmd.setWinePrice(sellerBuy.getPrice());
+		sellerBuy.removeQuantity(quantity);
+		wineFH.alterFile(cmd);
 			
 		return "Success! Your order is completed!";
 	}
@@ -143,6 +141,6 @@ public class Wine {
 	public void loadSeller(String seller, String value, String quantity) {
 		WineSeller wineSeller = new WineSeller(seller, Integer.parseInt(value), Integer.parseInt(quantity));
 		this.sellersList.put(seller, wineSeller);
-		System.out.println("Added " + this.sellersList.get(seller));
+
 	}
 }
