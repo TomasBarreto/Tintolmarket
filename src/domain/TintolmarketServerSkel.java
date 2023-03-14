@@ -86,7 +86,8 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
 				String userAndPass [] = line.split(":");
-				this.userCat.addUser(userAndPass[0]);
+				if(userAndPass.length > 1)
+					this.userCat.addUser(userAndPass[0]);
 			}
 		} catch (FileNotFoundException e){
 			System.out.println("Users file not found\n");
@@ -105,7 +106,8 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
 				String wine [] = line.split(":");
-				this.wineCat.loadWine(wine[0], wine[1], wine[2], wine[3]);
+				if(wine.length > 1)
+					this.wineCat.loadWine(wine[0], wine[1], wine[2], wine[3]);
 			}
 		} catch (FileNotFoundException e){
 			System.out.println("Users file not found\n");
@@ -119,7 +121,8 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
 				String seller [] = line.split(":");
-				this.wineCat.loadSeller(seller);
+				if (seller.length > 1)
+					this.wineCat.loadSeller(seller);
 			}
 		} catch (FileNotFoundException e){
 			System.out.println("Users file not found\n");

@@ -63,6 +63,7 @@ public class WineCatalog {
 			cmd.setCommand("updateRating");
 			cmd.setWine(wine);
 			cmd.setWineStars(stars);
+			this.wineFH.alterFile(cmd);
 			
 			return true;
 		}
@@ -75,7 +76,8 @@ public class WineCatalog {
 	        return "Wine not available...";
 	    }
 	    else {
-	        return wineCat.get(wine).buy(seller, quantity, balance);
+			String answer = wineCat.get(wine).buy(seller, quantity, balance, this.wineFH);
+	        return answer;
 	    }
 	}
 
@@ -90,7 +92,6 @@ public class WineCatalog {
 		rating.setStarsSum(Integer.parseInt(avTotal));
 		Wine newWine = new Wine(wine, image, rating);
 		this.wineCat.put(wine, newWine);
-		System.out.println("Added " + this.wineCat.get(wine));
 
 	}
 
