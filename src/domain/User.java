@@ -30,4 +30,8 @@ public class User {
 	public void loadMessage(Message newMessage) {
 		this.mailBox.loadMessage(newMessage);
 	}
+
+    public void increaseWalletMoney(int money) {
+		this.wallet.addMoney(money);
+    }
 }

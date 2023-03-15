@@ -63,4 +63,8 @@ public class UserCatalog {
 		Message newMessage = new Message(userReceiver, userFrom, message);
 		target.loadMessage(newMessage);
 	}
+
+    public void increaseBalance(String seller, int winePrice) {
+		this.users.get(seller).increaseWalletMoney(winePrice);
+    }
 }
