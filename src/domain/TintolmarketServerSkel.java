@@ -51,7 +51,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		if(result.equals("Success! Your order is completed!")){
 			int winePrice = wineCat.getWinePrice(wine, seller);
 			this.userCat.reduceBalance(userID, winePrice * quantity);
-			this.userCat.increaseBalance(seller, winePrice);
+			this.userCat.increaseBalance(seller, winePrice * quantity);
 		}
 
 		return result + "\n";

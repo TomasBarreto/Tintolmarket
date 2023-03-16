@@ -1,7 +1,14 @@
 
 package src.domain;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
+
+import javax.imageio.ImageIO;
 
 public class WineCatalog {
 	private HashMap<String, Wine> wineCat;
@@ -16,15 +23,21 @@ public class WineCatalog {
 		if(wineCat.containsKey(wineName)) 
 			return false;
 		
-		Wine newWine = new Wine(wineName, imageUrl);
+		String[] tokens = imageUrl.split("/");
+		
+		String newUrl = "/imgs/" + tokens[tokens.length - 1];
+		
+		Wine newWine = new Wine(wineName, newUrl);
 		wineCat.put(wineName, newWine);
 
 		Command cmd = new Command();
 		cmd.setCommand("addWine");
 		cmd.setWine(wineName);
-		cmd.setImage(imageUrl);
+		cmd.setImage(newUrl);
 		
 		wineFH.alterFile(cmd);
+		
+		saveImageOnServer(imageUrl, newUrl);
 		
 		return true;
 	}
@@ -98,5 +111,23 @@ public class WineCatalog {
 	public void loadSeller(String[] seller) {
 		Wine target = this.wineCat.get(seller[0]);
 		target.loadSeller(seller[1], seller[2], seller[3]);
+	}
+	
+	private void saveImageOnServer(String imageUrl, String newUrl) {
+		
+		try {
+			String[] tokens = imageUrl.split("/");
+			String extention = tokens[tokens.length - 1].split(".")[1];
+			
+			URL imageURL = new URL(imageUrl);
+			BufferedImage buffer = ImageIO.read(imageURL);
+			
+			ImageIO.write(buffer, extention, new File(newUrl));
+			
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

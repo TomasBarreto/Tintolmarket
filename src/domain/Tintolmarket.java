@@ -73,7 +73,6 @@ public class Tintolmarket {
                     "read\n" +
                     "stop\n");
 
-            System.out.println("Insert a valid command\n");
             String command = in.nextLine();
             String commandSplit [] = command.split(" ");
 

@@ -69,7 +69,7 @@ public class Wine {
     		
     		for(WineSeller target : this.sellersList.values())
 				if(target.getQuantity() != 0)
-    				sb.append("\tSeller: " + target.getSeller()
+    				sb.append("\t\tSeller: " + target.getSeller()
     							+ "	Price: " + target.getPrice()
     							+ "	Quantity: " + target.getQuantity()
     							+ "\n");
