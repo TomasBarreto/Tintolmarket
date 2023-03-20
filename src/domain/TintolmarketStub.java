@@ -1,11 +1,15 @@
 package src.domain;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
+import java.util.regex.Pattern;
 
 import src.interfaces.ITintolmarketStub;
+
+import javax.imageio.ImageIO;
 
 public class TintolmarketStub implements ITintolmarketStub {
 
@@ -32,11 +36,30 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void addWine(String wine, String image){
+	public void addWine(String wine, String imageUrl){
+
+		BufferedImage buffer;
+		System.out.println(imageUrl);
+
+		try {
+			buffer = ImageIO.read(new FileInputStream(imageUrl));
+			System.out.println(1);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		if(buffer == null)
+			System.out.println("OLA");
+
+		String[] imageName = imageUrl.split(Pattern.quote(File.separator));
+
 		Command cmd = new Command();
 		cmd.setCommand("add");
 		cmd.setWine(wine);
-		cmd.setImage(image);
+		cmd.setImageName(imageName[imageName.length - 1]);
+		cmd.setImageBuffer(buffer);
 		
 		try {
 			outStream.writeObject(cmd);

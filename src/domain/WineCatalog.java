@@ -2,6 +2,7 @@
 package src.domain;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -19,13 +20,11 @@ public class WineCatalog {
 		this.wineFH = new WineFileHandler();
 	}
 
-	public boolean addWine(String wineName, String imageUrl) {
+	public boolean addWine(String wineName, String imageName, BufferedImage imageBuffer) {
 		if(wineCat.containsKey(wineName)) 
 			return false;
 		
-		String[] tokens = imageUrl.split("/");
-		
-		String newUrl = "/imgs/" + tokens[tokens.length - 1];
+		String newUrl = "/imgs/" + imageName;
 		
 		Wine newWine = new Wine(wineName, newUrl);
 		wineCat.put(wineName, newWine);
@@ -33,11 +32,11 @@ public class WineCatalog {
 		Command cmd = new Command();
 		cmd.setCommand("addWine");
 		cmd.setWine(wineName);
-		cmd.setImage(newUrl);
+		cmd.setImageName(newUrl);
 		
 		wineFH.alterFile(cmd);
 		
-		saveImageOnServer(imageUrl, newUrl);
+		saveImageOnServer(imageName, imageBuffer, newUrl);
 		
 		return true;
 	}
@@ -113,16 +112,11 @@ public class WineCatalog {
 		target.loadSeller(seller[1], seller[2], seller[3]);
 	}
 	
-	private void saveImageOnServer(String imageUrl, String newUrl) {
+	private void saveImageOnServer(String imageName, BufferedImage imageBuffer, String newUrl) {
 		
 		try {
-			String[] tokens = imageUrl.split("/");
-			String extention = tokens[tokens.length - 1].split(".")[1];
-			
-			URL imageURL = new URL(imageUrl);
-			BufferedImage buffer = ImageIO.read(imageURL);
-			
-			ImageIO.write(buffer, extention, new File(newUrl));
+			System.out.println(newUrl);
+			ImageIO.write(imageBuffer, imageName.split("\\.")[1], new File(imageName));
 			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

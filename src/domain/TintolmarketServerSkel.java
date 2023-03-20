@@ -3,6 +3,7 @@ package src.domain;
 
 import src.interfaces.ITintolmarketServerSkel;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -21,16 +22,15 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		loadMessages();
 	}
 
-
-	public synchronized String addWine(String wine, String image) {
-		boolean value = wineCat.addWine(wine, image);
+	@Override
+	public String addWine(String wine, String imageName, BufferedImage imageBuffer) {
+		boolean value = wineCat.addWine(wine, imageName, imageBuffer);
 		if(value){
 			return "Wine added successfully\n";
 		}else {
 			return "Wine already in system\n";
 		}
 	}
-
 
 	public synchronized String sellWine(String wine, int value, int quantity, String seller) {
 		boolean bool = wineCat.sellWine(wine, value, quantity, seller);

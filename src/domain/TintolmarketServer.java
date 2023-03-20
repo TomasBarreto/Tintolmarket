@@ -52,7 +52,7 @@ public class TintolmarketServer {
                         Command cmd = (Command) inStream.readObject();
 
                         if (cmd.getCommand().equals("add")) {
-                            outStream.writeObject(serverSkel.addWine(cmd.getWine(), cmd.getImage()));
+                            outStream.writeObject(serverSkel.addWine(cmd.getWine(), cmd.getImageName(), cmd.getImageBuffer()));
                         } else if (cmd.getCommand().equals("sell")) {
                             outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(), cmd.getWineQuantity(), userID));
                         } else if (cmd.getCommand().equals("view")) {
