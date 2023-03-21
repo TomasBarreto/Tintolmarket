@@ -127,4 +127,8 @@ public class WineCatalog {
 			e.printStackTrace();
 		}
 	}
+
+	public String getWine(String wine) {
+		return this.wineCat.get(wine).getUrl();
+	}
 }

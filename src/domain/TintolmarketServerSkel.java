@@ -5,7 +5,9 @@ import src.interfaces.ITintolmarketServerSkel;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class TintolmarketServerSkel implements ITintolmarketServerSkel {
@@ -150,4 +152,24 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 
+	public byte[] getImage(String wine) {
+
+		String wineUrl = wineCat.getWine(wine);
+
+		FileInputStream fs = null;
+
+		File file = new File(wineUrl);
+		byte[] bytes = new byte[(int) file.length()];
+		try {
+			fs = new FileInputStream(file);
+			fs.read(bytes);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+
+		return bytes;
+	}
 }

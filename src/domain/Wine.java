@@ -165,4 +165,8 @@ public class Wine {
 		this.sellersList.put(seller, wineSeller);
 
 	}
+
+	public String getUrl() {
+		return this.imageUrl;
+	}
 }
