@@ -11,6 +11,12 @@ public class User {
 		this.mailBox = new Mailbox();
 	}
 
+	public User(String id, int wallet) {
+		this.id = id;
+		this.wallet = new Wallet(wallet);
+		this.mailBox = new Mailbox();
+	}
+
 	public void receiveMessage(Message message) {
 		mailBox.receiveMessage(message);
 	}
@@ -23,15 +29,15 @@ public class User {
 		return mailBox.readMessages();
 	}
 
-	public void reduceBalance(int winePrice) {
-		this.wallet.reduceBalance(winePrice);
+	public int reduceBalance(int winePrice) {
+		return this.wallet.reduceBalance(winePrice);
 	}
 
 	public void loadMessage(Message newMessage) {
 		this.mailBox.loadMessage(newMessage);
 	}
 
-    public void increaseWalletMoney(int money) {
-		this.wallet.addMoney(money);
+    public int increaseWalletMoney(int money) {
+		return this.wallet.addMoney(money);
     }
 }
