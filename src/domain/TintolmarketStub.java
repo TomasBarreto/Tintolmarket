@@ -102,7 +102,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void classifyWine(String wine, int stars){
+	public void classifyWine(String wine, float stars){
 		Command cmd = new Command();
 		cmd.setCommand("classify");
 		cmd.setWine(wine);

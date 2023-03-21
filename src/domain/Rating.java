@@ -1,13 +1,17 @@
 package src.domain;
 
 public class Rating {
-    private int starsSum;
+    private float starsSum;
 
-    public int getStarsSum() {
+    private int counter;
+
+    private float rating;
+
+    public float getStarsSum() {
         return starsSum;
     }
 
-    public void setStarsSum(int starsSum) {
+    public void setStarsSum(float starsSum) {
         this.starsSum = starsSum;
     }
 
@@ -18,9 +22,6 @@ public class Rating {
     public void setCounter(int counter) {
         this.counter = counter;
     }
-
-    private int counter;
-    private float rating;
     
     public Rating() {
     	this.starsSum = 0;
@@ -28,7 +29,7 @@ public class Rating {
     	this.rating = 0;
     }
     
-    public void update(int stars){
+    public void update(float stars){
     	this.starsSum += stars;
         this.counter ++;
         this.rating = this.starsSum / this.counter;

@@ -10,7 +10,7 @@ public class Command implements Serializable {
     private int winePrice;
     private int wineQuantity;
     private String wineSeller;
-    private int wineStars;
+    private float wineStars;
     private String userReceiver;
     private String message;
     private String user;
@@ -39,7 +39,7 @@ public class Command implements Serializable {
         this.wineSeller = wineSeller;
     }
 
-    public void setWineStars(int wineStars) {
+    public void setWineStars(float wineStars) {
         this.wineStars = wineStars;
     }
 
@@ -79,7 +79,7 @@ public class Command implements Serializable {
         return wineSeller;
     }
 
-    public int getWineStars() {
+    public float getWineStars() {
         return wineStars;
     }
 

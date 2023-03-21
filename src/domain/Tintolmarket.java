@@ -113,7 +113,7 @@ public class Tintolmarket {
 
             } else if (commandSplit[0].equals("classify") || commandSplit[0].equals("c")) {
                 if(commandSplit.length == 3){
-                    clientStub.classifyWine(commandSplit[1], Integer.parseInt(commandSplit[2]));
+                    clientStub.classifyWine(commandSplit[1], Float.parseFloat(commandSplit[2]));
                 } else {
                     System.out.println("Wrong command\n");
                 }

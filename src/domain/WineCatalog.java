@@ -65,7 +65,7 @@ public class WineCatalog {
 		return wineCat.get(wine).wineInfo();
 	}
 
-	public boolean classifyWine(String wine, int stars) {
+	public boolean classifyWine(String wine, float stars) {
 		Wine target = this.wineCat.get(wine);
 		
 		if(target != null) {
@@ -102,7 +102,7 @@ public class WineCatalog {
     public void loadWine(String wine, String image, String avNumber, String avTotal) {
 		Rating rating = new Rating();
 		rating.setCounter(Integer.parseInt(avNumber));
-		rating.setStarsSum(Integer.parseInt(avTotal));
+		rating.setStarsSum(Float.parseFloat(avTotal));
 		Wine newWine = new Wine(wine, image, rating);
 		this.wineCat.put(wine, newWine);
 
@@ -117,7 +117,7 @@ public class WineCatalog {
 		
 		try {
 			String[] tokens = imageUrl.split("/");
-			String extention = tokens[tokens.length - 1].split(".")[1];
+			String extention = tokens[tokens.length - 1].split("\\.")[1];
 			
 			URL imageURL = new URL(imageUrl);
 			BufferedImage buffer = ImageIO.read(imageURL);

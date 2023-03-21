@@ -85,7 +85,7 @@ public class WineFileHandler {
 											
 											if(tokens[0].equals(cmd.getWine())) {
 												tokens[2] = "" + (Integer.parseInt(tokens[2]) + 1);
-												tokens[3] = "" + (Integer.parseInt(tokens[3]) + cmd.getWineStars());
+												tokens[3] = "" + (Float.parseFloat(tokens[3]) + cmd.getWineStars());
 												lines2.add(tokens[0] + ":" + tokens[1] + ":" + tokens[2] + ":" + tokens[3]);
 											} 
 											else

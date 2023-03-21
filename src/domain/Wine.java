@@ -92,7 +92,7 @@ public class Wine {
 		return true;
 	}
 
-	public void updateRating(int stars) {
+	public void updateRating(float stars) {
 		this.averageRating.update(stars);
 	}
 	

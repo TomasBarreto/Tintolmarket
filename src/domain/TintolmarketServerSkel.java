@@ -61,7 +61,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return "Wallet: " + this.userCat.getWalletMoney(userID) + "\n";
 	}
 	
-	public synchronized String classifyWine(String wine, int stars) {
+	public synchronized String classifyWine(String wine, float stars) {
 		boolean value = this.wineCat.classifyWine(wine, stars);
 		if(value){
 			return "Wine classified successfully\n";
