@@ -1,7 +1,9 @@
 package src.interfaces;
 
+import java.awt.image.BufferedImage;
+
 public interface ITintolmarketServerSkel {
-	public String addWine(String wine, String image);
+	public String addWine(String wine, String imageName, BufferedImage imageBuffer);
 	
 	public String sellWine(String wine, int value, int quantity, String seller);
 	

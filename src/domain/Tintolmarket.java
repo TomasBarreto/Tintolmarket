@@ -77,8 +77,18 @@ public class Tintolmarket {
             String commandSplit [] = command.split(" ");
 
             if(commandSplit[0].equals("add") || commandSplit[0].equals("a")) {
-                if(commandSplit.length == 3){
-                    clientStub.addWine(commandSplit[1], commandSplit[2]);
+                if(commandSplit.length >= 3){
+
+                    String url = "";
+                    for (int i = 2; i < commandSplit.length; i++) {
+                        if (i < commandSplit.length - 1) {
+                            url = url + commandSplit[i] + " ";
+                        } else {
+                            url = url + commandSplit[i];
+                        }
+                    }
+
+                    clientStub.addWine(commandSplit[1], url);
                 } else {
                     System.out.println("Wrong command\n");
                 }

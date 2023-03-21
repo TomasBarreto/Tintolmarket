@@ -1,11 +1,14 @@
 package src.domain;
 
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 public class Command implements Serializable {
     private String command;
     private String wine;
-    private String image;
+    private String imageName;
+
+    private BufferedImage imageBuffer;
 
     private int winePrice;
     private int wineQuantity;
@@ -23,8 +26,8 @@ public class Command implements Serializable {
         this.wine = wine;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 
     public void setWineQuantity(int wineQuantity){
@@ -63,8 +66,8 @@ public class Command implements Serializable {
         return wine;
     }
 
-    public String getImage() {
-        return image;
+    public String getImageName() {
+        return imageName;
     }
 
     public int getWinePrice() {
@@ -93,5 +96,13 @@ public class Command implements Serializable {
     
     public String getUser() {
     	return user;
+    }
+
+    public void setImageBuffer(BufferedImage buffer) {
+        this.imageBuffer = buffer;
+    }
+
+    public BufferedImage getImageBuffer() {
+        return this.imageBuffer;
     }
 }

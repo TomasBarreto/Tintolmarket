@@ -27,7 +27,7 @@ public class WineFileHandler {
                 						BufferedWriter bw1 = new BufferedWriter(fw1);
                 						
                 						bw1.write(cmd.getWine() + ":" + 
-                						cmd.getImage() + ":" + "0" + ":" + "0" + "\n");
+                						cmd.getImageName() + ":" + "0" + ":" + "0" + "\n");
                 
                 						bw1.close();
                 						fw1.close();
