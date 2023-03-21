@@ -8,25 +8,7 @@ import java.util.Scanner;
 
 public class Tintolmarket {
 
-    class ClientThread extends Thread{
-        private ObjectInputStream inStream;
 
-        public ClientThread(ObjectInputStream in) throws IOException{
-            this.inStream = in;
-        }
-
-        public void run(){
-            try{
-                while(true){
-                    String response = (String) inStream.readObject();
-                    System.out.println(response);
-                }
-            }catch (IOException | ClassNotFoundException e){
-                System.out.println("Disconnected");
-            }
-        }
-
-    }
 
     private static Scanner in = new Scanner(System.in);
 
@@ -49,8 +31,6 @@ public class Tintolmarket {
         //verificar se foi autenticado
         if (autenticated){
             System.out.println("Autentication completed\n");
-            ClientThread clientThread = new ClientThread(inStream);
-            clientThread.start();
         }else{
             in.close();
             System.out.println("Autentication failed");
@@ -77,8 +57,19 @@ public class Tintolmarket {
             String commandSplit [] = command.split(" ");
 
             if(commandSplit[0].equals("add") || commandSplit[0].equals("a")) {
-                if(commandSplit.length == 3){
-                    clientStub.addWine(commandSplit[1], commandSplit[2]);
+                if(commandSplit.length >= 3){
+
+                    String url = "";
+                    for (int i = 2; i < commandSplit.length; i++) {
+                        if (i < commandSplit.length - 1) {
+                            url = url + commandSplit[i] + " ";
+                        } else {
+                            url = url + commandSplit[i];
+                        }
+                    }
+
+                    clientStub.addWine(commandSplit[1], url);
+                    System.out.println((String)inStream.readObject());
                 } else {
                     System.out.println("Wrong command\n");
                 }
@@ -86,6 +77,7 @@ public class Tintolmarket {
             } else if(commandSplit[0].equals("sell") || commandSplit[0].equals("s")){
                 if(commandSplit.length == 4){
                     clientStub.sellWine(commandSplit[1], Integer.parseInt(commandSplit[2]), Integer.parseInt(commandSplit[3]));
+
                 } else {
                     System.out.println("Wrong command\n");
                 }
@@ -113,7 +105,7 @@ public class Tintolmarket {
 
             } else if (commandSplit[0].equals("classify") || commandSplit[0].equals("c")) {
                 if(commandSplit.length == 3){
-                    clientStub.classifyWine(commandSplit[1], Integer.parseInt(commandSplit[2]));
+                    clientStub.classifyWine(commandSplit[1], Float.parseFloat(commandSplit[2]));
                 } else {
                     System.out.println("Wrong command\n");
                 }

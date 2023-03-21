@@ -1,7 +1,9 @@
 package src.interfaces;
 
+import java.awt.image.BufferedImage;
+
 public interface ITintolmarketServerSkel {
-	public String addWine(String wine, String image);
+	public String addWine(String wine, String imageName, byte[] imageBuffer);
 	
 	public String sellWine(String wine, int value, int quantity, String seller);
 	
@@ -11,7 +13,7 @@ public interface ITintolmarketServerSkel {
 	
 	public String viewWallet(String userID);
 	
-	public String classifyWine(String wine, int stars);
+	public String classifyWine(String wine, float stars);
 
 	public String sendMessage(String user, String userFrom, String message) ;
 	

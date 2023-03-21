@@ -18,7 +18,7 @@ public interface ITintolmarketStub {
 	
 	public void viewWallet();
 	
-	public void classifyWine(String wine, int stars);
+	public void classifyWine(String wine, float stars);
 
 	public void sendMessage(String user, String message);
 	

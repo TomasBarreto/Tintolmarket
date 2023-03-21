@@ -3,8 +3,11 @@ package src.domain;
 
 import src.interfaces.ITintolmarketServerSkel;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class TintolmarketServerSkel implements ITintolmarketServerSkel {
@@ -21,16 +24,15 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		loadMessages();
 	}
 
-
-	public synchronized String addWine(String wine, String image) {
-		boolean value = wineCat.addWine(wine, image);
+	@Override
+	public String addWine(String wine, String imageName, byte[] imageBuffer) {
+		boolean value = wineCat.addWine(wine, imageName, imageBuffer);
 		if(value){
 			return "Wine added successfully\n";
 		}else {
 			return "Wine already in system\n";
 		}
 	}
-
 
 	public synchronized String sellWine(String wine, int value, int quantity, String seller) {
 		boolean bool = wineCat.sellWine(wine, value, quantity, seller);
@@ -61,7 +63,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return "Wallet: " + this.userCat.getWalletMoney(userID) + "\n";
 	}
 	
-	public synchronized String classifyWine(String wine, int stars) {
+	public synchronized String classifyWine(String wine, float stars) {
 		boolean value = this.wineCat.classifyWine(wine, stars);
 		if(value){
 			return "Wine classified successfully\n";
@@ -150,4 +152,24 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 
+	public byte[] getImage(String wine) {
+
+		String wineUrl = wineCat.getWine(wine);
+
+		FileInputStream fs = null;
+
+		File file = new File(wineUrl);
+		byte[] bytes = new byte[(int) file.length()];
+		try {
+			fs = new FileInputStream(file);
+			fs.read(bytes);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+
+		return bytes;
+	}
 }

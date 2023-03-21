@@ -2,8 +2,8 @@
 package src.domain;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.awt.image.RenderedImage;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -19,13 +19,11 @@ public class WineCatalog {
 		this.wineFH = new WineFileHandler();
 	}
 
-	public boolean addWine(String wineName, String imageUrl) {
+	public boolean addWine(String wineName, String imageName, byte[] imageBuffer) {
 		if(wineCat.containsKey(wineName)) 
 			return false;
 		
-		String[] tokens = imageUrl.split("/");
-		
-		String newUrl = "/imgs/" + tokens[tokens.length - 1];
+		String newUrl = "imgs/" + wineName + "." + imageName.split("\\.")[1];
 		
 		Wine newWine = new Wine(wineName, newUrl);
 		wineCat.put(wineName, newWine);
@@ -33,11 +31,11 @@ public class WineCatalog {
 		Command cmd = new Command();
 		cmd.setCommand("addWine");
 		cmd.setWine(wineName);
-		cmd.setImage(newUrl);
+		cmd.setImageName(newUrl);
 		
 		wineFH.alterFile(cmd);
 		
-		saveImageOnServer(imageUrl, newUrl);
+		saveImageOnServer(imageName, imageBuffer, newUrl);
 		
 		return true;
 	}
@@ -65,7 +63,7 @@ public class WineCatalog {
 		return wineCat.get(wine).wineInfo();
 	}
 
-	public boolean classifyWine(String wine, int stars) {
+	public boolean classifyWine(String wine, float stars) {
 		Wine target = this.wineCat.get(wine);
 		
 		if(target != null) {
@@ -102,7 +100,7 @@ public class WineCatalog {
     public void loadWine(String wine, String image, String avNumber, String avTotal) {
 		Rating rating = new Rating();
 		rating.setCounter(Integer.parseInt(avNumber));
-		rating.setStarsSum(Integer.parseInt(avTotal));
+		rating.setStarsSum(Float.parseFloat(avTotal));
 		Wine newWine = new Wine(wine, image, rating);
 		this.wineCat.put(wine, newWine);
 
@@ -113,21 +111,24 @@ public class WineCatalog {
 		target.loadSeller(seller[1], seller[2], seller[3]);
 	}
 	
-	private void saveImageOnServer(String imageUrl, String newUrl) {
+	private void saveImageOnServer(String imageName, byte[] imageBuffer, String newUrl) {
 		
 		try {
-			String[] tokens = imageUrl.split("/");
-			String extention = tokens[tokens.length - 1].split(".")[1];
-			
-			URL imageURL = new URL(imageUrl);
-			BufferedImage buffer = ImageIO.read(imageURL);
-			
-			ImageIO.write(buffer, extention, new File(newUrl));
-			
+			ByteArrayInputStream bs = new ByteArrayInputStream(imageBuffer);
+
+			bs.read(imageBuffer);
+
+			File newFile = new File(newUrl);
+			FileOutputStream fo = new FileOutputStream(newFile);
+			fo.write(imageBuffer);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String getWine(String wine) {
+		return this.wineCat.get(wine).getUrl();
 	}
 }

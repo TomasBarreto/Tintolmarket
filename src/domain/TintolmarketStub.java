@@ -1,11 +1,15 @@
 package src.domain;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
+import java.util.regex.Pattern;
 
 import src.interfaces.ITintolmarketStub;
+
+import javax.imageio.ImageIO;
 
 public class TintolmarketStub implements ITintolmarketStub {
 
@@ -32,17 +36,37 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	@Override
-	public void addWine(String wine, String image){
-		Command cmd = new Command();
-		cmd.setCommand("add");
-		cmd.setWine(wine);
-		cmd.setImage(image);
-		
+	public void addWine(String wine, String imageUrl){
+
+		File file = new File(imageUrl);
 		try {
-			outStream.writeObject(cmd);
+			FileInputStream fs = new FileInputStream(file);
+			byte[] bytes = new byte[(int) file.length()];
+			fs.read(bytes);
+
+			String[] imageName = imageUrl.split(Pattern.quote(File.separator));
+
+			Command cmd = new Command();
+			cmd.setCommand("add");
+			cmd.setWine(wine);
+			cmd.setImageName(imageName[imageName.length - 1]);
+			cmd.setImageBuffer(bytes);
+
+			try {
+				outStream.writeObject(cmd);
+				System.out.println((String)inStream.readObject());
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException(e);
+			}
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
+
 	}
 
 	@Override
@@ -55,8 +79,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -68,8 +96,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -83,8 +115,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -96,13 +132,17 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	public void classifyWine(String wine, int stars){
+	public void classifyWine(String wine, float stars){
 		Command cmd = new Command();
 		cmd.setCommand("classify");
 		cmd.setWine(wine);
@@ -110,8 +150,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -124,8 +168,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -136,8 +184,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	

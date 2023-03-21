@@ -52,11 +52,12 @@ public class TintolmarketServer {
                         Command cmd = (Command) inStream.readObject();
 
                         if (cmd.getCommand().equals("add")) {
-                            outStream.writeObject(serverSkel.addWine(cmd.getWine(), cmd.getImage()));
+                            outStream.writeObject(serverSkel.addWine(cmd.getWine(), cmd.getImageName(), cmd.getImageBuffer()));
                         } else if (cmd.getCommand().equals("sell")) {
                             outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(), cmd.getWineQuantity(), userID));
                         } else if (cmd.getCommand().equals("view")) {
                             outStream.writeObject(serverSkel.viewWine(cmd.getWine()));
+                            outStream.writeObject(serverSkel.getImage(cmd.getWine()));
                         } else if (cmd.getCommand().equals("buy")) {
                             outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(), cmd.getWineQuantity(), userID));
                         } else if (cmd.getCommand().equals("wallet")) {
@@ -75,6 +76,9 @@ public class TintolmarketServer {
                     } catch(SocketException e){
                         System.out.println("Client disconnected");
                         working = false;
+                        autenticator.remove(userID);
+                    } catch (EOFException e) {
+                        System.out.println("Client disconnected");
                         autenticator.remove(userID);
                     }
                 }
