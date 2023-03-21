@@ -38,33 +38,29 @@ public class TintolmarketStub implements ITintolmarketStub {
 	@Override
 	public void addWine(String wine, String imageUrl){
 
-		BufferedImage buffer;
-		System.out.println(imageUrl);
-
+		File file = new File(imageUrl);
 		try {
-			buffer = ImageIO.read(new FileInputStream(imageUrl));
-			System.out.println(1);
-		} catch (MalformedURLException e) {
+			FileInputStream fs = new FileInputStream(file);
+			byte[] bytes = new byte[(int) file.length()];
+			fs.read(bytes);
+
+			String[] imageName = imageUrl.split(Pattern.quote(File.separator));
+
+			Command cmd = new Command();
+			cmd.setCommand("add");
+			cmd.setWine(wine);
+			cmd.setImageName(imageName[imageName.length - 1]);
+			cmd.setImageBuffer(bytes);
+
+			try {
+				outStream.writeObject(cmd);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
-		}
-
-		if(buffer == null)
-			System.out.println("OLA");
-
-		String[] imageName = imageUrl.split(Pattern.quote(File.separator));
-
-		Command cmd = new Command();
-		cmd.setCommand("add");
-		cmd.setWine(wine);
-		cmd.setImageName(imageName[imageName.length - 1]);
-		cmd.setImageBuffer(buffer);
-		
-		try {
-			outStream.writeObject(cmd);
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

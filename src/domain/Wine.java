@@ -1,6 +1,11 @@
 package src.domain;
 
+import javax.swing.event.HyperlinkEvent;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class Wine {
 	
@@ -59,6 +64,7 @@ public class Wine {
 	}
 	
     public String wineInfo() {
+
     	StringBuilder sb = new StringBuilder();
     	sb.append("Wine " + this.name + ":\n");
     	sb.append("	Associated Image: " + this.imageUrl + "\n");
@@ -74,8 +80,24 @@ public class Wine {
     							+ "	Quantity: " + target.getQuantity()
     							+ "\n");
     	}
-    
-    	return sb.toString();
+
+
+		// PARA FAZER A TARDE
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Open image? (y/n)\n");
+		String input = sc.nextLine();
+
+		if(input.equals("y")) {
+			File file = new File(this.imageUrl);
+			Desktop desktop = Desktop.getDesktop();
+			try {
+				desktop.open(file);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		return sb.toString();
     }
 
     private WineSeller getSeller(String seller) {

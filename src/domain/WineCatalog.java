@@ -3,8 +3,7 @@ package src.domain;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -20,11 +19,11 @@ public class WineCatalog {
 		this.wineFH = new WineFileHandler();
 	}
 
-	public boolean addWine(String wineName, String imageName, BufferedImage imageBuffer) {
+	public boolean addWine(String wineName, String imageName, byte[] imageBuffer) {
 		if(wineCat.containsKey(wineName)) 
 			return false;
 		
-		String newUrl = "/imgs/" + imageName;
+		String newUrl = "imgs/" + wineName + "." + imageName.split("\\.")[1];
 		
 		Wine newWine = new Wine(wineName, newUrl);
 		wineCat.put(wineName, newWine);
@@ -112,12 +111,16 @@ public class WineCatalog {
 		target.loadSeller(seller[1], seller[2], seller[3]);
 	}
 	
-	private void saveImageOnServer(String imageName, BufferedImage imageBuffer, String newUrl) {
+	private void saveImageOnServer(String imageName, byte[] imageBuffer, String newUrl) {
 		
 		try {
-			System.out.println(newUrl);
-			ImageIO.write(imageBuffer, imageName.split("\\.")[1], new File(imageName));
-			
+			ByteArrayInputStream bs = new ByteArrayInputStream(imageBuffer);
+
+			bs.read(imageBuffer);
+
+			File newFile = new File(newUrl);
+			FileOutputStream fo = new FileOutputStream(newFile);
+			fo.write(imageBuffer);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

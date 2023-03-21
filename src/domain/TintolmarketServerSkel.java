@@ -23,7 +23,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	}
 
 	@Override
-	public String addWine(String wine, String imageName, BufferedImage imageBuffer) {
+	public String addWine(String wine, String imageName, byte[] imageBuffer) {
 		boolean value = wineCat.addWine(wine, imageName, imageBuffer);
 		if(value){
 			return "Wine added successfully\n";

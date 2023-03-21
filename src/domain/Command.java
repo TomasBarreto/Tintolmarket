@@ -8,7 +8,7 @@ public class Command implements Serializable {
     private String wine;
     private String imageName;
 
-    private BufferedImage imageBuffer;
+    private byte[] imageBuffer;
 
     private int winePrice;
     private int wineQuantity;
@@ -98,11 +98,11 @@ public class Command implements Serializable {
     	return user;
     }
 
-    public void setImageBuffer(BufferedImage buffer) {
+    public void setImageBuffer(byte[] buffer) {
         this.imageBuffer = buffer;
     }
 
-    public BufferedImage getImageBuffer() {
+    public byte[] getImageBuffer() {
         return this.imageBuffer;
     }
 }
