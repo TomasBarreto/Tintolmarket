@@ -81,22 +81,6 @@ public class Wine {
     							+ "\n");
     	}
 
-
-		// PARA FAZER A TARDE
-		Scanner sc = new Scanner(System.in);
-		System.out.println("Open image? (y/n)\n");
-		String input = sc.nextLine();
-
-		if(input.equals("y")) {
-			File file = new File(this.imageUrl);
-			Desktop desktop = Desktop.getDesktop();
-			try {
-				desktop.open(file);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
 		return sb.toString();
     }
 

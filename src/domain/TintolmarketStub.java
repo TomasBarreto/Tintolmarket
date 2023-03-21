@@ -1,10 +1,12 @@
 package src.domain;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import src.interfaces.ITintolmarketStub;
@@ -97,6 +99,39 @@ public class TintolmarketStub implements ITintolmarketStub {
 		try {
 			outStream.writeObject(cmd);
 			System.out.println((String)inStream.readObject());
+
+			String imageUrl = (String) inStream.readObject();
+			byte[] imageBuffer = (byte[]) inStream.readObject();
+
+			imageUrl = "client" + imageUrl;
+
+			try {
+				ByteArrayInputStream bs = new ByteArrayInputStream(imageBuffer);
+
+				bs.read(imageBuffer);
+
+				File newFile = new File(imageUrl);
+				FileOutputStream fo = new FileOutputStream(newFile);
+				fo.write(imageBuffer);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			Scanner sc = new Scanner(System.in);
+			System.out.println("Open image? (y/n)\n");
+			String input = sc.nextLine();
+
+			if(input.equals("y")) {
+				File file = new File(imageUrl);
+				Desktop desktop = Desktop.getDesktop();
+				try {
+					desktop.open(file);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
 
 		} catch (IOException e) {
 			e.printStackTrace();

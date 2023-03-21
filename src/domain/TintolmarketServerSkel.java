@@ -154,7 +154,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 
 	public byte[] getImage(String wine) {
 
-		String wineUrl = wineCat.getWine(wine);
+		String wineUrl = wineCat.getWineUrl(wine);
 
 		FileInputStream fs = null;
 
@@ -169,7 +169,10 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			throw new RuntimeException(e);
 		}
 
-
 		return bytes;
+	}
+
+	public String getImageUrl(String wine) {
+		return this.wineCat.getWineUrl(wine);
 	}
 }

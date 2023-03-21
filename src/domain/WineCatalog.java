@@ -128,7 +128,7 @@ public class WineCatalog {
 		}
 	}
 
-	public String getWine(String wine) {
+	public String getWineUrl(String wine) {
 		return this.wineCat.get(wine).getUrl();
 	}
 }
