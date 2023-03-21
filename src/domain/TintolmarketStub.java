@@ -54,14 +54,19 @@ public class TintolmarketStub implements ITintolmarketStub {
 
 			try {
 				outStream.writeObject(cmd);
+				System.out.println((String)inStream.readObject());
+
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException(e);
 			}
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+
 	}
 
 	@Override
@@ -74,8 +79,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -87,8 +96,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -102,8 +115,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -115,8 +132,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -129,8 +150,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -143,8 +168,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -155,8 +184,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		
 		try {
 			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
