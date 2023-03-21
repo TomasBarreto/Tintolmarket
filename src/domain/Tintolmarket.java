@@ -8,8 +8,6 @@ import java.util.Scanner;
 
 public class Tintolmarket {
 
-
-
     private static Scanner in = new Scanner(System.in);
 
     public Tintolmarket(String serverAdress, String userID, String passWord) throws IOException, ClassNotFoundException {
