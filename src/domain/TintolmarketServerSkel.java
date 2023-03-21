@@ -4,10 +4,9 @@ package src.domain;
 import src.interfaces.ITintolmarketServerSkel;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class TintolmarketServerSkel implements ITintolmarketServerSkel {
@@ -52,8 +51,41 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		String result = wineCat.buyWine(wine, seller, quantity, balance);
 		if(result.equals("Success! Your order is completed!")){
 			int winePrice = wineCat.getWinePrice(wine, seller);
-			this.userCat.reduceBalance(userID, winePrice * quantity);
-			this.userCat.increaseBalance(seller, winePrice * quantity);
+			int buyerWallet = this.userCat.reduceBalance(userID, winePrice * quantity);
+			int sellerWallet = this.userCat.increaseBalance(seller, winePrice * quantity);
+
+			try{
+				File file = new File("Users");
+				Scanner scanner = new Scanner(file);
+				List<String> lines = new ArrayList<>();
+				while(scanner.hasNextLine()) {
+					String line = scanner.nextLine();
+					String userAndPass [] = line.split(":");
+					if (userAndPass[0].equals(userID)){
+						lines.add(userAndPass[0] + ":" + userAndPass[1] + ":" + buyerWallet);
+					} else if (userAndPass[0].equals(seller)) {
+						lines.add(userAndPass[0] + ":" + userAndPass[1] + ":" + sellerWallet);
+					} else {
+						lines.add(line);
+					}
+				}
+
+				FileWriter fw = new FileWriter("Users", false);
+
+				for(int i = 0; i < lines.size(); i++){
+					fw.write(lines.get(i) + "\n");
+				}
+
+				scanner.close();
+				fw.close();
+
+			} catch (FileNotFoundException e){
+				System.out.println("Users file not found\n");
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+
+
 		}
 
 		return result + "\n";
@@ -93,7 +125,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 				String line = scanner.nextLine();
 				String userAndPass [] = line.split(":");
 				if(userAndPass.length > 1)
-					this.userCat.addUser(userAndPass[0]);
+					this.userCat.addUser(userAndPass[0], userAndPass[2]);
 			}
 		} catch (FileNotFoundException e){
 			System.out.println("Users file not found\n");

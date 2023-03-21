@@ -7,6 +7,10 @@ public class Wallet {
 		this.credit = 200;
 	}
 
+	public Wallet(int credit) {
+		this.credit = credit;
+	}
+
 	public int getCredit() {
 		return credit;
 	}
@@ -19,11 +23,13 @@ public class Wallet {
 		return this.credit;
 	}
 
-	public void reduceBalance(int winePrice) {
+	public int reduceBalance(int winePrice) {
 		this.credit = this.credit - winePrice;
+		return this.credit;
 	}
 
-    public void addMoney(int money) {
+    public int addMoney(int money) {
 		this.credit += money;
+		return this.credit;
     }
 }

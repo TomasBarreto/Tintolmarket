@@ -77,8 +77,10 @@ public class TintolmarketServer {
                     } catch(SocketException e){
                         System.out.println("Client disconnected");
                         working = false;
+                        autenticator.remove(userID);
                     } catch (EOFException e) {
                         System.out.println("Client disconnected");
+                        autenticator.remove(userID);
                     }
                 }
 

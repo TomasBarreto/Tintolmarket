@@ -13,6 +13,12 @@ public class UserCatalog {
 		this.msgFH = new UserMessagesFileHandler();
 	}
 	
+	public void addUser(String userID, String wallet) {
+		if(!users.containsKey(userID)) {
+			users.put(userID, new User(userID, Integer.parseInt(wallet)));
+		}
+	}
+
 	public void addUser(String userID) {
 		if(!users.containsKey(userID)) {
 			users.put(userID, new User(userID));
@@ -54,8 +60,8 @@ public class UserCatalog {
 		return user.readMessages();
 	}
 
-	public void reduceBalance(String userID, int winePrice) {
-		this.users.get(userID).reduceBalance(winePrice);
+	public int reduceBalance(String userID, int winePrice) {
+		return this.users.get(userID).reduceBalance(winePrice);
 	}
 
 	public void loadMessage(String userFrom, String userReceiver, String message) {
@@ -64,7 +70,7 @@ public class UserCatalog {
 		target.loadMessage(newMessage);
 	}
 
-    public void increaseBalance(String seller, int winePrice) {
-		this.users.get(seller).increaseWalletMoney(winePrice);
+    public int increaseBalance(String seller, int winePrice) {
+		return this.users.get(seller).increaseWalletMoney(winePrice);
     }
 }
