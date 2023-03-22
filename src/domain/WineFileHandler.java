@@ -25,15 +25,15 @@ public class WineFileHandler {
             switch(cmd.getCommand()) {
                 case "addWine":			FileWriter fw1 = new FileWriter(WINE_CAT_FILE, true);
                 						BufferedWriter bw1 = new BufferedWriter(fw1);
-                						
-                						bw1.write(cmd.getWine() + ":" + 
+
+                						bw1.write(cmd.getWine() + ":" +
                 						cmd.getImageName() + ":" + "0" + ":" + "0" + "\n");
-                
+
                 						bw1.close();
                 						fw1.close();
-                						
+
 					                    break;
-					                    
+
                 case "updateSellerStats":	Scanner sc2 = new Scanner(this.wineSellers);
 											List<String> lines = new ArrayList<>();
                 
@@ -104,8 +104,12 @@ public class WineFileHandler {
                 default:                break;
             }
 
+			wait(10000);
+
         } catch (IOException e){
             System.out.println("File not found");
-        }
+        } catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

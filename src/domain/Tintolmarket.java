@@ -3,6 +3,7 @@ package src.domain;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -18,7 +19,14 @@ public class Tintolmarket {
             port = Integer.parseInt(serverAndPort[1]);
         }
 
-        Socket socket = new Socket(ip, port);
+        Socket socket = null;
+        try {
+            socket = new Socket(ip, port);
+        } catch (ConnectException e) {
+            System.out.println("Server Offline");
+            return;
+        }
+
         ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
         ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 
@@ -54,86 +62,92 @@ public class Tintolmarket {
             String command = in.nextLine();
             String commandSplit [] = command.split(" ");
 
-            if(commandSplit[0].equals("add") || commandSplit[0].equals("a")) {
-                if(commandSplit.length >= 3){
+            try {
+                if (commandSplit[0].equals("add") || commandSplit[0].equals("a")) {
+                    if (commandSplit.length >= 3) {
 
-                    String url = "";
-                    for (int i = 2; i < commandSplit.length; i++) {
-                        if (i < commandSplit.length - 1) {
-                            url = url + commandSplit[i] + " ";
-                        } else {
-                            url = url + commandSplit[i];
+                        String url = "";
+                        for (int i = 2; i < commandSplit.length; i++) {
+                            if (i < commandSplit.length - 1) {
+                                url = url + commandSplit[i] + " ";
+                            } else {
+                                url = url + commandSplit[i];
+                            }
                         }
+
+                        clientStub.addWine(commandSplit[1], url);
+                    } else {
+                        System.out.println("Wrong command\n");
                     }
 
-                    clientStub.addWine(commandSplit[1], url);
-                    System.out.println((String)inStream.readObject());
-                } else {
-                    System.out.println("Wrong command\n");
-                }
+                } else if (commandSplit[0].equals("sell") || commandSplit[0].equals("s")) {
+                    if (commandSplit.length == 4) {
+                        clientStub.sellWine(commandSplit[1], Integer.parseInt(commandSplit[2]), Integer.parseInt(commandSplit[3]));
 
-            } else if(commandSplit[0].equals("sell") || commandSplit[0].equals("s")){
-                if(commandSplit.length == 4){
-                    clientStub.sellWine(commandSplit[1], Integer.parseInt(commandSplit[2]), Integer.parseInt(commandSplit[3]));
-
-                } else {
-                    System.out.println("Wrong command\n");
-                }
-
-            } else if (commandSplit[0].equals("view") || commandSplit[0].equals("v")) {
-                if(commandSplit.length == 2){
-                    clientStub.viewWine(commandSplit[1]);
-                } else {
-                    System.out.println("Wrong command\n");
-                }
-
-            } else if (commandSplit[0].equals("buy") || commandSplit[0].equals("b")) {
-                if(commandSplit.length == 4){
-                    clientStub.buyWine(commandSplit[1], commandSplit[2], Integer.parseInt(commandSplit[3]));
-                } else {
-                    System.out.println("Wrong command\n");
-                }
-
-            } else if (commandSplit[0].equals("wallet") || commandSplit[0].equals("w")) {
-                if(commandSplit.length == 1){
-                    clientStub.viewWallet();
-                } else{
-                    System.out.println("Wrong command\n");
-                }
-
-            } else if (commandSplit[0].equals("classify") || commandSplit[0].equals("c")) {
-                if(commandSplit.length == 3){
-                    clientStub.classifyWine(commandSplit[1], Float.parseFloat(commandSplit[2]));
-                } else {
-                    System.out.println("Wrong command\n");
-                }
-
-            } else if (commandSplit[0].equals("talk") || commandSplit[0].equals("t")) {
-                if(commandSplit.length >= 3){
-                    String message = "";
-                    for (int i = 2; i < commandSplit.length; i++) {
-                        message = message + commandSplit[i] + " ";
+                    } else {
+                        System.out.println("Wrong command\n");
                     }
-                    message = message + "\n";
-                    clientStub.sendMessage(commandSplit[1], message);
+
+                } else if (commandSplit[0].equals("view") || commandSplit[0].equals("v")) {
+                    if (commandSplit.length == 2) {
+                        clientStub.viewWine(commandSplit[1]);
+                    } else {
+                        System.out.println("Wrong command\n");
+                    }
+
+                } else if (commandSplit[0].equals("buy") || commandSplit[0].equals("b")) {
+                    if (commandSplit.length == 4) {
+                        clientStub.buyWine(commandSplit[1], commandSplit[2], Integer.parseInt(commandSplit[3]));
+                    } else {
+                        System.out.println("Wrong command\n");
+                    }
+
+                } else if (commandSplit[0].equals("wallet") || commandSplit[0].equals("w")) {
+                    if (commandSplit.length == 1) {
+                        clientStub.viewWallet();
+                    } else {
+                        System.out.println("Wrong command\n");
+                    }
+
+                } else if (commandSplit[0].equals("classify") || commandSplit[0].equals("c")) {
+                    if (commandSplit.length == 3) {
+                        clientStub.classifyWine(commandSplit[1], Float.parseFloat(commandSplit[2]));
+                    } else {
+                        System.out.println("Wrong command\n");
+                    }
+
+                } else if (commandSplit[0].equals("talk") || commandSplit[0].equals("t")) {
+                    if (commandSplit.length >= 3) {
+                        String message = "";
+                        for (int i = 2; i < commandSplit.length; i++) {
+                            message = message + commandSplit[i] + " ";
+                        }
+                        message = message + "\n";
+                        clientStub.sendMessage(commandSplit[1], message);
+                    } else {
+                        System.out.println("Wrong command\n");
+                    }
+
+                } else if (commandSplit[0].equals("read") || commandSplit[0].equals("r")) {
+                    if (commandSplit.length == 1) {
+                        clientStub.readMessages();
+                    } else {
+                        System.out.println("Wrong command\n");
+                    }
+
+                } else if (commandSplit[0].equals("stop")) {
+                    working = false;
+                    System.out.println("Disconnecting");
+                    clientStub.stop();
+                    inStream.close();
                 } else {
                     System.out.println("Wrong command\n");
                 }
-
-            } else if (commandSplit[0].equals("read") || commandSplit[0].equals("r")) {
-                if(commandSplit.length == 1){
-                    clientStub.readMessages();
-                } else {
-                    System.out.println("Wrong command\n");
-                }
-
-            } else if (commandSplit[0].equals("stop")) {
+            } catch (RuntimeException e) {
+                System.out.println("Server Offline");
                 working = false;
                 System.out.println("Disconnecting");
-                clientStub.stop();
                 inStream.close();
-            } else {
-                System.out.println("Wrong command\n");
             }
         }
         in.close();

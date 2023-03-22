@@ -93,8 +93,7 @@ public class WineCatalog {
 	}
 
 	public int getWinePrice(String wine, String seller) {
-
-			return wineCat.get(wine).getPrice(seller);
+		return wineCat.get(wine).getPrice(seller);
 	}
 
     public void loadWine(String wine, String image, String avNumber, String avTotal) {
