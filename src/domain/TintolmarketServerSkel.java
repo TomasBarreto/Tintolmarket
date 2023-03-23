@@ -24,7 +24,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	}
 
 	@Override
-	public String addWine(String wine, String imageName, byte[] imageBuffer) {
+	public synchronized String addWine(String wine, String imageName, byte[] imageBuffer) {
 		boolean value = wineCat.addWine(wine, imageName, imageBuffer);
 		if(value){
 			return "Wine added successfully\n";
@@ -42,7 +42,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 
-	public String viewWine(String wine) {
+	public synchronized String viewWine(String wine) {
 		return wineCat.viewWine(wine);
 	}
 	
@@ -91,7 +91,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return result + "\n";
 	}
 
-	public String viewWallet(String userID) {
+	public synchronized String viewWallet(String userID) {
 		return "Wallet: " + this.userCat.getWalletMoney(userID) + "\n";
 	}
 	
@@ -204,7 +204,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return bytes;
 	}
 
-	public String getImageUrl(String wine) {
+	public synchronized String getImageUrl(String wine) {
 		return this.wineCat.getWineUrl(wine);
 	}
 }
