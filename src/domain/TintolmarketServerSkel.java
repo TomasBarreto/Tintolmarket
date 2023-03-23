@@ -97,6 +97,10 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	}
 	
 	public synchronized String classifyWine(String wine, float stars) {
+		if(stars > 5.0 || stars < 0){
+			return "Classification must be between 0.0 and 5.0";
+		}
+		
 		boolean value = this.wineCat.classifyWine(wine, stars);
 		if(value){
 			return "Wine classified successfully\n";
