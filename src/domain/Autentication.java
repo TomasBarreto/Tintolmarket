@@ -38,7 +38,7 @@ public class Autentication {
         this.usersConnected.add(userID);
         FileWriter fileWriter = new FileWriter("Users", true);
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-        bufferedWriter.write(userID + ":" + passWord + "200" + "\n" );
+        bufferedWriter.write(userID + ":" + passWord + ":200" + "\n" );
         bufferedWriter.close();
         fileWriter.close();
         scanner.close();
