@@ -47,7 +47,7 @@ public class Tintolmarket {
         }
 
         while(working){
-            System.out.println("U can call a command by his entire name or by his initial letter");
+            System.out.println("You can call a command by his entire name or by his initial letter");
             System.out.println("Commands:\n" +
                     "add <wine> <image>\n" +
                     "sell <wine> <value> <quantity>\n" +

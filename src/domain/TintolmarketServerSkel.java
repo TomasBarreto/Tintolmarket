@@ -196,7 +196,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			fs = new FileInputStream(file);
 			fs.read(bytes);
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
+			System.out.println("File not found");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

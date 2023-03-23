@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -229,8 +230,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 	
 	public void stop() throws IOException {
-		Command cmd = new Command();
-		cmd.setCommand("stop");
-		outStream.writeObject(cmd);
+		try {
+			Command cmd = new Command();
+			cmd.setCommand("stop");
+			outStream.writeObject(cmd);
+		} catch (SocketException e) {
+			System.out.println("Server Offline");
+		}
 	}
 }

@@ -103,13 +103,8 @@ public class WineFileHandler {
                     					
                 default:                break;
             }
-
-			wait(10000);
-
         } catch (IOException e){
             System.out.println("File not found");
-        } catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+        }
 	}
 }
