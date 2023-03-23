@@ -44,7 +44,7 @@ public class UserMessagesFileHandler {
                     FileWriter fw2 = new FileWriter(MESSAGES_FILE, false);
 
                     for (int i = 0; i < lines.size(); i++) {
-                        fw2.write(lines.get(i));
+                        fw2.write(lines.get(i) + "\n");
                     }
                     fw2.close();
                     sc.close();

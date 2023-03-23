@@ -30,6 +30,5 @@ public class Mailbox {
 
 	public void loadMessage(Message newMessage) {
 		this.mailBox.add(newMessage);
-		System.out.println("added");
 	}
 }
