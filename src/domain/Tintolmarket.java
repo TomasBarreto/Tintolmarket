@@ -16,7 +16,7 @@ public class Tintolmarket {
         String serverAndPort[] = serverAdress.split(":");
         String ip = serverAndPort[0];
         int port = 12345;
-        if(serverAndPort.length == 2){
+        if (serverAndPort.length == 2) {
             port = Integer.parseInt(serverAndPort[1]);
         }
 
@@ -36,9 +36,9 @@ public class Tintolmarket {
         boolean working = true;
 
         //verificar se foi autenticado
-        if (autenticated){
+        if (autenticated) {
             System.out.println("Autentication completed\n");
-        }else{
+        } else {
             in.close();
             System.out.println("Autentication failed");
             working = false;
@@ -47,7 +47,7 @@ public class Tintolmarket {
             socket.close();
         }
 
-        while(working){
+        while (working) {
             System.out.println("You can call a command by his entire name or by his initial letter");
             System.out.println("Commands:\n" +
                     "add <wine> <image>\n" +
@@ -61,7 +61,7 @@ public class Tintolmarket {
                     "stop\n");
 
             String command = in.nextLine();
-            String commandSplit [] = command.split(" ");
+            String commandSplit[] = command.split(" ");
 
             try {
                 if (commandSplit[0].equals("add") || commandSplit[0].equals("a")) {
@@ -158,13 +158,13 @@ public class Tintolmarket {
 
         createDirectories();
 
-        if(args.length == 2){
+        if (args.length == 2) {
             System.out.println("Insira a sua password");
             String password = in.next();
             in.nextLine();
             new Tintolmarket(args[0], args[1], password);
 
-        }else{
+        } else {
             new Tintolmarket(args[0], args[1], args[2]);
         }
     }
@@ -172,7 +172,7 @@ public class Tintolmarket {
     private static void createDirectories() {
         String clientImgPath = "clientimgs";
 
-        if(!new File(clientImgPath).exists())
+        if (!new File(clientImgPath).exists())
             try {
                 new File(clientImgPath).mkdir();
             } catch (Exception e) {
