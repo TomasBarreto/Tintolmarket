@@ -5,7 +5,6 @@
 Tintolmarket is a CLI Client-Server Distributed Application that represents a Wine Store, similar to _Vivino_, but with
 some new features (Clients are able to buy and sell wine).
 
-- - -
 
 # How to run
 
@@ -23,7 +22,7 @@ time.
 
 
 - **PS:** If you give the server a `serverPort` you need to give the same `serverPort` to the clients.
-- - -
+
 
 # How to use TintolmarketClient (Commands)
 
@@ -52,7 +51,7 @@ per unit.
 
 - `read` - allows the user (you) to read all the received messages and cleans the user's mailbox right after.
 
-- - -
+
 
 # Limitations
 
@@ -61,7 +60,7 @@ Spaces and Colons are banished from every user input, except:
   - colons in server initialization `(serverIP:serverPort)`;
   - spaces in between arguments when initializing, either the server or the clients.
 
-- - -
+
 
 # Authors
 
