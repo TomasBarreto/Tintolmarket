@@ -1,5 +1,6 @@
 package src.domain;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -154,6 +155,9 @@ public class Tintolmarket {
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+        createDirectories();
+
         if(args.length == 2){
             System.out.println("Insira a sua password");
             String password = in.next();
@@ -163,5 +167,16 @@ public class Tintolmarket {
         }else{
             new Tintolmarket(args[0], args[1], args[2]);
         }
+    }
+
+    private static void createDirectories() {
+        String clientImgPath = "clientimgs";
+
+        if(!new File(clientImgPath).exists())
+            try {
+                new File(clientImgPath).mkdir();
+            } catch (Exception e) {
+                System.out.println("Directory was not created");
+            }
     }
 }

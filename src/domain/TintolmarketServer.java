@@ -12,6 +12,9 @@ public class TintolmarketServer {
     private final Autentication autenticator = new Autentication();
 
     public static void main(String[] args) {
+        
+        createDirectories();
+        
         if (args.length > 0) {
             int port = Integer.parseInt(args[0]);
             TintolmarketServer server = new TintolmarketServer(port);
@@ -110,5 +113,53 @@ public class TintolmarketServer {
         }catch (IOException e){
             System.out.print("Error Connecting");
         }
+    }
+
+    private static void createDirectories() {
+
+        String users = "users";
+        String wine_cat = "wine_cat";
+        String wine_sellers = "wine_sellers";
+        String messages = "messages";
+        String imgsDir = "imgs";
+
+        if(!new File(users).exists()) {
+            try {
+                new File(users).createNewFile();
+            } catch (IOException e) {
+                System.out.println("File was not created");
+            }
+        }
+
+        if(!new File(wine_cat).exists()) {
+            try {
+                new File(wine_cat).createNewFile();
+            } catch (IOException e) {
+                System.out.println("File was not created");
+            }
+        }
+
+        if(!new File(wine_sellers).exists()) {
+            try {
+                new File(wine_sellers).createNewFile();
+            } catch (IOException e) {
+                System.out.println("File was not created");
+            }
+        }
+
+        if(!new File(messages).exists()) {
+            try {
+                new File(messages).createNewFile();
+            } catch (IOException e) {
+                System.out.println("File was not created");
+            }
+        }
+
+        if(!new File(imgsDir).exists())
+            try {
+                new File(imgsDir).mkdir();
+            } catch (Exception e) {
+                System.out.println("Directory was not created");
+            }
     }
 }
