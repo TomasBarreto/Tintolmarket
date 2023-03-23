@@ -9,10 +9,12 @@ public class Autentication {
 
     private ArrayList<String> usersConnected = new ArrayList<>();
 
+    private final String USERS = "users";
+
     public Autentication(){}
 
     public boolean autenticate(String userID, String passWord) throws IOException {
-        File file = new File("Users");
+        File file = new File(USERS);
         Scanner scanner = new Scanner(file);
 
         while(scanner.hasNextLine()){
@@ -36,7 +38,7 @@ public class Autentication {
         }
 
         this.usersConnected.add(userID);
-        FileWriter fileWriter = new FileWriter("Users", true);
+        FileWriter fileWriter = new FileWriter(USERS, true);
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
         bufferedWriter.write("\n" +userID + ":" + passWord);
         bufferedWriter.close();

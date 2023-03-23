@@ -13,6 +13,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	
 	private UserCatalog userCat;
 	private WineCatalog wineCat;
+	private final String USERS = "users";
 	
 	public TintolmarketServerSkel() {
 		this.userCat = new UserCatalog();
@@ -55,7 +56,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			int sellerWallet = this.userCat.increaseBalance(seller, winePrice * quantity);
 
 			try{
-				File file = new File("Users");
+				File file = new File(USERS);
 				Scanner scanner = new Scanner(file);
 				List<String> lines = new ArrayList<>();
 				while(scanner.hasNextLine()) {
@@ -70,7 +71,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 					}
 				}
 
-				FileWriter fw = new FileWriter("Users", false);
+				FileWriter fw = new FileWriter(USERS, false);
 
 				for(int i = 0; i < lines.size(); i++){
 					fw.write(lines.get(i) + "\n");
@@ -119,7 +120,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 
 	private void loadUsers() {
 		try{
-			File file = new File("Users");
+			File file = new File(USERS);
 			Scanner scanner = new Scanner(file);
 			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
