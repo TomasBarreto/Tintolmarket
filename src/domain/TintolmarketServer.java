@@ -6,11 +6,20 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
+/**
+ * The TintolmarketServer class represents a server for a wine market.
+ * The server receives requests from clients and performs operations on wine products.
+ */
 public class TintolmarketServer {
 
     private final TintolmarketServerSkel serverSkel = new TintolmarketServerSkel();
     private final Autentication autenticator = new Autentication();
 
+    /**
+     * Creates the server object and sets up the port for the server to listen on.
+     * If no port is given, the server will use the default port 12345.
+     * @param args command line arguments. The first argument is the port number.
+     */
     public static void main(String[] args) {
         
         createDirectories();
@@ -23,15 +32,27 @@ public class TintolmarketServer {
         }
     }
 
+    /**
+     * The ServerThread class represents a thread running on the server to handle a client request.
+     */
     class ServerThread extends Thread {
         private Socket socket;
         private ArrayList<ServerThread> threadList;
 
+        /**
+         * Creates a new ServerThread object with the given socket and list of threads.
+         * @param inSoc the socket to communicate with the client.
+         * @param threadList the list of threads.
+         */
         ServerThread(Socket inSoc, ArrayList<ServerThread> threadList) {
             this.socket = inSoc;
             this.threadList = threadList;
         }
 
+
+        /**
+         * Executes the code to handle the client request.
+         */
         public void run() {
             try {
                 ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
@@ -100,6 +121,10 @@ public class TintolmarketServer {
         }
     }
 
+    /**
+     * Constructor for TintolmarketServer class.
+     * @param port the port number for the server socket to listen on.
+     */
     public TintolmarketServer(int port) {
         ArrayList<ServerThread> threadList = new ArrayList<>();
 
@@ -115,6 +140,9 @@ public class TintolmarketServer {
         }
     }
 
+    /**
+     * This method creates the necessary directories for the server.
+     */
     private static void createDirectories() {
 
         String users = "users";

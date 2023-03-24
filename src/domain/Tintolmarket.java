@@ -8,10 +8,22 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Scanner;
 
+/**
+ * Tintolmarket class allows the interaction between the client and the server of the
+ Tintolmarket system.
+ */
 public class Tintolmarket {
 
     private static Scanner in = new Scanner(System.in);
 
+    /**
+     * Initializes the Tintolmarket system by connecting to the server and authenticating the user.
+     * @param serverAdress the address of the server to connect to
+     * @param userID the user ID to authenticate with
+     * @param passWord the password to authenticate with
+     * @throws IOException if there's an I/O error while communicating with the server
+     * @throws ClassNotFoundException if the TintolmarketStub class is not found
+     */
     public Tintolmarket(String serverAdress, String userID, String passWord) throws IOException, ClassNotFoundException {
         String serverAndPort[] = serverAdress.split(":");
         String ip = serverAndPort[0];
@@ -154,6 +166,12 @@ public class Tintolmarket {
         in.close();
     }
 
+    /**
+     * The main method of the Tintolmarket program.
+     * @param args the arguments passed to the program
+     * @throws IOException if an I/O exception occurs
+     * @throws ClassNotFoundException if a class is not found
+     */
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         createDirectories();
@@ -168,7 +186,9 @@ public class Tintolmarket {
             new Tintolmarket(args[0], args[1], args[2]);
         }
     }
-
+    /**
+     * Creates the necessary directories for the program.
+     */
     private static void createDirectories() {
         String clientImgPath = "clientimgs";
 

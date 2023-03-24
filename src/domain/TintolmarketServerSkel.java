@@ -9,12 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * The TintolmarketServerSkel class represents a skeleton of the Tintolmarket server.
+ */
 public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	
 	private UserCatalog userCat;
 	private WineCatalog wineCat;
 	private final String USERS = "users";
-	
+
+	/**
+	 * Constructor that initializes the user and wine catalogs and loads them from files.
+	 */
 	public TintolmarketServerSkel() {
 		this.userCat = new UserCatalog();
 		this.wineCat = new WineCatalog();
@@ -24,7 +30,13 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		loadMessages();
 	}
 
-	@Override
+	/**
+	 * Adds a wine to the catalog.
+	 * @param wine The name of the wine to add.
+	 * @param imageName The name of the image of the wine.
+	 * @param imageBuffer The byte array containing the image data.
+	 * @return A message indicating whether the wine was successfully added or if it already exists in the catalog.
+	 */
 	public synchronized String addWine(String wine, String imageName, byte[] imageBuffer) {
 		boolean value = wineCat.addWine(wine, imageName, imageBuffer);
 		if(value){
@@ -34,6 +46,14 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 
+	/**
+	 * Puts a wine up for sale.
+	 * @param wine The name of the wine to put up for sale.
+	 * @param value The price of the wine.
+	 * @param quantity The quantity of the wine.
+	 * @param seller The name of the seller.
+	 * @return A message indicating whether the wine was successfully put up for sale or if it doesn't exist in the catalog.
+	 */
 	public synchronized String sellWine(String wine, int value, int quantity, String seller) {
 		boolean bool = wineCat.sellWine(wine, value, quantity, seller);
 		if (bool){
@@ -43,10 +63,23 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 
+	/**
+	 * Views the information of a wine.
+	 * @param wine The name of the wine to view.
+	 * @return A string with the information of the wine.
+	 */
 	public synchronized String viewWine(String wine) {
 		return wineCat.viewWine(wine);
 	}
-	
+
+	/**
+	 * Buys a wine.
+	 * @param wine The name of the wine to buy.
+	 * @param seller The name of the seller.
+	 * @param quantity The quantity of the wine to buy.
+	 * @param userID The ID of the buyer.
+	 * @return A message indicating whether the purchase was successful and updating the wallets of the buyer and seller.
+	 */
 	public synchronized String buyWine(String wine, String seller, int quantity, String userID) {
 		int balance = userCat.getWalletMoney(userID);
 		String result = wineCat.buyWine(wine, seller, quantity, balance);
@@ -92,10 +125,21 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return result + "\n";
 	}
 
+	/**
+	 * Returns the wallet balance of a given user.
+	 * @param userID the ID of the user whose wallet balance is to be returned.
+	 * @return a string representation of the user's wallet balance.
+	 */
 	public synchronized String viewWallet(String userID) {
 		return "Wallet: " + this.userCat.getWalletMoney(userID) + "\n";
 	}
-	
+
+	/**
+	 * Classifies a wine with a given number of stars.
+	 * @param wine  the name of the wine to be classified.
+	 * @param stars the number of stars to be given to the wine.
+	 * @return a string indicating whether the wine was classified successfully or not.
+	 */
 	public synchronized String classifyWine(String wine, float stars) {
 		if(stars > 5.0 || stars < 0){
 			return "Classification must be between 0.0 and 5.0";
@@ -108,7 +152,14 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			return "Wine doesnt exist\n";
 		}
 	}
-	
+
+	/**
+	 * Sends a message from one user to another.
+	 * @param user     the recipient of the message.
+	 * @param userFrom the sender of the message.
+	 * @param message  the message to be sent.
+	 * @return a string indicating whether the message was sent successfully or not.
+	 */
 	public synchronized String sendMessage(String user, String userFrom, String message) {
 		boolean value = userCat.sendMessage(user, userFrom, message);
 		if(value){
@@ -118,10 +169,18 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 
+	/**
+	 * Reads messages for the given user ID.
+	 * @param userID the ID of the user to read messages for
+	 * @return a string representing the messages for the given user ID
+	 */
 	public synchronized String readMessages(String userID) {
 		return userCat.readMessages(userID);
 	}
 
+	/**
+	 * Loads users information from the users file.
+	 */
 	private void loadUsers() {
 		try{
 			File file = new File(USERS);
@@ -138,10 +197,17 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 
 	}
 
+	/**
+	 * Adds a user with the given user ID.
+	 * @param userID the ID of the user to add
+	 */
 	public void addUser(String userID) {
 		this.userCat.addUser(userID);
 	}
 
+	/**
+	 * Loads wines information from the wine catalog file.
+	 */
 	private void loadWine() {
 		try{
 			File file = new File("wine_cat");
@@ -157,6 +223,9 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 
+	/**
+	 * Loads sellers information from the wine sellers file.
+	 */
 	private void loadSellers() {
 		try{
 			File file = new File("wine_sellers");
@@ -172,6 +241,10 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 
+
+	/**
+	 * Loads messages from the messages file.
+	 */
 	private void loadMessages() {
 		try{
 			File file = new File("messages");
@@ -189,6 +262,11 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 
+	/**
+	 * Return the byte array of the image associated with the specified wine.
+	 * @param wine the name of the wine to return the image for
+	 * @return the byte array of the image associated with the specified wine
+	 */
 	public byte[] getImage(String wine) {
 
 		String wineUrl = wineCat.getWineUrl(wine);
@@ -209,6 +287,11 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return bytes;
 	}
 
+	/**
+	 * Return the URL of the image associated with the specified wine.
+	 * @param wine the name of the wine to return the image URL for
+	 * @return the URL of the image associated with the specified wine
+	 */
 	public synchronized String getImageUrl(String wine) {
 		return this.wineCat.getWineUrl(wine);
 	}

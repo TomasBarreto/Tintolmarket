@@ -8,15 +8,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * The UserMessagesFileHandler class is responsible for handling the messages file that contains all messages sent between Users.
+ * It can add or remove messages from the file, depending on the given Command object.
+ */
 public class UserMessagesFileHandler {
     private static final String MESSAGES_FILE = "messages";
 
     private File messages;
 
+    /**
+     * Constructs a new UserMessagesFileHandler object and sets the messages file to the default file name.
+     */
     public UserMessagesFileHandler() {
         this.messages = new File(MESSAGES_FILE);
     }
 
+    /**
+     * Modifies the messages file according to the given Command object.
+     * If the Command is "addMsg", the method adds the message to the file.
+     * If the Command is "removeMsg", the method removes all messages with the given receiver User from the file.
+     * @param cmd the Command object indicating the modification to be made
+     */
     public synchronized void alterFile(Command cmd) {
         try{
             switch (cmd.getCommand()){

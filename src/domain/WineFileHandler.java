@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * The WineFileHandler class is responsible for handling the files related to the wine store.
+ * It provides methods to add wines and sellers to their respective files, update seller
+ statistics and wine ratings.
+ */
 public class WineFileHandler {
 	
 	private static final String WINE_CAT_FILE = "wine_cat";
@@ -15,11 +20,18 @@ public class WineFileHandler {
 	private File wineCat;
 	private File wineSellers;
 
+	/**
+	 * Constructor that initializes the files for wine categories and sellers.
+	 */
 	public WineFileHandler() {
 		this.wineCat = new File(WINE_CAT_FILE);
 		this.wineSellers = new File(WINE_SELLERS_FILE);
 	}
-	
+
+	/**
+	 * Method that alters the file based on the given command.
+	 * @param cmd The command to execute.
+	 */
 	public synchronized void alterFile(Command cmd) {
         try{            
             switch(cmd.getCommand()) {
