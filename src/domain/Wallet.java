@@ -38,7 +38,7 @@ public class Wallet {
 	}
 
 	/**
-	 * Returns the current money balance. Equivalent to calling {@link #getCredit()}.
+	 * Returns the current money balance. 
 	 * @return the current money balance
 	 */
 	public int getMoney() {
