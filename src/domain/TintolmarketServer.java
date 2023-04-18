@@ -1,9 +1,17 @@
 package src.domain;
 
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 
 /**
@@ -13,7 +21,9 @@ import java.util.ArrayList;
 public class TintolmarketServer {
 
     private final TintolmarketServerSkel serverSkel = new TintolmarketServerSkel();
-    private final Autentication autenticator = new Autentication();
+    private final Autentication autenticator;
+
+    private SecretKey usersFileKey;
 
     /**
      * Creates the server object and sets up the port for the server to listen on.
@@ -24,27 +34,27 @@ public class TintolmarketServer {
         
         createDirectories();
         
-        if (args.length > 0) {
+        if (args.length == 4) {
             int port = Integer.parseInt(args[0]);
-            TintolmarketServer server = new TintolmarketServer(port);
+            TintolmarketServer server = new TintolmarketServer(port, args[1], args[2], args[3]);
         } else {
-            TintolmarketServer server = new TintolmarketServer(12345);
+            TintolmarketServer server = new TintolmarketServer(12345, args[0], args[1], args[2]);
         }
     }
 
     /**
      * The ServerThread class represents a thread running on the server to handle a client request.
      */
-    class ServerThread extends Thread {
+    class SSLSimpleServer extends Thread {
         private Socket socket;
-        private ArrayList<ServerThread> threadList;
+        private ArrayList<SSLSimpleServer> threadList;
 
         /**
          * Creates a new ServerThread object with the given socket and list of threads.
          * @param inSoc the socket to communicate with the client.
          * @param threadList the list of threads.
          */
-        ServerThread(Socket inSoc, ArrayList<ServerThread> threadList) {
+        SSLSimpleServer(Socket inSoc, ArrayList<SSLSimpleServer> threadList) {
             this.socket = inSoc;
             this.threadList = threadList;
         }
@@ -125,13 +135,24 @@ public class TintolmarketServer {
      * Constructor for TintolmarketServer class.
      * @param port the port number for the server socket to listen on.
      */
-    public TintolmarketServer(int port) {
-        ArrayList<ServerThread> threadList = new ArrayList<>();
+    public TintolmarketServer(int port, String passwordCifra ,String keyStore, String passKeystore) {
 
-        try(ServerSocket serverSocket = new ServerSocket(port)){
+        getUsersFileKey(passwordCifra);
+
+        this.autenticator = new Autentication(this.usersFileKey);
+
+        ArrayList<SSLSimpleServer> threadList = new ArrayList<>();
+
+        String keyStorePath = "keystoreServer/" + keyStore;
+
+        System.setProperty("javax.net.ssl.keyStore", keyStorePath);
+        System.setProperty("javax.net.ssl.keyStorePassword", passKeystore);
+
+        ServerSocketFactory ssf = SSLServerSocketFactory.getDefault();
+
+        try(SSLServerSocket ss = (SSLServerSocket) ssf.createServerSocket(port)){
             while (true){
-                Socket socket = serverSocket.accept();
-                ServerThread serverThread = new ServerThread(socket, threadList);
+                SSLSimpleServer serverThread = new SSLSimpleServer(ss.accept(), threadList);
                 threadList.add(serverThread);
                 serverThread.start();
             }
@@ -189,5 +210,21 @@ public class TintolmarketServer {
             } catch (Exception e) {
                 System.out.println("Directory was not created");
             }
+    }
+
+    /* Gets the key for encrypting and decrypting the users file
+     *  @param password - password for PBE
+     */
+    private void getUsersFileKey(String password) {
+        try {
+            byte[] salt = new byte[8];
+            PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, 20);
+            SecretKeyFactory kf = SecretKeyFactory.getInstance("PBEWithHmacSHA256AndAES_128");
+            this.usersFileKey = kf.generateSecret(keySpec);
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("SecretKeyFactory Algorithm Not Found");
+        } catch (InvalidKeySpecException e) {
+            System.out.println("Invalid KeySpec");
+        }
     }
 }

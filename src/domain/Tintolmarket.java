@@ -1,5 +1,9 @@
 package src.domain;
 
+import javax.net.ServerSocketFactory;
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,7 +28,7 @@ public class Tintolmarket {
      * @throws IOException if there's an I/O error while communicating with the server
      * @throws ClassNotFoundException if the TintolmarketStub class is not found
      */
-    public Tintolmarket(String serverAdress, String userID, String passWord) throws IOException, ClassNotFoundException {
+    public Tintolmarket(String serverAdress, String trustStore, String keyStore, String passwordKeyStore, String userID, String passWord) throws IOException, ClassNotFoundException {
         String serverAndPort[] = serverAdress.split(":");
         String ip = serverAndPort[0];
         int port = 12345;
@@ -32,9 +36,20 @@ public class Tintolmarket {
             port = Integer.parseInt(serverAndPort[1]);
         }
 
-        Socket socket = null;
+        String trustStorePath = "storesClient/" + trustStore;
+        String keyStorePath = "storesClient/" + keyStore;
+
+        System.setProperty("javax.net.ssl.trustStore", trustStorePath);
+        System.setProperty("javax.net.ssl.trustStorePassword", passwordKeyStore);
+
+        System.setProperty("javax.net.ssl.keyStore", keyStorePath);
+        System.setProperty("javax.net.ssl.keyStorePassword", passwordKeyStore);
+
+        SocketFactory sf = SSLSocketFactory.getDefault();
+        SSLSocket socket = null;
+
         try {
-            socket = new Socket(ip, port);
+            socket = (SSLSocket) sf.createSocket(ip, port);
         } catch (ConnectException e) {
             System.out.println("Server Offline");
             return;
@@ -176,15 +191,11 @@ public class Tintolmarket {
 
         createDirectories();
 
-        if (args.length == 2) {
-            System.out.println("Insira a sua password");
-            String password = in.next();
-            in.nextLine();
-            new Tintolmarket(args[0], args[1], password);
+        System.out.println("Insira a sua password");
+        String password = in.next();
+        in.nextLine();
+        new Tintolmarket(args[0], args[1], args[2], args[3], args[4], password);
 
-        } else {
-            new Tintolmarket(args[0], args[1], args[2]);
-        }
     }
     /**
      * Creates the necessary directories for the program.

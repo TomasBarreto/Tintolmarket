@@ -1,5 +1,6 @@
 package src.domain;
 
+import javax.crypto.SecretKey;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +19,14 @@ public class Autentication {
 
     private final String USERS = "users";
 
+    private SecretKey usersFileKey;
+
     /**
      * Default constructor for the class.
      */
-    public Autentication(){}
+    public Autentication(SecretKey usersFileKey){
+        this.usersFileKey = usersFileKey;
+    }
 
     /**
      * Performs user authentication in the system.
