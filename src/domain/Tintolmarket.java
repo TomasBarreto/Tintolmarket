@@ -125,7 +125,7 @@ public class Tintolmarket {
 
                 } else if (commandSplit[0].equals("buy") || commandSplit[0].equals("b")) {
                     if (commandSplit.length == 4) {
-                        clientStub.buyWine(commandSplit[1], commandSplit[2], Integer.parseInt(commandSplit[3]));
+                        clientStub.buyWine(commandSplit[1], commandSplit[2], Integer.parseInt(commandSplit[3]), userID);
                     } else {
                         System.out.println("Wrong command\n");
                     }

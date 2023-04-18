@@ -10,7 +10,8 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
+import java.security.cert.Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 
@@ -83,18 +84,47 @@ public class TintolmarketServer {
                 boolean working = true;
                 while (working && autenticated) {
                     try{
-                        Command cmd = (Command) inStream.readObject();
+                        Command cmd = null;
+
+                        int isSignedCommand = inStream.readInt();
+
+                        boolean isValidSignature = false;
+                        SignedCommand signedCommand = null;
+
+                        if(isSignedCommand == 1) {
+                            signedCommand = (SignedCommand) inStream.readObject();
+
+                            Certificate certificate = signedCommand.certificate;
+                            PublicKey pk = certificate.getPublicKey();
+
+                            Signature s = Signature.getInstance("MD5withRSA");
+                            s.initVerify(pk);
+                            byte[] data = (byte[]) signedCommand.signedObject.getObject();
+                            s.update(data);
+
+                            isValidSignature = s.verify(signedCommand.signedObject.getSignature());
+                            cmd = (Command) signedCommand.signedObject.getObject();
+                        }
+                        else {
+                            cmd = (Command) inStream.readObject();
+                        }
 
                         if (cmd.getCommand().equals("add")) {
                             outStream.writeObject(serverSkel.addWine(cmd.getWine(), cmd.getImageName(), cmd.getImageBuffer()));
                         } else if (cmd.getCommand().equals("sell")) {
-                            outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(), cmd.getWineQuantity(), userID));
+                            if(isValidSignature)
+                                outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(), cmd.getWineQuantity(), userID));
+                            else
+                                outStream.writeObject("Invalid Signature");
                         } else if (cmd.getCommand().equals("view")) {
                             outStream.writeObject(serverSkel.viewWine(cmd.getWine()));
                             outStream.writeObject(serverSkel.getImageUrl(cmd.getWine()));
                             outStream.writeObject(serverSkel.getImage(cmd.getWine()));
                         } else if (cmd.getCommand().equals("buy")) {
-                            outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(), cmd.getWineQuantity(), userID));
+                            if(isValidSignature)
+                                outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(), cmd.getWineQuantity(), userID));
+                            else
+                                outStream.writeObject("Invalid Signature");
                         } else if (cmd.getCommand().equals("wallet")) {
                             outStream.writeObject(serverSkel.viewWallet(userID));
                         } else if (cmd.getCommand().equals("classify")) {
@@ -116,6 +146,12 @@ public class TintolmarketServer {
                         System.out.println("Client disconnected");
                         working = false;
                         autenticator.remove(userID);
+                    } catch (NoSuchAlgorithmException e) {
+                        throw new RuntimeException(e);
+                    } catch (InvalidKeyException e) {
+                        throw new RuntimeException(e);
+                    } catch (SignatureException e) {
+                        throw new RuntimeException(e);
                     }
                 }
 
@@ -171,6 +207,8 @@ public class TintolmarketServer {
         String wine_sellers = "wine_sellers";
         String messages = "messages";
         String imgsDir = "imgs";
+        String logs = "logs";
+        String currentBlk = "currBlk";
 
         if(!new File(users).exists()) {
             try {
@@ -207,6 +245,30 @@ public class TintolmarketServer {
         if(!new File(imgsDir).exists())
             try {
                 new File(imgsDir).mkdir();
+            } catch (Exception e) {
+                System.out.println("Directory was not created");
+            }
+
+        if(!new File(currentBlk).exists())
+            try {
+                new File(currentBlk).createNewFile();
+                FileOutputStream fos = new FileOutputStream(currentBlk);
+                fos.write(1);
+                fos.close();
+            } catch (Exception e) {
+                System.out.println("File was not created");
+            }
+
+        if(!new File(logs).exists())
+            try {
+                new File(logs).mkdir();
+                new File(logs + "/block_1.blk");
+                FileWriter fw = new FileWriter(logs + "/block_1.blk");
+                fw.write("00000000");
+                fw.write("1");
+                fw.write("0");
+
+                fw.close();
             } catch (Exception e) {
                 System.out.println("Directory was not created");
             }

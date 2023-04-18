@@ -17,6 +17,8 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	private UserCatalog userCat;
 	private WineCatalog wineCat;
 	private final String USERS = "users";
+	private long currentBlock;
+	private final String CURR_BLOCK_FILE = "currBlk";
 
 	/**
 	 * Constructor that initializes the user and wine catalogs and loads them from files.
@@ -28,6 +30,16 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		loadWine();
 		loadSellers();
 		loadMessages();
+		try {
+			FileInputStream fs = new FileInputStream(CURR_BLOCK_FILE);
+			this.currentBlock = fs.read();
+
+			fs.close();
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -113,13 +125,16 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 				scanner.close();
 				fw.close();
 
+				String transaction = "";
+
+				writeTransaction(transaction);
+
+
 			} catch (FileNotFoundException e){
 				System.out.println("Users file not found\n");
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-
-
 		}
 
 		return result + "\n";
@@ -294,5 +309,62 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	 */
 	public synchronized String getImageUrl(String wine) {
 		return this.wineCat.getWineUrl(wine);
+	}
+
+	private void writeTransaction(String transaction) {
+		String currentBlockPath = "logs/block_" + this.currentBlock + ".blk";
+
+		try {
+			FileReader fr = new FileReader(currentBlockPath);
+			BufferedReader br = new BufferedReader(fr);
+
+			String currentLine = "";
+
+			int nrLine = 1;
+
+			int n_trx = 0;
+
+			List<String> lines = new ArrayList<>();
+
+			while((currentLine = br.readLine()) != null)  {
+				if(nrLine == 3) {
+					n_trx = Integer.parseInt(currentLine);
+					lines.add((n_trx + 1) + "");
+				}
+				else
+					lines.add(currentLine);
+
+
+				nrLine++;
+			}
+
+			lines.add(transaction);
+
+			FileWriter fw1 = new FileWriter(currentBlockPath, false);
+
+			for(String line : lines)
+				fw1.write(line + "\n");
+
+			fw1.close();
+			fr.close();
+			br.close();
+
+			if(n_trx == 4) {
+				this.currentBlock++;
+
+				FileWriter fw2 = new FileWriter(CURR_BLOCK_FILE, false);
+
+				fw2.write(this.currentBlock + "");
+
+				fw2.close();
+
+				// PARA AMANHA FALTA ASSINAR CALCULAR O HASH E CRIAR NOVO BLOCO
+			}
+
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
