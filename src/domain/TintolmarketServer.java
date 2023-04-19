@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.security.*;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 
@@ -34,12 +35,16 @@ public class TintolmarketServer {
     public static void main(String[] args) {
         
         createDirectories();
-        
-        if (args.length == 4) {
-            int port = Integer.parseInt(args[0]);
-            TintolmarketServer server = new TintolmarketServer(port, args[1], args[2], args[3]);
-        } else {
-            TintolmarketServer server = new TintolmarketServer(12345, args[0], args[1], args[2]);
+
+        if(verifyBlockChain()) {
+
+            if (args.length == 4) {
+                int port = Integer.parseInt(args[0]);
+                TintolmarketServer server = new TintolmarketServer(port, args[1], args[2], args[3]);
+            } else {
+                TintolmarketServer server = new TintolmarketServer(12345, args[0], args[1], args[2]);
+            }
+
         }
     }
 
@@ -264,9 +269,9 @@ public class TintolmarketServer {
                 new File(logs).mkdir();
                 new File(logs + "/block_1.blk");
                 FileWriter fw = new FileWriter(logs + "/block_1.blk");
-                fw.write("00000000");
-                fw.write("1");
-                fw.write("0");
+                fw.write("00000000\n");
+                fw.write("1\n");
+                fw.write("0\n");
 
                 fw.close();
             } catch (Exception e) {
@@ -288,5 +293,109 @@ public class TintolmarketServer {
         } catch (InvalidKeySpecException e) {
             System.out.println("Invalid KeySpec");
         }
+    }
+
+    private static boolean verifyBlockChain() {
+
+        int lastBlock = 0;
+        String currBlkFile = "currBlk";
+
+        try {
+            FileInputStream fs = new FileInputStream(currBlkFile);
+            lastBlock = fs.read();
+
+            fs.close();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        for(int i = 1; i < lastBlock; i++)
+            if (!verifyBlock(i))
+                return false;
+
+        return true;
+    }
+
+    private static boolean verifyBlock(int blockIndex) {
+
+        String alias = "server";
+
+        try {
+            BufferedReader br1 = new BufferedReader(new FileReader("logs/block_" + blockIndex + ".blk"));
+            BufferedReader br2 = new BufferedReader(new FileReader("logs/block_" + (blockIndex + 1) + ".blk"));
+
+            String hash1 = br1.readLine();
+            String hash2 = br2.readLine();
+            br1.close();
+            br2.close();
+
+            FileInputStream fis1 = new FileInputStream("logs/block_" + blockIndex + ".blk");
+
+            byte[] fileBytes1 = fis1.readAllBytes();
+
+            MessageDigest messageDigest1 = MessageDigest.getInstance("SHA-256");
+            messageDigest1.update(fileBytes1);
+
+            byte[] hash1ToCompare = messageDigest1.digest();
+
+            if(blockIndex == 1)  {
+                if(!hash1.equals("00000000"))
+                    return false;
+            }
+
+            if(!hash2.equals(hash1ToCompare.toString()))
+                return false;
+
+            String keyStorePath = System.getProperty("javax.net.ssl.keyStore");
+            char[] keyStorePass = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
+
+            KeyStore keyStore = KeyStore.getInstance("JCEKS");
+            FileInputStream fis2 = new FileInputStream(keyStorePath);
+
+            keyStore.load(fis2, keyStorePass);
+
+            Certificate certificate = keyStore.getCertificate(alias);
+
+            PublicKey pk = certificate.getPublicKey();
+
+            Signature signature = Signature.getInstance("MD5withRSA");
+
+            BufferedReader br3 = new BufferedReader(new FileReader("logs/block_" + blockIndex + ".blk"));
+
+            signature.initVerify(pk);
+
+            for(int i = 0; i < 8; i++)
+                signature.update(br3.readLine().getBytes());
+
+            if(signature.verify(br3.readLine().getBytes())) {
+                br3.close();
+                fis2.close();
+                fis1.close();
+
+                return true;
+            }
+
+            br3.close();
+            fis2.close();
+            fis1.close();
+
+            return false;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (CertificateException e) {
+            throw new RuntimeException(e);
+        } catch (KeyStoreException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (SignatureException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

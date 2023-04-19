@@ -5,6 +5,8 @@ import src.interfaces.ITintolmarketServerSkel;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,6 +21,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	private final String USERS = "users";
 	private long currentBlock;
 	private final String CURR_BLOCK_FILE = "currBlk";
+	private final String ALIAS = "server";
 
 	/**
 	 * Constructor that initializes the user and wine catalogs and loads them from files.
@@ -69,6 +72,11 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	public synchronized String sellWine(String wine, int value, int quantity, String seller) {
 		boolean bool = wineCat.sellWine(wine, value, quantity, seller);
 		if (bool){
+
+			String transaction = "sell:" + wine + ":" + quantity + ":" + value + ":" + seller;
+
+			writeTransaction(transaction);
+
 			return "Wine is now for sale\n";
 		}else{
 			return "Wine doesnt exist\n";
@@ -125,7 +133,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 				scanner.close();
 				fw.close();
 
-				String transaction = "";
+				String transaction = "buy:" + wine + ":" + quantity + ":" + winePrice + ":" + userID;
 
 				writeTransaction(transaction);
 
@@ -358,12 +366,62 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 
 				fw2.close();
 
-				// PARA AMANHA FALTA ASSINAR CALCULAR O HASH E CRIAR NOVO BLOCO
+				FileInputStream fis = new FileInputStream(new File("logs/block_" + (this.currentBlock - 1) + ".blk"));
+
+				byte[] fileBytes = fis.readAllBytes();
+
+				String keyStorePath = System.getProperty("javax.net.ssl.keyStore");
+				char[] keyStorePass = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
+
+				KeyStore keyStore = KeyStore.getInstance("JCEKS");
+				FileInputStream fis2 = new FileInputStream(keyStorePath);
+
+				keyStore.load(fis2, keyStorePass);
+
+				PrivateKey privateKey = (PrivateKey) keyStore.getKey(this.ALIAS, keyStorePass);
+
+				Signature signature = Signature.getInstance("MD5withRSA");
+				signature.initSign(privateKey);
+
+				signature.update(fileBytes);
+				byte[] signedBytes = signature.sign();
+
+				FileOutputStream fos = new FileOutputStream("logs/block_" + (this.currentBlock - 1) + ".blk");
+				fos.write(signedBytes);
+
+				fis.close();
+				fis2.close();
+				fos.close();
+
+				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+				messageDigest.update(signedBytes);
+
+				byte[] fileHash = messageDigest.digest();
+
+				new File("logs/block_" + this.currentBlock + ".blk");
+				FileWriter fw = new FileWriter("logs/block_" + this.currentBlock + ".blk");
+				fw.write(fileHash.toString() + "\n");
+				fw.write(this.currentBlock + "\n");
+				fw.write(0 + "\n");
+
+				fw.close();
 			}
 
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (KeyStoreException e) {
+			throw new RuntimeException(e);
+		} catch (CertificateException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		} catch (UnrecoverableKeyException e) {
+			throw new RuntimeException(e);
+		} catch (InvalidKeyException e) {
+			throw new RuntimeException(e);
+		} catch (SignatureException e) {
 			throw new RuntimeException(e);
 		}
 	}
