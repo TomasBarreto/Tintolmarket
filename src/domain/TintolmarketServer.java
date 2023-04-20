@@ -13,8 +13,10 @@ import java.net.SocketException;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * The TintolmarketServer class represents a server for a wine market.
@@ -76,39 +78,102 @@ public class TintolmarketServer {
                 //CODIGO A EXECUTAR PELO SERVER
 
 
+
                 //fazer a autenticacao e manda ao cliente o valor
+                Random rd = new Random();
+
                 String userID = (String) inStream.readObject();
-                String passWord = (String) inStream.readObject();
-                boolean autenticated = autenticator.autenticate(userID, passWord);
-                outStream.writeObject(autenticated);
-                if(autenticated){
-                    System.out.println("Client connected");
-                    serverSkel.addUser(userID);
+                boolean clientExists = autenticator.autenticate(userID);
+
+                outStream.writeObject(clientExists);
+
+                Long nonce = rd.nextLong();
+
+                outStream.writeObject(nonce);
+
+                boolean isTrueClient = false;
+
+                if(clientExists) {
+                    byte[] signedNonce = (byte[]) inStream.readObject();
+
+                    FileInputStream fis = new FileInputStream("certs/" + userID + ".cer");
+                    CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+                    Certificate certificate = certificateFactory.generateCertificate(fis);
+                    fis.close();
+
+                    PublicKey pk = certificate.getPublicKey();
+
+                    Signature signature = Signature.getInstance("MD5withRSA");
+                    signature.initVerify(pk);
+                    signature.update(nonce.byteValue());
+
+                    isTrueClient = signature.verify(signedNonce);
+
+                    if (isTrueClient) {
+                        System.out.println("Client connected");
+                        serverSkel.addUser(userID);
+                    }
+
+                    outStream.writeObject(isTrueClient);
+                }
+                else {
+                    byte[] signedNonce = new byte[0];
+                    signedNonce = (byte[]) inStream.readObject();
+
+                    Certificate certificate = (Certificate) inStream.readObject();
+
+                    PublicKey pk = certificate.getPublicKey();
+
+                    Signature signature = Signature.getInstance("MD5withRSA");
+                    signature.initVerify(pk);
+                    signature.update(nonce.byteValue());
+
+                    isTrueClient = signature.verify(signedNonce);
+
+                    outStream.writeObject(isTrueClient);
+
+                    // ESCREVER CERTIFICADO NA PASTA DO SERVER
+
+                    String cert = "certs/" + userID + ".cer";
+
+                    if(!new File(userID + ".cer").exists())
+                        try {
+                            new File(cert).createNewFile();
+                            FileOutputStream fos = new FileOutputStream(cert);
+                            fos.write(certificate.getEncoded());
+                            fos.close();
+
+                            FileWriter fw = new FileWriter("Users", true);
+                            fw.write(userID + ":" + "certs/" + userID + ".cer" + ":" + "200");
+                            fw.close();
+                        } catch (Exception e) {
+                            System.out.println("File was not created");
+                        }
                 }
 
                 boolean working = true;
-                while (working && autenticated) {
+                while (working && clientExists && isTrueClient) {
                     try{
                         Command cmd = null;
 
                         int isSignedCommand = inStream.readInt();
 
                         boolean isValidSignature = false;
-                        SignedCommand signedCommand = null;
+                        SignedObject signedObject = null;
 
                         if(isSignedCommand == 1) {
-                            signedCommand = (SignedCommand) inStream.readObject();
+                            //signedObject = (SignedObject) inStream.readObject();
 
-                            Certificate certificate = signedCommand.certificate;
-                            PublicKey pk = certificate.getPublicKey();
+                            //Certificate certificate = signedObject.certificate;
+                            //PublicKey pk = certificate.getPublicKey();
 
-                            Signature s = Signature.getInstance("MD5withRSA");
-                            s.initVerify(pk);
-                            byte[] data = (byte[]) signedCommand.signedObject.getObject();
-                            s.update(data);
+                            //Signature s = Signature.getInstance("MD5withRSA");
+                            //s.initVerify(pk);
+                            //byte[] data = (byte[]) signedObject.getObject();
+                            //s.update(data);
 
-                            isValidSignature = s.verify(signedCommand.signedObject.getSignature());
-                            cmd = (Command) signedCommand.signedObject.getObject();
+                            //isValidSignature = s.verify(signedObject.getSignature());
+                            //cmd = (Command) signedObject.getObject();
                         }
                         else {
                             cmd = (Command) inStream.readObject();
@@ -151,12 +216,6 @@ public class TintolmarketServer {
                         System.out.println("Client disconnected");
                         working = false;
                         autenticator.remove(userID);
-                    } catch (NoSuchAlgorithmException e) {
-                        throw new RuntimeException(e);
-                    } catch (InvalidKeyException e) {
-                        throw new RuntimeException(e);
-                    } catch (SignatureException e) {
-                        throw new RuntimeException(e);
                     }
                 }
 
@@ -167,6 +226,14 @@ public class TintolmarketServer {
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (CertificateException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            } catch (SignatureException e) {
+                throw new RuntimeException(e);
+            } catch (InvalidKeyException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -186,12 +253,14 @@ public class TintolmarketServer {
 
         String keyStorePath = "keystoreServer/" + keyStore;
 
+        System.setProperty("javax.net.ssl.keyStoreType", "JCEKS");
         System.setProperty("javax.net.ssl.keyStore", keyStorePath);
         System.setProperty("javax.net.ssl.keyStorePassword", passKeystore);
 
         ServerSocketFactory ssf = SSLServerSocketFactory.getDefault();
 
-        try(SSLServerSocket ss = (SSLServerSocket) ssf.createServerSocket(port)){
+        try {
+            SSLServerSocket ss = (SSLServerSocket) ssf.createServerSocket(port);
             while (true){
                 SSLSimpleServer serverThread = new SSLSimpleServer(ss.accept(), threadList);
                 threadList.add(serverThread);

@@ -4,12 +4,11 @@ import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.Scanner;
 
 /**
@@ -28,7 +27,7 @@ public class Tintolmarket {
      * @throws IOException if there's an I/O error while communicating with the server
      * @throws ClassNotFoundException if the TintolmarketStub class is not found
      */
-    public Tintolmarket(String serverAdress, String trustStore, String keyStore, String passwordKeyStore, String userID, String passWord) throws IOException, ClassNotFoundException {
+    public Tintolmarket(String serverAdress, String trustStore, String keyStore, String passwordKeyStore, String userID) throws IOException, ClassNotFoundException {
         String serverAndPort[] = serverAdress.split(":");
         String ip = serverAndPort[0];
         int port = 12345;
@@ -39,9 +38,11 @@ public class Tintolmarket {
         String trustStorePath = "storesClient/" + trustStore;
         String keyStorePath = "storesClient/" + keyStore;
 
+        System.setProperty("javax.net.ssl.trustStoreType", "JCEKS");
         System.setProperty("javax.net.ssl.trustStore", trustStorePath);
         System.setProperty("javax.net.ssl.trustStorePassword", passwordKeyStore);
 
+        System.setProperty("javax.net.ssl.keyStoreType", "JCEKS");
         System.setProperty("javax.net.ssl.keyStore", keyStorePath);
         System.setProperty("javax.net.ssl.keyStorePassword", passwordKeyStore);
 
@@ -59,15 +60,12 @@ public class Tintolmarket {
         ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
 
         TintolmarketStub clientStub = new TintolmarketStub(socket, outStream, inStream);
-        boolean autenticated = clientStub.autenticate(userID, passWord);
+        boolean autenticated = clientStub.autenticate(userID, keyStore, passwordKeyStore);
         boolean working = true;
 
         //verificar se foi autenticado
-        if (autenticated) {
-            System.out.println("Autentication completed\n");
-        } else {
+        if (!autenticated) {
             in.close();
-            System.out.println("Autentication failed");
             working = false;
             inStream.close();
             outStream.close();
@@ -191,10 +189,7 @@ public class Tintolmarket {
 
         createDirectories();
 
-        System.out.println("Insira a sua password");
-        String password = in.next();
-        in.nextLine();
-        new Tintolmarket(args[0], args[1], args[2], args[3], args[4], password);
+        new Tintolmarket(args[0], args[1], args[2], args[3], args[4]);
 
     }
     /**

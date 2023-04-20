@@ -35,7 +35,7 @@ public class Autentication {
      * @return true, if the user was successfully authenticated. false, otherwise.
      * @throws IOException If an error occurs while accessing the users file.
      */
-    public boolean autenticate(String userID, String passWord) throws IOException {
+    public boolean autenticate(String userID) throws IOException {
         File file = new File(USERS);
         Scanner scanner = new Scanner(file);
 
@@ -44,29 +44,20 @@ public class Autentication {
             String userAndPass [] = line.split(":");
 
             if(userAndPass[0].equals(userID)){
-                if(userAndPass[1].equals(passWord)){
-                    if(!this.usersConnected.contains(userID)){
-                        this.usersConnected.add(userID);
-                        scanner.close();
-                        return true;
-                    }else{
-                        scanner.close();
-                        return false;
-                    }
+                if(!this.usersConnected.contains(userID)){
+                    this.usersConnected.add(userID);
+                    scanner.close();
+                    return true;
                 }
+
                 scanner.close();
                 return false;
             }
         }
 
-        this.usersConnected.add(userID);
-        FileWriter fileWriter = new FileWriter(USERS, true);
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-        bufferedWriter.write(userID + ":" + passWord + ":200" + "\n" );
-        bufferedWriter.close();
-        fileWriter.close();
         scanner.close();
-        return true;
+
+        return false;
     }
 
     /**
@@ -78,6 +69,20 @@ public class Autentication {
             if (this.usersConnected.get(i).equals(userID)){
                 this.usersConnected.remove(i);
             }
+        }
+    }
+
+    public void addClient(String userID) {
+        try {
+            this.usersConnected.add(userID);
+            FileWriter fileWriter = null;
+            fileWriter = new FileWriter(USERS, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(userID + ":" + (userID + ".cer") + ":200" + "\n" );
+            bufferedWriter.close();
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

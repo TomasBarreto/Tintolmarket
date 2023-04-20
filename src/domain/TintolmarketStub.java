@@ -49,15 +49,64 @@ public class TintolmarketStub implements ITintolmarketStub {
 	 * @throws IOException            if there is an I/O error.
 	 * @throws ClassNotFoundException if the class is not found.
 	 */
-	public boolean autenticate(String userID, String passWord) throws IOException, ClassNotFoundException {
+	public boolean autenticate(String userID, String keyStoreFileName, String keyStorePass) throws IOException, ClassNotFoundException {
 		outStream.writeObject(userID);
-		outStream.writeObject(passWord);
-		if ((boolean) inStream.readObject() == false) {
-			System.out.println("closed");
-			return false;
+
+		boolean isRegistered = (boolean) inStream.readObject();
+		Long nonce = (Long) inStream.readObject();
+
+		KeyStore keyStore = null;
+
+		try {
+			String keyStorePath = "storesClient/" + keyStoreFileName;
+
+			keyStore = KeyStore.getInstance("JCEKS");
+			keyStore.load(new FileInputStream(keyStorePath), keyStorePass.toCharArray());
+
+			PrivateKey pk = (PrivateKey) keyStore.getKey(userID, keyStorePass.toCharArray());
+
+			Signature signature = Signature.getInstance("MD5withRSA");
+			signature.initSign(pk);
+			signature.update(nonce.byteValue());
+			byte[] signedNonce = signature.sign();
+
+			outStream.writeObject(signedNonce);
+
+		} catch (KeyStoreException e) {
+			throw new RuntimeException(e);
+		} catch (CertificateException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		} catch (UnrecoverableKeyException e) {
+			throw new RuntimeException(e);
+		} catch (InvalidKeyException e) {
+			throw new RuntimeException(e);
+		} catch (SignatureException e) {
+			throw new RuntimeException(e);
 		}
+
+		if (!isRegistered) {
+			try {
+
+				Certificate certificate = keyStore.getCertificate(userID);
+				outStream.writeObject(certificate);
+
+			} catch (KeyStoreException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		boolean autenticated = (boolean) inStream.readObject();
+
+		if(autenticated)
+			System.out.println("Authentication Completed!");
+		else
+			System.out.println("There was a problem with your authentication");
+
 		this.userID = userID;
-		return true;
+
+		return autenticated;
 	}
 
 	/**

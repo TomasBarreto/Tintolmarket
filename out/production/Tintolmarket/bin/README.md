@@ -5,14 +5,13 @@
 Tintolmarket is a CLI Client-Server Distributed Application that represents a Wine Store, similar to _Vivino_, but with
 some new features (Clients are able to buy and sell wine).
 
+# How to Compile
+
+- Open a CLI (README directory), run the following command: `javac -d obj src/domain/*.java src/interfaces/*.java`.
 
 # How to run
 
-- Open 1 CLI for running the Server and 1 or more CLI's for running 1 or multiple clients at the same
-time.
-
-
-- `cd "path where the .jar [ Tintolmarket.jar (Client) / TintolmarketServer.jar (Server) ] is located"`
+- Open 1 CLI (README directory or where the TintolmarketServer.jar is located) for running the Server and 1 or more CLI's (README directory or where the Tintolmarket.jar is located) for running 1 or multiple clients at the same time.
 
 
 - In the Server CLI execute the following command: `java -jar TintolmarketServer.jar {serverPort (optional)}`
@@ -50,6 +49,9 @@ per unit.
 
 
 - `read` - allows the user (you) to read all the received messages and cleans the user's mailbox right after.
+
+
+- `stop`(extra) - logout, disconnects and stops the client
 
 
 
