@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -24,10 +25,11 @@ import java.util.Random;
  */
 public class TintolmarketServer {
 
-    private final TintolmarketServerSkel serverSkel = new TintolmarketServerSkel();
+    private final TintolmarketServerSkel serverSkel;
     private final Autentication autenticator;
 
     private SecretKey usersFileKey;
+    private PBEDUsers pbedUsers;
 
     /**
      * Creates the server object and sets up the port for the server to listen on.
@@ -56,15 +58,17 @@ public class TintolmarketServer {
     class SSLSimpleServer extends Thread {
         private Socket socket;
         private ArrayList<SSLSimpleServer> threadList;
+        private PBEDUsers pbedUsers;
 
         /**
          * Creates a new ServerThread object with the given socket and list of threads.
          * @param inSoc the socket to communicate with the client.
          * @param threadList the list of threads.
          */
-        SSLSimpleServer(Socket inSoc, ArrayList<SSLSimpleServer> threadList) {
+        SSLSimpleServer(Socket inSoc, ArrayList<SSLSimpleServer> threadList, PBEDUsers pbedUsers) {
             this.socket = inSoc;
             this.threadList = threadList;
+            this.pbedUsers = pbedUsers;
         }
 
 
@@ -73,6 +77,7 @@ public class TintolmarketServer {
          */
         public void run() {
             try {
+
                 ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
                 //CODIGO A EXECUTAR PELO SERVER
@@ -96,10 +101,7 @@ public class TintolmarketServer {
                 if(clientExists) {
                     byte[] signedNonce = (byte[]) inStream.readObject();
 
-                    FileInputStream fis = new FileInputStream("certs/" + userID + ".cer");
-                    CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-                    Certificate certificate = certificateFactory.generateCertificate(fis);
-                    fis.close();
+                    Certificate certificate = getUserCerticate("certs/" + userID + ".cer");
 
                     PublicKey pk = certificate.getPublicKey();
 
@@ -108,6 +110,9 @@ public class TintolmarketServer {
                     signature.update(nonce.byteValue());
 
                     isTrueClient = signature.verify(signedNonce);
+
+                    System.out.println(nonce.toString());
+                    System.out.println(ByteBuffer.wrap(signedNonce).getLong());
 
                     if (isTrueClient) {
                         System.out.println("Client connected");
@@ -143,9 +148,9 @@ public class TintolmarketServer {
                             fos.write(certificate.getEncoded());
                             fos.close();
 
-                            FileWriter fw = new FileWriter("Users", true);
-                            fw.write(userID + ":" + "certs/" + userID + ".cer" + ":" + "200");
-                            fw.close();
+                            FileOutputStream fos2 = new FileOutputStream("Users", true);
+                            fos2.write(this.pbedUsers.encrypt(userID + ":" + "certs/" + userID + ".cer"));
+                            fos2.close();
                         } catch (Exception e) {
                             System.out.println("File was not created");
                         }
@@ -156,24 +161,21 @@ public class TintolmarketServer {
                     try{
                         Command cmd = null;
 
-                        int isSignedCommand = inStream.readInt();
+                        int isSignedCommand = (int) inStream.readObject();
 
                         boolean isValidSignature = false;
                         SignedObject signedObject = null;
 
                         if(isSignedCommand == 1) {
-                            //signedObject = (SignedObject) inStream.readObject();
+                            signedObject = (SignedObject) inStream.readObject();
 
-                            //Certificate certificate = signedObject.certificate;
-                            //PublicKey pk = certificate.getPublicKey();
+                            Certificate certificate = getUserCerticate("certs/" + userID + ".cer");
+                            PublicKey pk = certificate.getPublicKey();
 
-                            //Signature s = Signature.getInstance("MD5withRSA");
-                            //s.initVerify(pk);
-                            //byte[] data = (byte[]) signedObject.getObject();
-                            //s.update(data);
+                            Signature s = Signature.getInstance("MD5withRSA");
 
-                            //isValidSignature = s.verify(signedObject.getSignature());
-                            //cmd = (Command) signedObject.getObject();
+                            isValidSignature = signedObject.verify(pk, s);
+                            cmd = (Command) signedObject.getObject();
                         }
                         else {
                             cmd = (Command) inStream.readObject();
@@ -227,13 +229,28 @@ public class TintolmarketServer {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
-            } catch (CertificateException e) {
-                throw new RuntimeException(e);
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
             } catch (SignatureException e) {
                 throw new RuntimeException(e);
             } catch (InvalidKeyException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private Certificate getUserCerticate(String certificatePath) {
+            try {
+                FileInputStream fis = new FileInputStream(certificatePath);
+                CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+                Certificate certificate = certificateFactory.generateCertificate(fis);
+                fis.close();
+
+                return certificate;
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (CertificateException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -245,9 +262,11 @@ public class TintolmarketServer {
      */
     public TintolmarketServer(int port, String passwordCifra ,String keyStore, String passKeystore) {
 
-        getUsersFileKey(passwordCifra);
+        this.pbedUsers = new PBEDUsers(passwordCifra);
 
-        this.autenticator = new Autentication(this.usersFileKey);
+        this.serverSkel = new TintolmarketServerSkel();
+
+        this.autenticator = new Autentication(this.usersFileKey, this.pbedUsers);
 
         ArrayList<SSLSimpleServer> threadList = new ArrayList<>();
 
@@ -262,7 +281,7 @@ public class TintolmarketServer {
         try {
             SSLServerSocket ss = (SSLServerSocket) ssf.createServerSocket(port);
             while (true){
-                SSLSimpleServer serverThread = new SSLSimpleServer(ss.accept(), threadList);
+                SSLSimpleServer serverThread = new SSLSimpleServer(ss.accept(), threadList, this.pbedUsers);
                 threadList.add(serverThread);
                 serverThread.start();
             }
@@ -346,22 +365,6 @@ public class TintolmarketServer {
             } catch (Exception e) {
                 System.out.println("Directory was not created");
             }
-    }
-
-    /* Gets the key for encrypting and decrypting the users file
-     *  @param password - password for PBE
-     */
-    private void getUsersFileKey(String password) {
-        try {
-            byte[] salt = new byte[8];
-            PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, 20);
-            SecretKeyFactory kf = SecretKeyFactory.getInstance("PBEWithHmacSHA256AndAES_128");
-            this.usersFileKey = kf.generateSecret(keySpec);
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println("SecretKeyFactory Algorithm Not Found");
-        } catch (InvalidKeySpecException e) {
-            System.out.println("Invalid KeySpec");
-        }
     }
 
     private static boolean verifyBlockChain() {

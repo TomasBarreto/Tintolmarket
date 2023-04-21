@@ -20,42 +20,37 @@ public class Autentication {
     private final String USERS = "users";
 
     private SecretKey usersFileKey;
+    private PBEDUsers pbedUsers;
 
     /**
      * Default constructor for the class.
      */
-    public Autentication(SecretKey usersFileKey){
+    public Autentication(SecretKey usersFileKey, PBEDUsers pbedUsers){
         this.usersFileKey = usersFileKey;
+        this.pbedUsers = pbedUsers;
     }
 
     /**
      * Performs user authentication in the system.
      * @param userID   The ID of the user to be authenticated.
-     * @param passWord The password of the user to be authenticated.
      * @return true, if the user was successfully authenticated. false, otherwise.
      * @throws IOException If an error occurs while accessing the users file.
      */
     public boolean autenticate(String userID) throws IOException {
-        File file = new File(USERS);
-        Scanner scanner = new Scanner(file);
+        List<String> fileStrings = this.pbedUsers.decrypt();
 
-        while(scanner.hasNextLine()){
-            String line = scanner.nextLine();
-            String userAndPass [] = line.split(":");
+        for(String line : fileStrings) {
+            String userAndPass[] = line.split(":");
 
-            if(userAndPass[0].equals(userID)){
-                if(!this.usersConnected.contains(userID)){
+            if (userAndPass[0].equals(userID)) {
+                if (!this.usersConnected.contains(userID)) {
                     this.usersConnected.add(userID);
-                    scanner.close();
                     return true;
                 }
 
-                scanner.close();
                 return false;
             }
         }
-
-        scanner.close();
 
         return false;
     }
@@ -69,20 +64,6 @@ public class Autentication {
             if (this.usersConnected.get(i).equals(userID)){
                 this.usersConnected.remove(i);
             }
-        }
-    }
-
-    public void addClient(String userID) {
-        try {
-            this.usersConnected.add(userID);
-            FileWriter fileWriter = null;
-            fileWriter = new FileWriter(USERS, true);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(userID + ":" + (userID + ".cer") + ":200" + "\n" );
-            bufferedWriter.close();
-            fileWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

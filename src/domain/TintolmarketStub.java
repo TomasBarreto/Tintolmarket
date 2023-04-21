@@ -44,7 +44,6 @@ public class TintolmarketStub implements ITintolmarketStub {
 	/**
 	 * Authenticates the user in the server.
 	 * @param userID     the user ID.
-	 * @param passWord   the password.
 	 * @return           true if authentication succeeds, false otherwise.
 	 * @throws IOException            if there is an I/O error.
 	 * @throws ClassNotFoundException if the class is not found.
@@ -154,16 +153,18 @@ public class TintolmarketStub implements ITintolmarketStub {
 	 * @param value     the wine value.
 	 * @param quantity  the wine quantity.
 	 */
-	public void sellWine(String wine, int value, int quantity){
+	public void sellWine(String wine, int value, int quantity, String keyStorePath, String keyStorePass){
 		Command cmd = new Command();
 		cmd.setCommand("sell");
 		cmd.setWine(wine);
 		cmd.setWinePrice(value);
 		cmd.setWineQuantity(quantity);
-		
+
+		SignedObject signedObject = signedObject(cmd, keyStorePath, keyStorePass);
+
 		try {
-			outStream.writeInt(1);
-			outStream.writeObject(cmd);
+			outStream.writeObject(1);
+			outStream.writeObject(signedObject);
 			System.out.println((String)inStream.readObject());
 
 		} catch (IOException e) {
@@ -184,7 +185,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		cmd.setWine(wine);
 		
 		try {
-			outStream.writeInt(0);
+			outStream.writeObject(0);
 			outStream.writeObject(cmd);
 			System.out.println((String)inStream.readObject());
 
@@ -235,50 +236,18 @@ public class TintolmarketStub implements ITintolmarketStub {
 	 * @param seller the seller of the wine
 	 * @param quantity the quantity of wine to buy
 	 */
-	public void buyWine(String wine, String seller, int quantity, String userID){
+	public void buyWine(String wine, String seller, int quantity, String userID, String keyStorePath, String keyStorePass){
 		Command cmd = new Command();
 		cmd.setCommand("buy");
 		cmd.setWine(wine);
 		cmd.setWineSeller(seller);
 		cmd.setWineQuantity(quantity);
 
-		String keyStorePath = System.getProperty("javax.net.ssl.keyStore");
-		char[] keyStorePassword = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
-		FileInputStream fs = null;
-		SignedCommand signedCommand = null;
+		SignedObject signedObject = signedObject(cmd, keyStorePath, keyStorePass);
 
 		try {
-			fs = new FileInputStream(keyStorePath);
-			KeyStore keyStore = KeyStore.getInstance("JCEKS");
-			keyStore.load(fs, keyStorePassword);
-
-			Certificate certificate = keyStore.getCertificate(userID);
-			PrivateKey pk = (PrivateKey) keyStore.getKey(userID, keyStorePassword);
-
-			SignedObject signedObject = new SignedObject(cmd, pk, Signature.getInstance("MD5withRSA"));
-
-			signedCommand = new SignedCommand(signedObject, certificate);
-
-			fs.close();
-		} catch (FileNotFoundException | KeyStoreException e) {
-			System.out.println("Keystore not found");
-		} catch (CertificateException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		} catch (UnrecoverableKeyException e) {
-			throw new RuntimeException(e);
-		} catch (SignatureException e) {
-			throw new RuntimeException(e);
-		} catch (InvalidKeyException e) {
-			throw new RuntimeException(e);
-		}
-
-		try {
-			outStream.writeInt(1);
-			outStream.writeObject(signedCommand);
+			outStream.writeObject(1);
+			outStream.writeObject(signedObject);
 			System.out.println((String)inStream.readObject());
 
 		} catch (IOException e) {
@@ -286,6 +255,39 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private SignedObject signedObject(Command cmd, String keyStorePath, String keyStorePass) {
+
+		try {
+			FileInputStream fs = new FileInputStream(keyStorePath);
+
+			KeyStore keyStore = KeyStore.getInstance("JCEKS");
+			keyStore.load(fs, keyStorePass.toCharArray());
+
+			Certificate certificate = keyStore.getCertificate(userID);
+			PrivateKey pk = (PrivateKey) keyStore.getKey(userID, keyStorePass.toCharArray());
+
+			return new SignedObject(cmd, pk, Signature.getInstance("MD5withRSA"));
+
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (UnrecoverableKeyException e) {
+			throw new RuntimeException(e);
+		} catch (CertificateException e) {
+			throw new RuntimeException(e);
+		} catch (KeyStoreException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		} catch (SignatureException e) {
+			throw new RuntimeException(e);
+		} catch (InvalidKeyException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 
 	/**
@@ -297,7 +299,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		cmd.setUserReceiver(userID);
 		
 		try {
-			outStream.writeInt(0);
+			outStream.writeObject(0);
 			outStream.writeObject(cmd);
 			System.out.println((String)inStream.readObject());
 
@@ -320,7 +322,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		cmd.setWineStars(stars);
 		
 		try {
-			outStream.writeInt(0);
+			outStream.writeObject(0);
 			outStream.writeObject(cmd);
 			System.out.println((String)inStream.readObject());
 
@@ -344,7 +346,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		cmd.setMessage(message);
 		
 		try {
-			outStream.writeInt(0);
+			outStream.writeObject(0);
 			outStream.writeObject(cmd);
 			System.out.println((String)inStream.readObject());
 
@@ -363,7 +365,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		cmd.setCommand("read");
 		
 		try {
-			outStream.writeInt(0);
+			outStream.writeObject(0);
 			outStream.writeObject(cmd);
 			System.out.println((String)inStream.readObject());
 
@@ -382,7 +384,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		try {
 			Command cmd = new Command();
 			cmd.setCommand("stop");
-			outStream.writeInt(0);
+			outStream.writeObject(0);
 			outStream.writeObject(cmd);
 		} catch (SocketException e) {
 			System.out.println("Server Offline");

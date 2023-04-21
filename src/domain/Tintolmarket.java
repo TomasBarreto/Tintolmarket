@@ -108,7 +108,7 @@ public class Tintolmarket {
 
                 } else if (commandSplit[0].equals("sell") || commandSplit[0].equals("s")) {
                     if (commandSplit.length == 4) {
-                        clientStub.sellWine(commandSplit[1], Integer.parseInt(commandSplit[2]), Integer.parseInt(commandSplit[3]));
+                        clientStub.sellWine(commandSplit[1], Integer.parseInt(commandSplit[2]), Integer.parseInt(commandSplit[3]), keyStorePath, passwordKeyStore);
 
                     } else {
                         System.out.println("Wrong command\n");
@@ -123,7 +123,7 @@ public class Tintolmarket {
 
                 } else if (commandSplit[0].equals("buy") || commandSplit[0].equals("b")) {
                     if (commandSplit.length == 4) {
-                        clientStub.buyWine(commandSplit[1], commandSplit[2], Integer.parseInt(commandSplit[3]), userID);
+                        clientStub.buyWine(commandSplit[1], commandSplit[2], Integer.parseInt(commandSplit[3]), userID, keyStorePath, passwordKeyStore);
                     } else {
                         System.out.println("Wrong command\n");
                     }

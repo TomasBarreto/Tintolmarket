@@ -23,7 +23,7 @@ public interface ITintolmarketStub {
 	 * @param value The value to sell each unit of the wine for.
 	 * @param quantity The quantity of the wine to sell.
 	 */
-	public void sellWine(String wine, int value, int quantity);
+	public void sellWine(String wine, int value, int quantity, String keyStorePath, String keyStorePass);
 
 	/**
 	 * Displays information about the specified wine.
@@ -37,7 +37,7 @@ public interface ITintolmarketStub {
 	 * @param seller The name of the seller to buy the wine from.
 	 * @param quantity The quantity of the wine to buy.
 	 */
-	public void buyWine(String wine, String seller, int quantit, String userId);
+	public void buyWine(String wine, String seller, int quantit, String userId, String keyStorePath, String keyStorePass);
 
 	/**
 	 * Displays information about the user's wallet.
