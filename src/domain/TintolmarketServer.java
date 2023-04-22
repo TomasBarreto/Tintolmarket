@@ -59,16 +59,20 @@ public class TintolmarketServer {
         private Socket socket;
         private ArrayList<SSLSimpleServer> threadList;
         private PBEDUsers pbedUsers;
+        private String keyStorePath;
+        private String keyStorePass;
 
         /**
          * Creates a new ServerThread object with the given socket and list of threads.
          * @param inSoc the socket to communicate with the client.
          * @param threadList the list of threads.
          */
-        SSLSimpleServer(Socket inSoc, ArrayList<SSLSimpleServer> threadList, PBEDUsers pbedUsers) {
+        SSLSimpleServer(Socket inSoc, ArrayList<SSLSimpleServer> threadList, PBEDUsers pbedUsers, String keyStorePath, String keyStorePass) {
             this.socket = inSoc;
             this.threadList = threadList;
             this.pbedUsers = pbedUsers;
+            this.keyStorePath = keyStorePath;
+            this.keyStorePass = keyStorePass;
         }
 
 
@@ -149,11 +153,16 @@ public class TintolmarketServer {
                             fos.close();
 
                             FileOutputStream fos2 = new FileOutputStream("Users", true);
-                            fos2.write(this.pbedUsers.encrypt(userID + ":" + "certs/" + userID + ".cer"));
+                            fos2.write(this.pbedUsers.encrypt(userID + ":" + "certs/" + userID + ".cer\n"));
                             fos2.close();
                         } catch (Exception e) {
                             System.out.println("File was not created");
                         }
+
+                    if (isTrueClient) {
+                        System.out.println("Client connected");
+                        serverSkel.addUser(userID);
+                    }
                 }
 
                 boolean working = true;
@@ -185,7 +194,7 @@ public class TintolmarketServer {
                             outStream.writeObject(serverSkel.addWine(cmd.getWine(), cmd.getImageName(), cmd.getImageBuffer()));
                         } else if (cmd.getCommand().equals("sell")) {
                             if(isValidSignature)
-                                outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(), cmd.getWineQuantity(), userID));
+                                outStream.writeObject(serverSkel.sellWine(cmd.getWine(), cmd.getWinePrice(), cmd.getWineQuantity(), userID, this.keyStorePath, this.keyStorePass));
                             else
                                 outStream.writeObject("Invalid Signature");
                         } else if (cmd.getCommand().equals("view")) {
@@ -194,7 +203,7 @@ public class TintolmarketServer {
                             outStream.writeObject(serverSkel.getImage(cmd.getWine()));
                         } else if (cmd.getCommand().equals("buy")) {
                             if(isValidSignature)
-                                outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(), cmd.getWineQuantity(), userID));
+                                outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(), cmd.getWineQuantity(), userID, this.keyStorePath, this.keyStorePass));
                             else
                                 outStream.writeObject("Invalid Signature");
                         } else if (cmd.getCommand().equals("wallet")) {
@@ -260,7 +269,7 @@ public class TintolmarketServer {
      * Constructor for TintolmarketServer class.
      * @param port the port number for the server socket to listen on.
      */
-    public TintolmarketServer(int port, String passwordCifra ,String keyStore, String passKeystore) {
+    public TintolmarketServer(int port, String passwordCifra ,String keyStore, String keyStorePass) {
 
         this.pbedUsers = new PBEDUsers(passwordCifra);
 
@@ -274,14 +283,14 @@ public class TintolmarketServer {
 
         System.setProperty("javax.net.ssl.keyStoreType", "JCEKS");
         System.setProperty("javax.net.ssl.keyStore", keyStorePath);
-        System.setProperty("javax.net.ssl.keyStorePassword", passKeystore);
+        System.setProperty("javax.net.ssl.keyStorePassword", keyStorePass);
 
         ServerSocketFactory ssf = SSLServerSocketFactory.getDefault();
 
         try {
             SSLServerSocket ss = (SSLServerSocket) ssf.createServerSocket(port);
             while (true){
-                SSLSimpleServer serverThread = new SSLSimpleServer(ss.accept(), threadList, this.pbedUsers);
+                SSLSimpleServer serverThread = new SSLSimpleServer(ss.accept(), threadList, this.pbedUsers, keyStorePath, keyStorePass);
                 threadList.add(serverThread);
                 serverThread.start();
             }

@@ -6,6 +6,7 @@ import src.interfaces.ITintolmarketServerSkel;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,13 +70,13 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	 * @param seller The name of the seller.
 	 * @return A message indicating whether the wine was successfully put up for sale or if it doesn't exist in the catalog.
 	 */
-	public synchronized String sellWine(String wine, int value, int quantity, String seller) {
+	public synchronized String sellWine(String wine, int value, int quantity, String seller, String keyStorePath, String keyStorePass) {
 		boolean bool = wineCat.sellWine(wine, value, quantity, seller);
 		if (bool){
 
 			String transaction = "sell:" + wine + ":" + quantity + ":" + value + ":" + seller;
 
-			writeTransaction(transaction);
+			writeTransaction(transaction, keyStorePath, keyStorePass);
 
 			return "Wine is now for sale\n";
 		}else{
@@ -100,7 +101,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	 * @param userID The ID of the buyer.
 	 * @return A message indicating whether the purchase was successful and updating the wallets of the buyer and seller.
 	 */
-	public synchronized String buyWine(String wine, String seller, int quantity, String userID) {
+	public synchronized String buyWine(String wine, String seller, int quantity, String userID, String keyStorePath, String keyStorePass) {
 		int balance = userCat.getWalletMoney(userID);
 		String result = wineCat.buyWine(wine, seller, quantity, balance);
 		if(result.equals("Success! Your order is completed!")){
@@ -135,7 +136,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 
 				String transaction = "buy:" + wine + ":" + quantity + ":" + winePrice + ":" + userID;
 
-				writeTransaction(transaction);
+				writeTransaction(transaction, keyStorePath, keyStorePass);
 
 
 			} catch (FileNotFoundException e){
@@ -319,7 +320,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return this.wineCat.getWineUrl(wine);
 	}
 
-	private void writeTransaction(String transaction) {
+	private void writeTransaction(String transaction, String keyStorePath, String keyStorePass) {
 		String currentBlockPath = "logs/block_" + this.currentBlock + ".blk";
 
 		try {
@@ -366,35 +367,27 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 
 				fw2.close();
 
-				FileInputStream fis = new FileInputStream(new File("logs/block_" + (this.currentBlock - 1) + ".blk"));
+				BufferedReader fis = new BufferedReader(new FileReader("logs/block_" + (this.currentBlock - 1) + ".blk"));
 
-				byte[] fileBytes = fis.readAllBytes();
+				List<String> fileLines = (List<String>) fis.lines();
 
-				String keyStorePath = System.getProperty("javax.net.ssl.keyStore");
-				char[] keyStorePass = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
+				Block block = new Block(fileLines.get(0), Integer.parseInt(fileLines.get(1)), Integer.parseInt(fileLines.get(2)), fileLines.subList(3, fileLines.size()));
 
-				KeyStore keyStore = KeyStore.getInstance("JCEKS");
-				FileInputStream fis2 = new FileInputStream(keyStorePath);
+				SignedObject signedBlock = signedObject(block, keyStorePath, keyStorePass);
 
-				keyStore.load(fis2, keyStorePass);
-
-				PrivateKey privateKey = (PrivateKey) keyStore.getKey(this.ALIAS, keyStorePass);
-
-				Signature signature = Signature.getInstance("MD5withRSA");
-				signature.initSign(privateKey);
-
-				signature.update(fileBytes);
-				byte[] signedBytes = signature.sign();
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream out = new ObjectOutputStream(bos);
+				out.writeObject(signedBlock);
+				byte[] blockBytes = bos.toByteArray();
 
 				FileOutputStream fos = new FileOutputStream("logs/block_" + (this.currentBlock - 1) + ".blk");
-				fos.write(signedBytes);
+				fos.write(blockBytes);
 
 				fis.close();
-				fis2.close();
 				fos.close();
 
 				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-				messageDigest.update(signedBytes);
+				messageDigest.update(blockBytes);
 
 				byte[] fileHash = messageDigest.digest();
 
@@ -411,17 +404,38 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
-		} catch (KeyStoreException e) {
-			throw new RuntimeException(e);
-		} catch (CertificateException e) {
-			throw new RuntimeException(e);
 		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private SignedObject signedObject(Block block, String keyStorePath, String keyStorePass) {
+
+		try {
+			FileInputStream fs = new FileInputStream(keyStorePath);
+
+			KeyStore keyStore = KeyStore.getInstance("JCEKS");
+			keyStore.load(fs, keyStorePass.toCharArray());
+
+			PrivateKey pk = (PrivateKey) keyStore.getKey("server", keyStorePass.toCharArray());
+
+			return new SignedObject(block, pk, Signature.getInstance("MD5withRSA"));
+
+		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (UnrecoverableKeyException e) {
 			throw new RuntimeException(e);
-		} catch (InvalidKeyException e) {
+		} catch (CertificateException e) {
+			throw new RuntimeException(e);
+		} catch (KeyStoreException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		} catch (SignatureException e) {
+			throw new RuntimeException(e);
+		} catch (InvalidKeyException e) {
 			throw new RuntimeException(e);
 		}
 	}

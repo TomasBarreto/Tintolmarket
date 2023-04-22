@@ -39,6 +39,9 @@ public class Autentication {
     public boolean autenticate(String userID) throws IOException {
         List<String> fileStrings = this.pbedUsers.decrypt();
 
+        if (fileStrings.size() == 0)
+            System.out.println("ficheiro vazio");
+
         for(String line : fileStrings) {
             String userAndPass[] = line.split(":");
 

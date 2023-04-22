@@ -257,39 +257,6 @@ public class TintolmarketStub implements ITintolmarketStub {
 		}
 	}
 
-	private SignedObject signedObject(Command cmd, String keyStorePath, String keyStorePass) {
-
-		try {
-			FileInputStream fs = new FileInputStream(keyStorePath);
-
-			KeyStore keyStore = KeyStore.getInstance("JCEKS");
-			keyStore.load(fs, keyStorePass.toCharArray());
-
-			Certificate certificate = keyStore.getCertificate(userID);
-			PrivateKey pk = (PrivateKey) keyStore.getKey(userID, keyStorePass.toCharArray());
-
-			return new SignedObject(cmd, pk, Signature.getInstance("MD5withRSA"));
-
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (UnrecoverableKeyException e) {
-			throw new RuntimeException(e);
-		} catch (CertificateException e) {
-			throw new RuntimeException(e);
-		} catch (KeyStoreException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		} catch (SignatureException e) {
-			throw new RuntimeException(e);
-		} catch (InvalidKeyException e) {
-			throw new RuntimeException(e);
-		}
-
-	}
-
 	/**
 	 * Sends a "wallet" command to the server and displays the current balance of the user's wallet.
 	 */
@@ -389,5 +356,37 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (SocketException e) {
 			System.out.println("Server Offline");
 		}
+	}
+
+	private SignedObject signedObject(Command cmd, String keyStorePath, String keyStorePass) {
+
+		try {
+			FileInputStream fs = new FileInputStream(keyStorePath);
+
+			KeyStore keyStore = KeyStore.getInstance("JCEKS");
+			keyStore.load(fs, keyStorePass.toCharArray());
+
+			PrivateKey pk = (PrivateKey) keyStore.getKey(userID, keyStorePass.toCharArray());
+
+			return new SignedObject(cmd, pk, Signature.getInstance("MD5withRSA"));
+
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (UnrecoverableKeyException e) {
+			throw new RuntimeException(e);
+		} catch (CertificateException e) {
+			throw new RuntimeException(e);
+		} catch (KeyStoreException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		} catch (SignatureException e) {
+			throw new RuntimeException(e);
+		} catch (InvalidKeyException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 }

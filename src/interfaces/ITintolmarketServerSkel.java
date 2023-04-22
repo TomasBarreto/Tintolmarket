@@ -24,7 +24,7 @@ public interface ITintolmarketServerSkel {
 	 * @param seller the name of the seller
 	 * @return a message indicating whether the operation was successful or not
 	 */
-	public String sellWine(String wine, int value, int quantity, String seller);
+	public String sellWine(String wine, int value, int quantity, String seller, String keyStorePath, String keyStorePass);
 
 	/**
 	 * Views information about a wine from the Tintolmarket server.
@@ -41,7 +41,7 @@ public interface ITintolmarketServerSkel {
 	 * @param userID the ID of the user who is buying the wine
 	 * @return a message indicating whether the operation was successful or not
 	 */
-	public String buyWine(String wine, String seller, int quantity, String userID);
+	public String buyWine(String wine, String seller, int quantity, String userID, String keyStorePath, String keyStorePass);
 
 	/**
 	 * Views the wallet of a user from the Tintolmarket server.
