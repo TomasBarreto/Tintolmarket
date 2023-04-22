@@ -2,36 +2,56 @@ package src.domain;
 
 import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.security.*;
+import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PBEDUsers {
 
-    private final String USERS = "users";
+    private final String USERS = "users.cif";
     private final byte[] SALT = { (byte) 0xc9, (byte) 0x36, (byte) 0x78, (byte) 0x99, (byte) 0x52, (byte) 0x3e, (byte) 0xea, (byte) 0xf2 };
     private final int INTERATION_COUNT = 20;
     private SecretKey key;
     private Cipher encrypt;
     private Cipher decrypt;
 
-    public PBEDUsers(String password) {
+    public PBEDUsers(String password, String keystorePath, String keystorePass) {
         try {
+
+            KeyStore keystore = KeyStore.getInstance("JCEKS");
+            keystore.load(new FileInputStream(keystorePath), keystorePass.toCharArray());
+
+            SecretKey key = null;
+
+            try {
+                key = (SecretKey) keystore.getKey("pbe", keystorePass.toCharArray());
+            } catch (UnrecoverableKeyException e) {
+                throw new RuntimeException(e);
+            }
+
+            if(key == null) {
+                SecretKeyFactory factory = SecretKeyFactory.getInstance("PBEWithHmacSHA256AndAES_128");
+                PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), this.SALT, this.INTERATION_COUNT);
+                key = factory.generateSecret(spec);
+
+                KeyStore.PasswordProtection keyPassword = new KeyStore.PasswordProtection(keystorePass.toCharArray());
+                KeyStore.SecretKeyEntry keyEntry = new KeyStore.SecretKeyEntry(key);
+                keystore.setEntry("pbe", keyEntry, keyPassword);
+
+                keystore.store(new FileOutputStream(keystorePath), keystorePass.toCharArray());
+            }
+
             this.encrypt = Cipher.getInstance("PBEWithHmacSHA256AndAES_128");
             this.decrypt = Cipher.getInstance("PBEWithHmacSHA256AndAES_128");
-            PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(), SALT, INTERATION_COUNT);
-            SecretKeyFactory kf = SecretKeyFactory.getInstance("PBEWithHmacSHA256AndAES_128");
-            this.key = kf.generateSecret(keySpec);
-            byte[] params = this.encrypt.getParameters().getEncoded();
+
+            this.encrypt.init(Cipher.ENCRYPT_MODE, key);
 
             AlgorithmParameters p = AlgorithmParameters.getInstance("PBEWithHmacSHA256AndAES_128");
+            p.init(this.encrypt.getParameters().getEncoded());
 
-            p.init(params);
             this.decrypt.init(Cipher.DECRYPT_MODE, key, p);
 
         } catch (NoSuchAlgorithmException e) {
@@ -45,6 +65,10 @@ public class PBEDUsers {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InvalidAlgorithmParameterException e) {
+            throw new RuntimeException(e);
+        } catch (CertificateException e) {
+            throw new RuntimeException(e);
+        } catch (KeyStoreException e) {
             throw new RuntimeException(e);
         }
     }

@@ -152,7 +152,7 @@ public class TintolmarketServer {
                             fos.write(certificate.getEncoded());
                             fos.close();
 
-                            FileOutputStream fos2 = new FileOutputStream("Users", true);
+                            FileOutputStream fos2 = new FileOutputStream("users.cif", true);
                             fos2.write(this.pbedUsers.encrypt(userID + ":" + "certs/" + userID + ".cer\n"));
                             fos2.close();
                         } catch (Exception e) {
@@ -163,6 +163,8 @@ public class TintolmarketServer {
                         System.out.println("Client connected");
                         serverSkel.addUser(userID);
                     }
+
+                    clientExists = true;
                 }
 
                 boolean working = true;
@@ -271,15 +273,15 @@ public class TintolmarketServer {
      */
     public TintolmarketServer(int port, String passwordCifra ,String keyStore, String keyStorePass) {
 
-        this.pbedUsers = new PBEDUsers(passwordCifra);
+        String keyStorePath = "keystoreServer/" + keyStore;
+
+        this.pbedUsers = new PBEDUsers(passwordCifra, keyStorePath, keyStorePass);
 
         this.serverSkel = new TintolmarketServerSkel();
 
         this.autenticator = new Autentication(this.usersFileKey, this.pbedUsers);
 
         ArrayList<SSLSimpleServer> threadList = new ArrayList<>();
-
-        String keyStorePath = "keystoreServer/" + keyStore;
 
         System.setProperty("javax.net.ssl.keyStoreType", "JCEKS");
         System.setProperty("javax.net.ssl.keyStore", keyStorePath);
@@ -304,7 +306,7 @@ public class TintolmarketServer {
      */
     private static void createDirectories() {
 
-        String users = "users";
+        String users = "users.cif";
         String wine_cat = "wine_cat";
         String wine_sellers = "wine_sellers";
         String messages = "messages";
