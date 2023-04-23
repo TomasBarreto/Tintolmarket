@@ -49,9 +49,11 @@ public class PBEDUsers {
 
             System.out.println(this.encrypt.getParameters().getEncoded().length);
 
-            FileOutputStream fos = new FileOutputStream("users.cif");
-            fos.write(this.encrypt.getParameters().getEncoded());
-            fos.close();
+            if(!new File("params").exists()) {
+                FileOutputStream fos = new FileOutputStream("params");
+                fos.write(this.encrypt.getParameters().getEncoded());
+                fos.close();
+            }
 
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
@@ -83,7 +85,7 @@ public class PBEDUsers {
     public List<String> decrypt() {
 
         try {
-            FileInputStream fis = new FileInputStream(USERS);
+            FileInputStream fis = new FileInputStream("params");
 
             byte[] params = new byte[91];
             fis.read(params);
@@ -95,7 +97,7 @@ public class PBEDUsers {
 
             byte[] fileBytes = fis.readAllBytes();
 
-            byte [] dec = this.decrypt.doFinal(fileBytes);
+            byte[] dec = this.decrypt.doFinal(fileBytes);
 
             String fileContent = new String(dec);
 

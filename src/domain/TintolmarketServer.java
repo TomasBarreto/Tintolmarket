@@ -145,7 +145,7 @@ public class TintolmarketServer {
 
                     String cert = "certs/" + userID + ".cer";
 
-                    if(!new File(userID + ".cer").exists())
+                    if(!new File(cert).exists())
                         try {
                             new File(cert).createNewFile();
                             FileOutputStream fos = new FileOutputStream(cert);
@@ -153,7 +153,7 @@ public class TintolmarketServer {
                             fos.close();
 
                             FileOutputStream fos2 = new FileOutputStream("users.cif", true);
-                            fos2.write(this.pbedUsers.encrypt(userID + ":" + "certs/" + userID + ".cer\n"));
+                            fos2.write(this.pbedUsers.encrypt(userID + ":" + "certs/" + userID + ".cer:200\n"));
                             fos2.close();
                         } catch (Exception e) {
                             System.out.println("File was not created");
