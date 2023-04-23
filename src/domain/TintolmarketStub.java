@@ -389,4 +389,24 @@ public class TintolmarketStub implements ITintolmarketStub {
 		}
 
 	}
+
+	/**
+	 * Obtêm a lista de todas as transações já efetuadas
+	 */
+	public void getList() {
+		Command cmd = new Command();
+		cmd.setCommand("list");
+		try {
+			outStream.writeObject(0);
+			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+
 }

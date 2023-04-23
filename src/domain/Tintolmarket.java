@@ -79,6 +79,7 @@ public class Tintolmarket {
                     "sell <wine> <value> <quantity>\n" +
                     "view <wine>\n" +
                     "buy <wine> <seller> <quantity>\n" +
+                    "list\n"+
                     "wallet\n" +
                     "classify <wine> <stars>\n" +
                     "talk <user> <message>\n" +
@@ -128,6 +129,12 @@ public class Tintolmarket {
                         System.out.println("Wrong command\n");
                     }
 
+                } else if (commandSplit[0].equals("list") || commandSplit[0].equals("l")) {
+                    if (commandSplit.length ==1) {
+                        clientStub.getList();
+                    } else {
+                        System.out.println("Wrong command\n");
+                    }
                 } else if (commandSplit[0].equals("wallet") || commandSplit[0].equals("w")) {
                     if (commandSplit.length == 1) {
                         clientStub.viewWallet();

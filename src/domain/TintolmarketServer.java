@@ -214,6 +214,8 @@ public class TintolmarketServer {
                                 outStream.writeObject(serverSkel.buyWine(cmd.getWine(), cmd.getWineSeller(), cmd.getWineQuantity(), userID, this.keyStorePath, this.keyStorePass));
                             else
                                 outStream.writeObject("Invalid Signature");
+                        } else if (cmd.getCommand().equals("list")) {
+                            outStream.writeObject(serverSkel.getAllTransactions(this.keyStorePath, this.keyStorePass));
                         } else if (cmd.getCommand().equals("wallet")) {
                             outStream.writeObject(serverSkel.viewWallet(userID));
                         } else if (cmd.getCommand().equals("classify")) {

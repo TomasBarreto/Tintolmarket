@@ -16,7 +16,7 @@ import java.util.Scanner;
  * The TintolmarketServerSkel class represents a skeleton of the Tintolmarket server.
  */
 public class TintolmarketServerSkel implements ITintolmarketServerSkel {
-	
+
 	private UserCatalog userCat;
 	private WineCatalog wineCat;
 	private final String USERS = "users";
@@ -360,8 +360,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 				FileOutputStream fos2 = new FileOutputStream("logs/block_" + (this.currentBlock) + ".blk");
 				ObjectOutputStream out3 = new ObjectOutputStream(fos2);
 				out3.writeObject(newBlock);
-			}
-			else {
+			} else {
 				FileOutputStream fos = new FileOutputStream("logs/block_" + (this.currentBlock) + ".blk");
 				ObjectOutputStream out = new ObjectOutputStream(fos);
 				out.writeObject(block);
@@ -405,6 +404,77 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		} catch (SignatureException e) {
 			throw new RuntimeException(e);
 		} catch (InvalidKeyException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String getAllTransactions(String keyStorePath, String keyStorePass) {
+		List<String> transactions = new ArrayList<>();
+
+		try {
+			int currBlock = 1;
+
+			while (currBlock <= this.currentBlock) {
+				String currentBlockPath = "logs/block_" + currBlock + ".blk";
+				FileInputStream fis = new FileInputStream(currentBlockPath);
+				ObjectInputStream in = new ObjectInputStream(fis);
+				Block block = null;
+				if (currBlock == this.currentBlock){
+					block = (Block) in.readObject();
+				}
+				else{
+					block = verifySignedObject((SignedObject) in.readObject(),keyStorePath,keyStorePass);
+				}
+				in.close();
+				fis.close();
+				if (block.getNrTransacions() > 0) {
+					List<String> blockTransactions = block.getTransactions();
+					transactions.addAll(blockTransactions);
+				}
+
+				currBlock++;
+			}
+		} catch (FileNotFoundException e) {
+			// End of blocks
+		} catch (IOException | ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("Sell's list:\n");
+		for (String s : transactions) {
+			sb.append(s+"\n");
+		}
+		return sb.toString();
+	}
+
+	private Block verifySignedObject(SignedObject signedBlock, String keyStorePath, String keyStorePass) {
+		try {
+			FileInputStream fs = new FileInputStream(keyStorePath);
+			KeyStore keyStore = KeyStore.getInstance("JCEKS");
+			keyStore.load(fs, keyStorePass.toCharArray());
+
+			PublicKey publicKey = keyStore.getCertificate("server").getPublicKey();
+
+			if (signedBlock.verify(publicKey, Signature.getInstance("MD5withRSA"))) {
+				return (Block) signedBlock.getObject();
+			} else {
+				throw new RuntimeException("Invalid signature for signed block.");
+			}
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (CertificateException e) {
+			throw new RuntimeException(e);
+		} catch (KeyStoreException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		} catch (SignatureException e) {
+			throw new RuntimeException(e);
+		} catch (InvalidKeyException e) {
+			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
