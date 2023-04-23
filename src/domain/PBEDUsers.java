@@ -24,21 +24,19 @@ public class PBEDUsers {
             KeyStore keystore = KeyStore.getInstance("JCEKS");
             keystore.load(new FileInputStream(keystorePath), keystorePass.toCharArray());
 
-            SecretKey key = null;
-
             try {
-                key = (SecretKey) keystore.getKey("pbe", keystorePass.toCharArray());
+                this.key = (SecretKey) keystore.getKey("pbe", keystorePass.toCharArray());
             } catch (UnrecoverableKeyException e) {
                 throw new RuntimeException(e);
             }
 
-            if(key == null) {
+            if(this.key == null) {
                 SecretKeyFactory factory = SecretKeyFactory.getInstance("PBEWithHmacSHA256AndAES_128");
                 PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), this.SALT, this.INTERATION_COUNT);
-                key = factory.generateSecret(spec);
+                this.key = factory.generateSecret(spec);
 
                 KeyStore.PasswordProtection keyPassword = new KeyStore.PasswordProtection(keystorePass.toCharArray());
-                KeyStore.SecretKeyEntry keyEntry = new KeyStore.SecretKeyEntry(key);
+                KeyStore.SecretKeyEntry keyEntry = new KeyStore.SecretKeyEntry(this.key);
                 keystore.setEntry("pbe", keyEntry, keyPassword);
 
                 keystore.store(new FileOutputStream(keystorePath), keystorePass.toCharArray());
@@ -49,10 +47,11 @@ public class PBEDUsers {
 
             this.encrypt.init(Cipher.ENCRYPT_MODE, key);
 
-            AlgorithmParameters p = AlgorithmParameters.getInstance("PBEWithHmacSHA256AndAES_128");
-            p.init(this.encrypt.getParameters().getEncoded());
+            System.out.println(this.encrypt.getParameters().getEncoded().length);
 
-            this.decrypt.init(Cipher.DECRYPT_MODE, key, p);
+            FileOutputStream fos = new FileOutputStream("users.cif");
+            fos.write(this.encrypt.getParameters().getEncoded());
+            fos.close();
 
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
@@ -63,8 +62,6 @@ public class PBEDUsers {
         } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         } catch (CertificateException e) {
             throw new RuntimeException(e);
@@ -87,6 +84,14 @@ public class PBEDUsers {
 
         try {
             FileInputStream fis = new FileInputStream(USERS);
+
+            byte[] params = new byte[91];
+            fis.read(params);
+
+            AlgorithmParameters p = AlgorithmParameters.getInstance("PBEWithHmacSHA256AndAES_128");
+            p.init(params);
+
+            this.decrypt.init(Cipher.DECRYPT_MODE, key, p);
 
             byte[] fileBytes = fis.readAllBytes();
 
@@ -116,6 +121,12 @@ public class PBEDUsers {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidAlgorithmParameterException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
         }
     }
