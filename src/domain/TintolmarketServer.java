@@ -17,7 +17,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * The TintolmarketServer class represents a server for a wine market.
@@ -39,17 +41,21 @@ public class TintolmarketServer {
     public static void main(String[] args) {
         
         createDirectories();
-
-        if(verifyBlockChain()) {
+        TintolmarketServer server = null;
 
             if (args.length == 4) {
-                int port = Integer.parseInt(args[0]);
-                TintolmarketServer server = new TintolmarketServer(port, args[1], args[2], args[3]);
+                if(verifyBlockChain("keystoreServer/" + args[2], args[3])) {
+                    int port = Integer.parseInt(args[0]);
+                    server = new TintolmarketServer(port, args[1], args[2], args[3]);
+                }
+                else
+                    System.out.println("Blockchain is corrupted");
             } else {
-                TintolmarketServer server = new TintolmarketServer(12345, args[0], args[1], args[2]);
+                if(verifyBlockChain("keystoreServer/" + args[1], args[2]))
+                    server = new TintolmarketServer(12345, args[0], args[1], args[2]);
+                else
+                    System.out.println("Blockchain is corrupted");
             }
-
-        }
     }
 
     /**
@@ -277,7 +283,7 @@ public class TintolmarketServer {
 
         this.pbedUsers = new PBEDUsers(passwordCifra, keyStorePath, keyStorePass);
 
-        this.serverSkel = new TintolmarketServerSkel();
+        this.serverSkel = new TintolmarketServerSkel(this.pbedUsers);
 
         this.autenticator = new Autentication(this.usersFileKey, this.pbedUsers);
 
@@ -356,9 +362,9 @@ public class TintolmarketServer {
         if(!new File(currentBlk).exists())
             try {
                 new File(currentBlk).createNewFile();
-                FileOutputStream fos = new FileOutputStream(currentBlk);
-                fos.write(1);
-                fos.close();
+                FileWriter fw = new FileWriter(currentBlk);
+                fw.write("1");
+                fw.close();
             } catch (Exception e) {
                 System.out.println("File was not created");
             }
@@ -366,78 +372,101 @@ public class TintolmarketServer {
         if(!new File(logs).exists())
             try {
                 new File(logs).mkdir();
-                new File(logs + "/block_1.blk");
-                FileWriter fw = new FileWriter(logs + "/block_1.blk");
-                fw.write("00000000\n");
-                fw.write("1\n");
-                fw.write("0\n");
+                new File(logs + "/block_1.blk").createNewFile();
 
-                fw.close();
+                Block newBlock = new Block("00000000".getBytes(), 1, 0);
+
+                FileOutputStream fos2 = new FileOutputStream(logs + "/block_1.blk");
+                ObjectOutputStream out3 = new ObjectOutputStream(fos2);
+                out3.writeObject(newBlock);
+
             } catch (Exception e) {
                 System.out.println("Directory was not created");
             }
     }
 
-    private static boolean verifyBlockChain() {
+    private static boolean verifyBlockChain(String keyStorePath, String keyStorePass) {
 
         int lastBlock = 0;
         String currBlkFile = "currBlk";
 
+        Scanner sc = null;
         try {
-            FileInputStream fs = new FileInputStream(currBlkFile);
-            lastBlock = fs.read();
+            sc = new Scanner(new File(currBlkFile));
 
-            fs.close();
+            lastBlock = sc.nextInt();
+
+            sc.close();
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         for(int i = 1; i < lastBlock; i++)
-            if (!verifyBlock(i))
+            if (!verifyBlock(i, lastBlock, keyStorePath, keyStorePass))
                 return false;
 
         return true;
     }
 
-    private static boolean verifyBlock(int blockIndex) {
+    private static boolean verifyBlock(int blockIndex, int lastBlock, String keyStorePath, String keyStorePass) {
 
         String alias = "server";
 
         try {
-            BufferedReader br1 = new BufferedReader(new FileReader("logs/block_" + blockIndex + ".blk"));
-            BufferedReader br2 = new BufferedReader(new FileReader("logs/block_" + (blockIndex + 1) + ".blk"));
+            SignedObject signedObject1 = null;
+            SignedObject signedObject2 = null;
+            byte[] hash1 = new byte[0];
+            byte[] hash2 = new byte[0];
 
-            String hash1 = br1.readLine();
-            String hash2 = br2.readLine();
-            br1.close();
-            br2.close();
+            FileInputStream fis = new FileInputStream("logs/block_" + blockIndex + ".blk");
+            ObjectInputStream in = new ObjectInputStream(fis);
 
-            FileInputStream fis1 = new FileInputStream("logs/block_" + blockIndex + ".blk");
+            FileInputStream fis2 = new FileInputStream("logs/block_" + (blockIndex + 1) + ".blk");
+            ObjectInputStream in2 = new ObjectInputStream(fis2);
 
-            byte[] fileBytes1 = fis1.readAllBytes();
+            if (blockIndex + 1 != lastBlock) {
+                signedObject1 = (SignedObject) in.readObject();
 
-            MessageDigest messageDigest1 = MessageDigest.getInstance("SHA-256");
-            messageDigest1.update(fileBytes1);
+                signedObject2 = (SignedObject) in2.readObject();
 
-            byte[] hash1ToCompare = messageDigest1.digest();
+                hash1 = ((Block) signedObject1.getObject()).getHash();
+                hash2 = ((Block) signedObject2.getObject()).getHash();
+            }
+            else {
+                signedObject1 = (SignedObject) in.readObject();
+
+                Block block2 = (Block) in2.readObject();
+
+                hash1 = ((Block) signedObject1.getObject()).getHash();
+                hash2 = block2.getHash();
+            }
+
+            fis.close();
+            fis2.close();
+            in.close();
+            in2.close();
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bos);
+            out.writeObject(signedObject1);
+            byte[] blockBytes = bos.toByteArray();
+
+
+            MessageDigest hash1ToCompare = MessageDigest.getInstance("SHA-256");
+            hash1ToCompare.update(blockBytes);
 
             if(blockIndex == 1)  {
-                if(!hash1.equals("00000000"))
+                if(!Arrays.equals(hash1, "00000000".getBytes()))
                     return false;
             }
 
-            if(!hash2.equals(hash1ToCompare.toString()))
+            if(!Arrays.equals(hash1ToCompare.digest(), hash2))
                 return false;
 
-            String keyStorePath = System.getProperty("javax.net.ssl.keyStore");
-            char[] keyStorePass = System.getProperty("javax.net.ssl.keyStorePassword").toCharArray();
-
             KeyStore keyStore = KeyStore.getInstance("JCEKS");
-            FileInputStream fis2 = new FileInputStream(keyStorePath);
+            FileInputStream fis3 = new FileInputStream(keyStorePath);
 
-            keyStore.load(fis2, keyStorePass);
+            keyStore.load(fis3, keyStorePass.toCharArray());
 
             Certificate certificate = keyStore.getCertificate(alias);
 
@@ -445,26 +474,18 @@ public class TintolmarketServer {
 
             Signature signature = Signature.getInstance("MD5withRSA");
 
-            BufferedReader br3 = new BufferedReader(new FileReader("logs/block_" + blockIndex + ".blk"));
-
             signature.initVerify(pk);
 
-            for(int i = 0; i < 8; i++)
-                signature.update(br3.readLine().getBytes());
+            ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
+            ObjectOutputStream out2 = new ObjectOutputStream(bos2);
+            out2.writeObject(signedObject1.getObject());
+            byte[] blockBytesNoSig = bos2.toByteArray();
 
-            if(signature.verify(br3.readLine().getBytes())) {
-                br3.close();
-                fis2.close();
-                fis1.close();
+            signature.update(blockBytesNoSig);
 
-                return true;
-            }
+            byte[] signatureCurrBlock = signedObject1.getSignature();
 
-            br3.close();
-            fis2.close();
-            fis1.close();
-
-            return false;
+            return signature.verify(signatureCurrBlock);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -477,6 +498,8 @@ public class TintolmarketServer {
         } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
         } catch (SignatureException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 

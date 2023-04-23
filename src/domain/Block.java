@@ -1,38 +1,44 @@
 package src.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Block implements Serializable {
 
-    private String hash;
+    private byte[] hash;
 
-    private int block_id;
+    private long block_id;
 
-    private int nr_transacions;
+    private int nrTransacions;
 
     private List<String> transactions;
 
-    public Block(String hash, int block_id, int nr_transacions, List<String> transactions) {
+    public Block(byte[] hash, long block_id, int nrTransacions) {
         this.hash = hash;
         this.block_id = block_id;
-        this.nr_transacions = nr_transacions;
-        this.transactions = transactions;
+        this.nrTransacions = nrTransacions;
+        this.transactions = new ArrayList<>();
     }
 
-    public String getHash() {
+    public byte[] getHash() {
         return hash;
     }
 
-    public int getBlock_id() {
+    public long getBlock_id() {
         return block_id;
     }
 
-    public int getNr_transacions() {
-        return nr_transacions;
+    public int getNrTransacions() {
+        return nrTransacions;
     }
 
     public List<String> getTransactions() {
         return transactions;
+    }
+
+    public void addTransaction(String transaction) {
+        this.transactions.add(transaction);
+        this.nrTransacions++;
     }
 }

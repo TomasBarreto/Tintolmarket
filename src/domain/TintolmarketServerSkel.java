@@ -23,22 +23,25 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	private long currentBlock;
 	private final String CURR_BLOCK_FILE = "currBlk";
 	private final String ALIAS = "server";
+	private PBEDUsers pbedUsers;
 
 	/**
 	 * Constructor that initializes the user and wine catalogs and loads them from files.
 	 */
-	public TintolmarketServerSkel() {
+	public TintolmarketServerSkel(PBEDUsers pbedUsers) {
 		this.userCat = new UserCatalog();
 		this.wineCat = new WineCatalog();
+		this.pbedUsers = pbedUsers;
 		loadUsers();
 		loadWine();
 		loadSellers();
 		loadMessages();
 		try {
-			FileInputStream fs = new FileInputStream(CURR_BLOCK_FILE);
-			this.currentBlock = fs.read();
+			Scanner sc = new Scanner(new File(CURR_BLOCK_FILE));
 
-			fs.close();
+			this.currentBlock = sc.nextInt();
+
+			sc.close();
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -110,11 +113,10 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			int sellerWallet = this.userCat.increaseBalance(seller, winePrice * quantity);
 
 			try{
-				File file = new File(USERS);
-				Scanner scanner = new Scanner(file);
+				List<String> fileStrings = this.pbedUsers.decrypt();
 				List<String> lines = new ArrayList<>();
-				while(scanner.hasNextLine()) {
-					String line = scanner.nextLine();
+
+				for(String line : fileStrings) {
 					String userAndPass [] = line.split(":");
 					if (userAndPass[0].equals(userID)){
 						lines.add(userAndPass[0] + ":" + userAndPass[1] + ":" + buyerWallet);
@@ -125,19 +127,17 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 					}
 				}
 
-				FileWriter fw = new FileWriter(USERS, false);
+				FileOutputStream fos = new FileOutputStream(USERS, false);
 
 				for(int i = 0; i < lines.size(); i++){
-					fw.write(lines.get(i) + "\n");
+					fos.write(this.pbedUsers.encrypt(lines.get(i) + "\n"));
 				}
 
-				scanner.close();
-				fw.close();
+				fos.close();
 
 				String transaction = "buy:" + wine + ":" + quantity + ":" + winePrice + ":" + userID;
 
 				writeTransaction(transaction, keyStorePath, keyStorePass);
-
 
 			} catch (FileNotFoundException e){
 				System.out.println("Users file not found\n");
@@ -206,19 +206,13 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	 * Loads users information from the users file.
 	 */
 	private void loadUsers() {
-		try{
-			File file = new File(USERS);
-			Scanner scanner = new Scanner(file);
-			while(scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				String userAndPass [] = line.split(":");
-				if(userAndPass.length > 1)
-					this.userCat.addUser(userAndPass[0], userAndPass[2]);
-			}
-		} catch (FileNotFoundException e){
-			System.out.println("Users file not found\n");
-		}
+		List<String> fileLines = this.pbedUsers.decrypt();
 
+		for(String line : fileLines) {
+			String userAndPass [] = line.split(":");
+			if(userAndPass.length > 1)
+				this.userCat.addUser(userAndPass[0], userAndPass[2]);
+		}
 	}
 
 	/**
@@ -324,41 +318,13 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		String currentBlockPath = "logs/block_" + this.currentBlock + ".blk";
 
 		try {
-			FileReader fr = new FileReader(currentBlockPath);
-			BufferedReader br = new BufferedReader(fr);
+			FileInputStream fis = new FileInputStream(currentBlockPath);
+			ObjectInputStream in = new ObjectInputStream(fis);
+			Block block = (Block) in.readObject();
 
-			String currentLine = "";
+			block.addTransaction(transaction);
 
-			int nrLine = 1;
-
-			int n_trx = 0;
-
-			List<String> lines = new ArrayList<>();
-
-			while((currentLine = br.readLine()) != null)  {
-				if(nrLine == 3) {
-					n_trx = Integer.parseInt(currentLine);
-					lines.add((n_trx + 1) + "");
-				}
-				else
-					lines.add(currentLine);
-
-
-				nrLine++;
-			}
-
-			lines.add(transaction);
-
-			FileWriter fw1 = new FileWriter(currentBlockPath, false);
-
-			for(String line : lines)
-				fw1.write(line + "\n");
-
-			fw1.close();
-			fr.close();
-			br.close();
-
-			if(n_trx == 4) {
+			if(block.getNrTransacions() == 5) {
 				this.currentBlock++;
 
 				FileWriter fw2 = new FileWriter(CURR_BLOCK_FILE, false);
@@ -367,12 +333,6 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 
 				fw2.close();
 
-				BufferedReader fis = new BufferedReader(new FileReader("logs/block_" + (this.currentBlock - 1) + ".blk"));
-
-				List<String> fileLines = (List<String>) fis.lines();
-
-				Block block = new Block(fileLines.get(0), Integer.parseInt(fileLines.get(1)), Integer.parseInt(fileLines.get(2)), fileLines.subList(3, fileLines.size()));
-
 				SignedObject signedBlock = signedObject(block, keyStorePath, keyStorePass);
 
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -380,8 +340,12 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 				out.writeObject(signedBlock);
 				byte[] blockBytes = bos.toByteArray();
 
+				out.close();
+				bos.close();
+
 				FileOutputStream fos = new FileOutputStream("logs/block_" + (this.currentBlock - 1) + ".blk");
-				fos.write(blockBytes);
+				ObjectOutputStream out2 = new ObjectOutputStream(fos);
+				out2.writeObject(signedBlock);
 
 				fis.close();
 				fos.close();
@@ -391,13 +355,16 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 
 				byte[] fileHash = messageDigest.digest();
 
-				new File("logs/block_" + this.currentBlock + ".blk");
-				FileWriter fw = new FileWriter("logs/block_" + this.currentBlock + ".blk");
-				fw.write(fileHash.toString() + "\n");
-				fw.write(this.currentBlock + "\n");
-				fw.write(0 + "\n");
+				Block newBlock = new Block(fileHash, this.currentBlock, 0);
 
-				fw.close();
+				FileOutputStream fos2 = new FileOutputStream("logs/block_" + (this.currentBlock) + ".blk");
+				ObjectOutputStream out3 = new ObjectOutputStream(fos2);
+				out3.writeObject(newBlock);
+			}
+			else {
+				FileOutputStream fos = new FileOutputStream("logs/block_" + (this.currentBlock) + ".blk");
+				ObjectOutputStream out = new ObjectOutputStream(fos);
+				out.writeObject(block);
 			}
 
 		} catch (FileNotFoundException e) {
@@ -405,6 +372,8 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
