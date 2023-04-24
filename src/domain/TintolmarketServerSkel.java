@@ -440,7 +440,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 			throw new RuntimeException(e);
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.append("Sell's list:\n");
+
 		for (String s : transactions) {
 			sb.append(s+"\n");
 		}
