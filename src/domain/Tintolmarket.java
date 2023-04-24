@@ -156,14 +156,14 @@ public class Tintolmarket {
                             message = message + commandSplit[i] + " ";
                         }
                         message = message + "\n";
-                        clientStub.sendMessage(commandSplit[1], message);
+                        clientStub.sendMessage(commandSplit[1], message, trustStorePath, passwordKeyStore);
                     } else {
                         System.out.println("Wrong command\n");
                     }
 
                 } else if (commandSplit[0].equals("read") || commandSplit[0].equals("r")) {
                     if (commandSplit.length == 1) {
-                        clientStub.readMessages();
+                        clientStub.readMessages(keyStorePath, passwordKeyStore);
                     } else {
                         System.out.println("Wrong command\n");
                     }

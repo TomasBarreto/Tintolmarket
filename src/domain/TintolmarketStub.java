@@ -15,7 +15,12 @@ import java.util.regex.Pattern;
 
 import src.interfaces.ITintolmarketStub;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.imageio.ImageIO;
+
 
 /**
  * TintolmarketStub class represents a stub to access the Tintolmarket server.
@@ -183,7 +188,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		Command cmd = new Command();
 		cmd.setCommand("view");
 		cmd.setWine(wine);
-		
+
 		try {
 			outStream.writeObject(0);
 			outStream.writeObject(cmd);
@@ -264,7 +269,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		Command cmd = new Command();
 		cmd.setCommand("wallet");
 		cmd.setUserReceiver(userID);
-		
+
 		try {
 			outStream.writeObject(0);
 			outStream.writeObject(cmd);
@@ -276,6 +281,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 			throw new RuntimeException(e);
 		}
 	}
+
 	/**
 	 * Sends a "classify" command to the server with the specified wine and star rating to classify.
 	 * Displays a message indicating whether the classification was successful or not.
@@ -287,7 +293,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		cmd.setCommand("classify");
 		cmd.setWine(wine);
 		cmd.setWineStars(stars);
-		
+
 		try {
 			outStream.writeObject(0);
 			outStream.writeObject(cmd);
@@ -306,12 +312,16 @@ public class TintolmarketStub implements ITintolmarketStub {
 	 * @param user the name of the user to send the message to
 	 * @param message the message to send
 	 */
-	public void sendMessage(String user, String message){
+	public void sendMessage(String user, String message, String trustStorePath, String trustStorePassword){
 		Command cmd = new Command();
 		cmd.setCommand("talk");
 		cmd.setUserReceiver(user);
-		cmd.setMessage(message);
-		
+		//cifrar a message com a public key do recetor
+
+		String messageEncrypted = encryptWithReceiverPublicKey(message, user, trustStorePath ,trustStorePassword);
+
+		cmd.setMessage(messageEncrypted);
+
 		try {
 			outStream.writeObject(0);
 			outStream.writeObject(cmd);
@@ -324,21 +334,108 @@ public class TintolmarketStub implements ITintolmarketStub {
 		}
 	}
 
+	private String encryptWithReceiverPublicKey(String message, String user, String trustStorePath, String trustStorePassword) {
+		try {
+			KeyStore keyStore = KeyStore.getInstance("JCEKS");
+			FileInputStream fis = new FileInputStream(trustStorePath);
+			keyStore.load(fis, trustStorePassword.toCharArray());
+
+			Certificate certificate = keyStore.getCertificate(user);
+			PublicKey pk = certificate.getPublicKey();
+
+			Cipher cipher = Cipher.getInstance("RSA");
+			cipher.init(Cipher.ENCRYPT_MODE, pk);
+
+			return cipher.doFinal(message.getBytes()).toString();
+
+
+		} catch (KeyStoreException e) {
+			throw new RuntimeException(e);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (CertificateException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchPaddingException e) {
+			throw new RuntimeException(e);
+		} catch (InvalidKeyException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalBlockSizeException e) {
+			throw new RuntimeException(e);
+		} catch (BadPaddingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/**
 	 * Sends a "read" command to the server and displays all messages addressed to the user.
 	 */
-	public void readMessages(){
+	public void readMessages(String trustStorePath, String trustStorePassword){
 		Command cmd = new Command();
 		cmd.setCommand("read");
-		
+
 		try {
 			outStream.writeObject(0);
 			outStream.writeObject(cmd);
-			System.out.println((String)inStream.readObject());
+			// decifrar a mensagem com a private key
+			String message = (String)inStream.readObject();
+			String [] lines = message.split("\n");
+			String result = "";
+			for (String line : lines){
+				String [] currentLine = line.split(":");
+				if(currentLine[0].equals("text")){
+					result = result + decryptWithPrivateKey(currentLine[1], trustStorePath, trustStorePassword);
+				}
+
+			}
+
+
+			System.out.println(result);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private String decryptWithPrivateKey(String message, String trustStorePath, String trustStorePassword) {
+		try {
+			KeyStore keyStore = KeyStore.getInstance("JCEKS");
+			FileInputStream fis = new FileInputStream(trustStorePath);
+			keyStore.load(fis, trustStorePassword.toCharArray());
+
+
+			PrivateKey pk = (PrivateKey) keyStore.getKey(userID, trustStorePassword.toCharArray());
+
+			Cipher cipher = Cipher.getInstance("RSA");
+			cipher.init(Cipher.DECRYPT_MODE, pk);
+
+			return cipher.doFinal(message.getBytes()).toString();
+
+
+		} catch (KeyStoreException e) {
+			throw new RuntimeException(e);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (CertificateException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchPaddingException e) {
+			throw new RuntimeException(e);
+		} catch (InvalidKeyException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalBlockSizeException e) {
+			throw new RuntimeException(e);
+		} catch (BadPaddingException e) {
+			throw new RuntimeException(e);
+		} catch (UnrecoverableKeyException e) {
 			throw new RuntimeException(e);
 		}
 	}

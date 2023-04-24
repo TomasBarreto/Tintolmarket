@@ -56,10 +56,10 @@ public interface ITintolmarketStub {
 	 * @param user The name of the user to send the message to.
 	 * @param message The message to send.
 	 */
-	public void sendMessage(String user, String message);
+	public void sendMessage(String user, String message, String trustStorePath, String trustStorePassword);
 
 	/**
 	 * Reads the user's messages.
 	 */
-	public void readMessages();
+	public void readMessages(String trustStorePath, String trustStorePassword);
 }
