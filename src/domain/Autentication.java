@@ -43,6 +43,7 @@ public class Autentication {
             System.out.println("ficheiro vazio");
 
         for(String line : fileStrings) {
+            System.out.println(line);
             String userAndPass[] = line.split(":");
 
             if (userAndPass[0].equals(userID)) {

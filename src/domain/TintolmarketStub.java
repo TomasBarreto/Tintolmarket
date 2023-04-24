@@ -346,9 +346,9 @@ public class TintolmarketStub implements ITintolmarketStub {
 			Cipher cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.ENCRYPT_MODE, pk);
 
-			return cipher.doFinal(message.getBytes()).toString();
+			cipher.update(message.getBytes());
 
-
+			return new String(cipher.doFinal());
 		} catch (KeyStoreException e) {
 			throw new RuntimeException(e);
 		} catch (FileNotFoundException e) {
@@ -408,15 +408,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 			FileInputStream fis = new FileInputStream(trustStorePath);
 			keyStore.load(fis, trustStorePassword.toCharArray());
 
-
 			PrivateKey pk = (PrivateKey) keyStore.getKey(userID, trustStorePassword.toCharArray());
 
 			Cipher cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.DECRYPT_MODE, pk);
 
 			return cipher.doFinal(message.getBytes()).toString();
-
-
 		} catch (KeyStoreException e) {
 			throw new RuntimeException(e);
 		} catch (FileNotFoundException e) {

@@ -130,7 +130,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 				FileOutputStream fos = new FileOutputStream(USERS, false);
 
 				for(int i = 0; i < lines.size(); i++){
-					fos.write(this.pbedUsers.encrypt(lines.get(i) + "\n"));
+					this.pbedUsers.encrypt(lines.get(i) + "\n");
 				}
 
 				fos.close();
