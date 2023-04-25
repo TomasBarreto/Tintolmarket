@@ -7,10 +7,12 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.util.Scanner;
+import java.util.*;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import src.interfaces.ITintolmarketStub;
@@ -319,7 +321,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 		//cifrar a message com a public key do recetor
 
 		String messageEncrypted = encryptWithReceiverPublicKey(message, user, trustStorePath ,trustStorePassword);
-
+		System.out.println(messageEncrypted);
 		cmd.setMessage(messageEncrypted);
 
 		try {
@@ -346,9 +348,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			Cipher cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.ENCRYPT_MODE, pk);
 
-			cipher.update(message.getBytes());
+			return Base64.getEncoder().encodeToString(cipher.doFinal(message.getBytes()));
 
-			return new String(cipher.doFinal());
 		} catch (KeyStoreException e) {
 			throw new RuntimeException(e);
 		} catch (FileNotFoundException e) {
@@ -382,16 +383,23 @@ public class TintolmarketStub implements ITintolmarketStub {
 			outStream.writeObject(cmd);
 			// decifrar a mensagem com a private key
 			String message = (String)inStream.readObject();
+			if (message.equals("There are no messages available\n")){
+				System.out.println(message);
+				return;
+			}
 			String [] lines = message.split("\n");
+
 			String result = "";
+
 			for (String line : lines){
 				String [] currentLine = line.split(":");
+
 				if(currentLine[0].equals("text")){
-					result = result + decryptWithPrivateKey(currentLine[1], trustStorePath, trustStorePassword);
-				}
+					result = result + "text: " + decryptWithPrivateKey(currentLine[1].substring(1), trustStorePath, trustStorePassword) + "\n";
+				}else
+					result = result + line + "\n";
 
 			}
-
 
 			System.out.println(result);
 
@@ -413,7 +421,9 @@ public class TintolmarketStub implements ITintolmarketStub {
 			Cipher cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.DECRYPT_MODE, pk);
 
-			return cipher.doFinal(message.getBytes()).toString();
+			byte [] messageBytes = Base64.getDecoder().decode(message.getBytes(StandardCharsets.UTF_8));
+
+			return new String(cipher.doFinal(messageBytes), StandardCharsets.UTF_8);
 		} catch (KeyStoreException e) {
 			throw new RuntimeException(e);
 		} catch (FileNotFoundException e) {
@@ -435,6 +445,13 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (UnrecoverableKeyException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private byte[] concatenateByteArrays(byte[] a, byte[] b) {
+		byte[] result = new byte[a.length + b.length];
+		System.arraycopy(a, 0, result, 0, a.length);
+		System.arraycopy(b, 0, result, a.length, b.length);
+		return result;
 	}
 
 	/**
