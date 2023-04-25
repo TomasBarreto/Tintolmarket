@@ -103,7 +103,7 @@ public class PBEDUsers {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InvalidAlgorithmParameterException e) {
-            throw new RuntimeException(e);
+            x
         }
 
     }

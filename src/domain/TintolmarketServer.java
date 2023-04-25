@@ -121,9 +121,6 @@ public class TintolmarketServer {
 
                     isTrueClient = signature.verify(signedNonce);
 
-                    System.out.println(nonce.toString());
-                    System.out.println(ByteBuffer.wrap(signedNonce).getLong());
-
                     if (isTrueClient) {
                         System.out.println("Client connected");
                         serverSkel.addUser(userID);
