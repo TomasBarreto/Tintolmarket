@@ -321,7 +321,6 @@ public class TintolmarketStub implements ITintolmarketStub {
 		//cifrar a message com a public key do recetor
 
 		String messageEncrypted = encryptWithReceiverPublicKey(message, user, trustStorePath ,trustStorePassword);
-		System.out.println(messageEncrypted);
 		cmd.setMessage(messageEncrypted);
 
 		try {
