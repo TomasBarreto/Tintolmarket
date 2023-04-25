@@ -158,7 +158,7 @@ public class TintolmarketServer {
                             fos.write(certificate.getEncoded());
                             fos.close();
 
-                            String toWrite = userID + ":" + "certs/" + userID + ".cer:200\n";
+                            String toWrite = userID + ":" + "certs/" + userID + ".cer:200";
                             this.pbedUsers.encrypt(toWrite);
                         } catch (Exception e) {
                             System.out.println("File was not created");

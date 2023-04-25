@@ -143,6 +143,8 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 				System.out.println("Users file not found\n");
 			} catch (IOException e) {
 				throw new RuntimeException(e);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		}
 

@@ -1,25 +1,33 @@
 package src.domain;
 
 import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 public class PBEDUsers {
 
     private final String USERS = "users.cif";
     private final int INTERATION_COUNT = 20;
-    private final byte[] SALT = {(byte) 0xc9, (byte) 0x36, (byte) 0x78, (byte) 0x99, (byte) 0x52, (byte) 0x3e, (byte) 0xea, (byte) 0xf2, (byte) 0xc9, (byte) 0x36, (byte) 0x78, (byte) 0x99, (byte) 0x52, (byte) 0x3e, (byte) 0xea, (byte) 0xf2};
+    private final byte[] SALT = {(byte) 0xc9, (byte) 0x36, (byte) 0x78, (byte) 0x99, (byte) 0x52, (byte) 0x3e, (byte) 0xea, (byte) 0xf2};
     private SecretKey key;
-    private Cipher encrypt;
-    private Cipher decrypt;
     private String password;
+    private PBEParameterSpec pbeParameterSpec;
+
+    private final byte[] IV = {(byte) 0xc9, (byte) 0x36, (byte) 0x78, (byte) 0x99, (byte) 0x52, (byte) 0x3e, (byte) 0xea, (byte) 0xf2, (byte) 0xc9, (byte) 0x36, (byte) 0x78, (byte) 0x99, (byte) 0x52, (byte) 0x3e, (byte) 0xea, (byte) 0xf2};
+
+    private FileWriter fileWriter;
+    private BufferedWriter writer;
 
     public PBEDUsers(String password, String keystorePath, String keystorePass) {
 
@@ -50,18 +58,14 @@ public class PBEDUsers {
                 keyStore.store(fos, password.toCharArray());
             }
 
-            this.encrypt = Cipher.getInstance("PBEWithHmacSHA256AndAES_128/CBC/PKCS5Padding");
-            this.encrypt.init(Cipher.ENCRYPT_MODE, key);
+            this.pbeParameterSpec = new PBEParameterSpec(SALT, INTERATION_COUNT, new IvParameterSpec(IV));
 
-            this.decrypt = Cipher.getInstance("PBEWithHmacSHA256AndAES_128/CBC/PKCS5Padding");
-            this.decrypt.init(Cipher.DECRYPT_MODE, this.key, this.encrypt.getParameters());
+            this.fileWriter = new FileWriter("users.cif", true);
+            this.writer = new BufferedWriter(this.fileWriter);
+
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
-        } catch (NoSuchPaddingException e) {
-            throw new RuntimeException(e);
         } catch (InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -71,54 +75,73 @@ public class PBEDUsers {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void encrypt(String newLine) {
+
+        try {
+            Cipher encrypt = Cipher.getInstance("PBEWithHmacSHA256AndAES_128");
+            encrypt.init(Cipher.ENCRYPT_MODE, this.key, this.pbeParameterSpec);
+
+            String result = Base64.getEncoder().encodeToString(encrypt.doFinal(newLine.getBytes()));
+
+            FileWriter fw = new FileWriter("users.cif", true);
+            fw.write(result + '\n');
+            fw.close();
+
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalBlockSizeException e) {
+            throw new RuntimeException(e);
+        } catch (BadPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } catch (InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         }
+
     }
 
-    public synchronized void encrypt(String newLine) {
-        try {
-            CipherOutputStream out = new CipherOutputStream(new FileOutputStream("users.cif", true), this.encrypt);
-
-            out.write(newLine.getBytes());
-
-            out.close();
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public synchronized List<String> decrypt() {
+    public List<String> decrypt() {
 
         try {
-            CipherInputStream in = new CipherInputStream(new FileInputStream("users.cif"), this.decrypt);
-
-            String fileContent = new String(in.readAllBytes());
-
-            in.close();
-
-            System.out.println(fileContent);
-
             List<String> result = new ArrayList<>();
-            StringBuilder sb = new StringBuilder();
 
-            for(char c : fileContent.toCharArray())
-                if(c == '\n') {
-                    result.add(sb.toString());
-                    sb.delete(0, sb.length());
-                }
-                else
-                    sb.append(c);
+            Cipher decrypt = Cipher.getInstance("PBEWithHmacSHA256AndAES_128");
+            decrypt.init(Cipher.DECRYPT_MODE, this.key, this.pbeParameterSpec);
+
+            BufferedReader br = new BufferedReader(new FileReader("users.cif"));
+            String line = "";
+
+            while ((line = br.readLine()) != null) {
+                byte [] lineBytes = Base64.getDecoder().decode(line.getBytes(StandardCharsets.UTF_8));
+                result.add(new String(decrypt.doFinal(lineBytes), StandardCharsets.UTF_8));
+            }
 
             return result;
-
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidAlgorithmParameterException e) {
+            throw new RuntimeException(e);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (IllegalBlockSizeException e) {
+            throw new RuntimeException(e);
+        } catch (BadPaddingException e) {
+            throw new RuntimeException(e);
         }
+
     }
 }
