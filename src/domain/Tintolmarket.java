@@ -156,7 +156,12 @@ public class Tintolmarket {
                             message = message + commandSplit[i] + " ";
                         }
                         message = message + "\n";
-                        clientStub.sendMessage(commandSplit[1], message, trustStorePath, passwordKeyStore);
+                        try{
+                            clientStub.sendMessage(commandSplit[1], message, trustStorePath, passwordKeyStore);
+                        } catch (NullPointerException e){
+                            System.out.println("User does not exists in the system \n");
+                        }
+
                     } else {
                         System.out.println("Wrong command\n");
                     }
