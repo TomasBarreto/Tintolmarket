@@ -137,7 +137,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 			cmd.setImageBuffer(bytes);
 
 			try {
-				outStream.writeInt(0);
+				outStream.writeObject(0);
 				outStream.writeObject(cmd);
 				System.out.println((String)inStream.readObject());
 
