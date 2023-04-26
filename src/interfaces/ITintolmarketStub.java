@@ -60,6 +60,8 @@ public interface ITintolmarketStub {
 
 	/**
 	 * Reads the user's messages.
+	 * @param trustStorePath the path to the trust store file
+	 * @param trustStorePassword the password to access the trust store
 	 */
 	public void readMessages(String trustStorePath, String trustStorePassword);
 }

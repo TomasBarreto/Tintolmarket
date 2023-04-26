@@ -21,11 +21,13 @@ public class Tintolmarket {
 
     /**
      * Initializes the Tintolmarket system by connecting to the server and authenticating the user.
-     * @param serverAdress the address of the server to connect to
-     * @param userID the user ID to authenticate with
-     * @param passWord the password to authenticate with
-     * @throws IOException if there's an I/O error while communicating with the server
-     * @throws ClassNotFoundException if the TintolmarketStub class is not found
+     * @param serverAdress The address of the server to connect to.
+     * @param trustStore The path of the truststore file.
+     * @param keyStore The path of the keystore file.
+     * @param passwordKeyStore The password for the keystore file.
+     * @param userID The user ID to authenticate with.
+     * @throws IOException If there's an I/O error while communicating with the server.
+     * @throws ClassNotFoundException If the TintolmarketStub class is not found.
      */
     public Tintolmarket(String serverAdress, String trustStore, String keyStore, String passwordKeyStore, String userID) throws IOException, ClassNotFoundException {
         String serverAndPort[] = serverAdress.split(":");
@@ -156,7 +158,12 @@ public class Tintolmarket {
                             message = message + commandSplit[i] + " ";
                         }
                         message = message + "\n";
-                        clientStub.sendMessage(commandSplit[1], message, trustStorePath, passwordKeyStore);
+                        try{
+                            clientStub.sendMessage(commandSplit[1], message, trustStorePath, passwordKeyStore);
+                        } catch (NullPointerException e){
+                            System.out.println("User does not exists in the system \n");
+                        }
+
                     } else {
                         System.out.println("Wrong command\n");
                     }

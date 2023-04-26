@@ -313,6 +313,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 	 * Displays a message indicating whether the message was sent successfully or not.
 	 * @param user the name of the user to send the message to
 	 * @param message the message to send
+	 * @param trustStorePath the path to the truststore file containing the receiver's public key
+	 * @param trustStorePassword the password to access the truststore file
 	 */
 	public void sendMessage(String user, String message, String trustStorePath, String trustStorePassword){
 		Command cmd = new Command();
@@ -335,6 +337,15 @@ public class TintolmarketStub implements ITintolmarketStub {
 		}
 	}
 
+	/**
+	 * Encrypts the specified message using the public key of the receiver.
+	 * @param message the message to be encrypted
+	 * @param user the name of the receiver user whose public key will be used for encryption
+	 * @param trustStorePath the path of the truststore file containing the receiver's public key
+	 * @param trustStorePassword the password to access the truststore file
+	 * @return the encrypted message as a Base64-encoded string
+	 * @throws RuntimeException if an error occurs during the encryption process
+	 */
 	private String encryptWithReceiverPublicKey(String message, String user, String trustStorePath, String trustStorePassword) {
 		try {
 			KeyStore keyStore = KeyStore.getInstance("JCEKS");
@@ -372,6 +383,9 @@ public class TintolmarketStub implements ITintolmarketStub {
 
 	/**
 	 * Sends a "read" command to the server and displays all messages addressed to the user.
+	 Decrypts the messages with the user's private key before displaying them.
+	 * @param trustStorePath the path to the truststore containing the user's private key
+	 * @param trustStorePassword the password to the truststore
 	 */
 	public void readMessages(String trustStorePath, String trustStorePassword){
 		Command cmd = new Command();
@@ -409,6 +423,13 @@ public class TintolmarketStub implements ITintolmarketStub {
 		}
 	}
 
+	/**
+	 * Decrypts a message with the user's private key.
+	 * @param message the message to be decrypted
+	 * @param trustStorePath the path to the truststore file containing the user's private key
+	 * @param trustStorePassword the password for the truststore file
+	 * @return the decrypted message
+	 */
 	private String decryptWithPrivateKey(String message, String trustStorePath, String trustStorePassword) {
 		try {
 			KeyStore keyStore = KeyStore.getInstance("JCEKS");
@@ -446,6 +467,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 		}
 	}
 
+	/**
+	 * Concatenates two byte arrays into a single byte array.
+	 * @param a the first byte array
+	 * @param b the second byte array
+	 * @return a byte array resulting from the concatenation of a and b
+	 */
 	private byte[] concatenateByteArrays(byte[] a, byte[] b) {
 		byte[] result = new byte[a.length + b.length];
 		System.arraycopy(a, 0, result, 0, a.length);
@@ -468,6 +495,14 @@ public class TintolmarketStub implements ITintolmarketStub {
 		}
 	}
 
+	/**
+	 * Signs a command object using the private key associated with the user and returns the resulting signed object.
+	 * @param cmd The command object to be signed.
+	 * @param keyStorePath The path to the key store file.
+	 * @param keyStorePass The password to access the key store.
+	 * @return The signed object.
+	 * @throws RuntimeException If there is an error accessing the key store or signing the object.
+	 */
 	private SignedObject signedObject(Command cmd, String keyStorePath, String keyStorePass) {
 
 		try {
@@ -500,8 +535,9 @@ public class TintolmarketStub implements ITintolmarketStub {
 
 	}
 
+
 	/**
-	 * Obtêm a lista de todas as transações já efetuadas
+	 * Sends a "list" command to the server and prints the list of all transactions.
 	 */
 	public void getList() {
 		Command cmd = new Command();
@@ -517,6 +553,4 @@ public class TintolmarketStub implements ITintolmarketStub {
 			throw new RuntimeException(e);
 		}
 	}
-
-
 }

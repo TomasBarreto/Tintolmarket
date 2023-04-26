@@ -71,6 +71,8 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	 * @param value The price of the wine.
 	 * @param quantity The quantity of the wine.
 	 * @param seller The name of the seller.
+	 * @param keyStorePath The path of the keystore file.
+	 * @param keyStorePass The password for the keystore file.
 	 * @return A message indicating whether the wine was successfully put up for sale or if it doesn't exist in the catalog.
 	 */
 	public synchronized String sellWine(String wine, int value, int quantity, String seller, String keyStorePath, String keyStorePass) {
@@ -102,6 +104,8 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	 * @param seller The name of the seller.
 	 * @param quantity The quantity of the wine to buy.
 	 * @param userID The ID of the buyer.
+	 * @param keyStorePath The path of the keystore file.
+	 * @param keyStorePass The password for the keystore file.
 	 * @return A message indicating whether the purchase was successful and updating the wallets of the buyer and seller.
 	 */
 	public synchronized String buyWine(String wine, String seller, int quantity, String userID, String keyStorePath, String keyStorePass) {
@@ -316,6 +320,13 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return this.wineCat.getWineUrl(wine);
 	}
 
+	/**
+	 * Write a new transaction in a block.
+	 * @param transaction a String representing the transaction to be added.
+	 * @param keyStorePath a String representing the path to the keystore file.
+	 * @param keyStorePass a String representing the password to the keystore file.
+	 * @throws RuntimeException if there is an issue with file input/output or if there is an issue with the message digest algorithm.
+	 */
 	private void writeTransaction(String transaction, String keyStorePath, String keyStorePass) {
 		String currentBlockPath = "logs/block_" + this.currentBlock + ".blk";
 
@@ -379,6 +390,14 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 
+	/**
+	 * Signs a Block using the private key from the keystore located in the given path and with the given password.
+	 * @param block the Block to sign.
+	 * @param keyStorePath the path to the keystore file.
+	 * @param keyStorePass the password to access the keystore.
+	 * @return a SignedObject containing the signed Block object.
+	 * @throws RuntimeException if there is an error accessing or reading the keystore, retrieving the private key, creating the signature, or signing the object.
+	 */
 	private SignedObject signedObject(Block block, String keyStorePath, String keyStorePass) {
 
 		try {
@@ -410,7 +429,13 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		}
 	}
 
-	public String getAllTransactions(String keyStorePath, String keyStorePass) {
+	/**
+	 * Returns a string with all transactions stored in the blockchain.
+	 * @param keyStorePath the path to the keystore file
+	 * @param keyStorePass the password to access the keystore file
+	 * @return a string with all transactions stored in the blockchain
+	*/
+ 	public String getAllTransactions(String keyStorePath, String keyStorePass) {
 		List<String> transactions = new ArrayList<>();
 
 		try {
@@ -449,6 +474,15 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 		return sb.toString();
 	}
 
+	/**
+	 * Verifies a SignedObject containing a Block by checking its signature against the server's public
+	 key in the keystore.
+	 * @param signedBlock the SignedObject to be verified.
+	 * @param keyStorePath the file path to the keystore containing the server's public key.
+	 * @param keyStorePass the password to access the keystore.
+	 * @return the Block object if the signature is valid.
+	 * @throws RuntimeException if the signature is invalid or if there's an error in the verification process.
+	 */
 	private Block verifySignedObject(SignedObject signedBlock, String keyStorePath, String keyStorePass) {
 		try {
 			FileInputStream fs = new FileInputStream(keyStorePath);

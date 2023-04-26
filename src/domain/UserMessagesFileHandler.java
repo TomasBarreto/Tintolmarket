@@ -34,7 +34,7 @@ public class UserMessagesFileHandler {
         try{
             switch (cmd.getCommand()){
                 case "addMsg":
-                    String message = "From:" + cmd.getUser() + ":Receiver:" + cmd.getUserReceiver() + ":Message:" + cmd.getMessage();
+                    String message = "From:" + cmd.getUser() + ":Receiver:" + cmd.getUserReceiver() + ":Message:" + cmd.getMessage() + "\n";
                     FileWriter fw1 = new FileWriter(MESSAGES_FILE, true);
                     BufferedWriter bw1 = new BufferedWriter(fw1);
                     bw1.write(message);
