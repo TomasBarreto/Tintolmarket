@@ -15,6 +15,9 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
+/**
+ * Class responsible for encrypting and decrypting users data using PBE encryption.
+ */
 public class PBEDUsers {
 
     private final String USERS = "users.cif";
@@ -29,6 +32,13 @@ public class PBEDUsers {
     private FileWriter fileWriter;
     private BufferedWriter writer;
 
+    /**
+     * Constructor for PBEDUsers. Initializes the secret key from keystore if it exists, or generates a new one if it doesn't.
+     * Also initializes the PBEParameterSpec, FileWriter and BufferedWriter.
+     * @param password The password for the secret key.
+     * @param keystorePath The path of the keystore file.
+     * @param keystorePass The password for the keystore file.
+     */
     public PBEDUsers(String password, String keystorePath, String keystorePass) {
 
         try {
@@ -78,6 +88,11 @@ public class PBEDUsers {
         }
     }
 
+    /**
+     * Encrypts the given string and writes it to the "users.cif" file.
+     * @param newLine The string to be encrypted and written to the file.
+     * @throws RuntimeException if there is an error during the encryption or file writing process.
+     */
     public void encrypt(String newLine) {
 
         try {
@@ -108,6 +123,11 @@ public class PBEDUsers {
 
     }
 
+    /**
+     * Decrypts the strings in the "users.cif" file and returns them as a list of strings.
+     * @return A list of decrypted strings read from the "users.cif" file.
+     * @throws RuntimeException if there is an error during the decryption or file reading process.
+     */
     public List<String> decrypt() {
 
         try {

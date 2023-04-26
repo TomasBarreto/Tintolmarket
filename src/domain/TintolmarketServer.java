@@ -69,9 +69,12 @@ public class TintolmarketServer {
         private String keyStorePass;
 
         /**
-         * Creates a new ServerThread object with the given socket and list of threads.
-         * @param inSoc the socket to communicate with the client.
-         * @param threadList the list of threads.
+         * Constructs an instance of SSLSimpleServer.
+         * @param inSoc Socket object to be used for communication.
+         * @param threadList ArrayList of SSLSimpleServer objects to maintain a list of active threads.
+         * @param pbedUsers PBEDUsers object to access the user information.
+         * @param keyStorePath Path of the keystore file.
+         * @param keyStorePass Password for the keystore file.
          */
         SSLSimpleServer(Socket inSoc, ArrayList<SSLSimpleServer> threadList, PBEDUsers pbedUsers, String keyStorePath, String keyStorePass) {
             this.socket = inSoc;
@@ -253,6 +256,12 @@ public class TintolmarketServer {
             }
         }
 
+        /**
+         * Retrieves the certificate from the specified file path.
+         * @param certificatePath the path to the X.509 certificate file
+         * @return the certificate object
+         * @throws RuntimeException if the certificate file is not found, cannot be parsed, or there is an I/O error
+         */
         private Certificate getUserCerticate(String certificatePath) {
             try {
                 FileInputStream fis = new FileInputStream(certificatePath);
@@ -383,6 +392,16 @@ public class TintolmarketServer {
             }
     }
 
+    /**
+     * This method verifies the blockchain by checking if all the blocks in the chain are valid.
+     It reads the current block number from the file "currBlk" and iterates through all the
+     blocks from 1 to the last block number, calling the verifyBlock method to validate each block.
+     If any of the blocks is found to be invalid, this method returns false.
+     * @param keyStorePath The path of the keystore file containing the public key used for signature verification
+     * @param keyStorePass The password for accessing the keystore
+     * @return true if all the blocks in the blockchain are valid, false otherwise
+     * @throws RuntimeException if any exception occurs while executing the method
+     */
     private static boolean verifyBlockChain(String keyStorePath, String keyStorePass) {
 
         int lastBlock = 0;
@@ -406,6 +425,20 @@ public class TintolmarketServer {
         return true;
     }
 
+    /**
+     * This method verifies a single block in the blockchain. It reads the block and its successor
+     (if any) from the corresponding block files and computes the hash of the current block using
+     SHA-256. It then compares the computed hash with the hash of the next block. If the hashes
+     do not match, the block is considered invalid. If the block is the first one, it also checks
+     if the hash is equal to "00000000". Finally, it verifies the signature of the block using
+     the public key stored in the keystore file.
+     * @param blockIndex The index of the block to be verified
+     * @param lastBlock The index of the last block in the chain
+     * @param keyStorePath The path of the keystore file containing the public key used for signature verification
+     * @param keyStorePass The password for accessing the keystore
+     * @return true if the block is valid, false otherwise
+     * @throws RuntimeException if any exception occurs while executing the method
+     */
     private static boolean verifyBlock(int blockIndex, int lastBlock, String keyStorePath, String keyStorePass) {
 
         String alias = "server";

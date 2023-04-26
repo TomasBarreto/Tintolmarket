@@ -60,7 +60,11 @@ public class Rating {
         this.counter ++;
         this.rating = this.starsSum / this.counter;
     }
-    
+
+    /**
+     * Returns the rating of the wine.
+     * @return the rating of the wine as a float value.
+     */
     public float getRating() {
     	return this.rating;
     }
