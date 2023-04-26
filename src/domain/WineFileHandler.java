@@ -44,6 +44,8 @@ public class WineFileHandler {
                 						bw1.close();
                 						fw1.close();
 
+										new HMacHandler().updateHMac(WINE_CAT_FILE);
+
 					                    break;
 
                 case "updateSellerStats":	Scanner sc2 = new Scanner(this.wineSellers);
@@ -73,6 +75,8 @@ public class WineFileHandler {
                 							sc2.close();
                 							fw2.close();
 
+											new HMacHandler().updateHMac(WINE_SELLERS_FILE);
+
                     						break;
                     					
                 case "addSeller":		FileWriter fw4 = new FileWriter(WINE_SELLERS_FILE, true);
@@ -83,6 +87,9 @@ public class WineFileHandler {
 
 										bw4.close();
 										fw4.close();
+
+										new HMacHandler().updateHMac(WINE_SELLERS_FILE);
+
                     					break;
                     					
                 case "updateRating":	Scanner sc5 = new Scanner(this.wineCat);
@@ -111,6 +118,9 @@ public class WineFileHandler {
 
 										fw5.close();
 										sc5.close();
+
+										new HMacHandler().updateHMac(WINE_CAT_FILE);
+
 										break;
                     					
                 default:                break;

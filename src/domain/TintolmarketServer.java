@@ -325,6 +325,7 @@ public class TintolmarketServer {
         String imgsDir = "imgs";
         String logs = "logs";
         String currentBlk = "currBlk";
+        String certsDir = "certs";
         String hmacFile = "hmac.hmac";
 
         String pass = "hmacpassword";
@@ -362,6 +363,8 @@ public class TintolmarketServer {
             return false;
 
         createDirectory(imgsDir);
+
+        createDirectory(certsDir);
 
         if(!new File(logs).exists())
             try {

@@ -105,6 +105,7 @@ public class PBEDUsers {
             fw.write(result + '\n');
             fw.close();
 
+            new HMacHandler().updateHMac("users.cif");
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         } catch (NoSuchPaddingException e) {

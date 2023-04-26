@@ -346,6 +346,8 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 
 				fw2.close();
 
+				new HMacHandler().updateHMac(CURR_BLOCK_FILE);
+
 				SignedObject signedBlock = signedObject(block, keyStorePath, keyStorePass);
 
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
