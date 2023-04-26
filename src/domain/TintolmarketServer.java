@@ -1,8 +1,10 @@
 package src.domain;
 
+import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -16,10 +18,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * The TintolmarketServer class represents a server for a wine market.
@@ -39,23 +38,23 @@ public class TintolmarketServer {
      * @param args command line arguments. The first argument is the port number.
      */
     public static void main(String[] args) {
-        
-        createDirectories();
-        TintolmarketServer server = null;
+
+        if(createDirectoriesAndFiles()) {
+            TintolmarketServer server = null;
 
             if (args.length == 4) {
-                if(verifyBlockChain("keystoreServer/" + args[2], args[3])) {
+                if (verifyBlockChain("keystoreServer/" + args[2], args[3])) {
                     int port = Integer.parseInt(args[0]);
                     server = new TintolmarketServer(port, args[1], args[2], args[3]);
-                }
-                else
+                } else
                     System.out.println("Blockchain is corrupted");
             } else {
-                if(verifyBlockChain("keystoreServer/" + args[1], args[2]))
+                if (verifyBlockChain("keystoreServer/" + args[1], args[2]))
                     server = new TintolmarketServer(12345, args[0], args[1], args[2]);
                 else
                     System.out.println("Blockchain is corrupted");
             }
+        }
     }
 
     /**
@@ -308,7 +307,7 @@ public class TintolmarketServer {
     /**
      * This method creates the necessary directories for the server.
      */
-    private static void createDirectories() {
+    private static boolean createDirectoriesAndFiles() {
 
         String users = "users.cif";
         String wine_cat = "wine_cat";
@@ -317,55 +316,43 @@ public class TintolmarketServer {
         String imgsDir = "imgs";
         String logs = "logs";
         String currentBlk = "currBlk";
+        String hmacFile = "hmac.hmac";
 
-        if(!new File(users).exists()) {
+        String pass = "hmacpassword";
+
+        Key key = new SecretKeySpec(pass.getBytes(), "HmacSHA256");
+        Mac mac = null;
+        try {
+            mac = Mac.getInstance("HmacSHA256");
+            mac.init(key);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(!new File(hmacFile).exists()) {
             try {
-                new File(users).createNewFile();
+                new File(hmacFile).createNewFile();
             } catch (IOException e) {
                 System.out.println("File was not created");
             }
         }
 
-        if(!new File(wine_cat).exists()) {
-            try {
-                new File(wine_cat).createNewFile();
-            } catch (IOException e) {
-                System.out.println("File was not created");
-            }
-        }
+        if(!createFile(users, 1, mac, hmacFile))
+            return false;
 
-        if(!new File(wine_sellers).exists()) {
-            try {
-                new File(wine_sellers).createNewFile();
-            } catch (IOException e) {
-                System.out.println("File was not created");
-            }
-        }
+        if(!createFile(wine_cat, 2, mac, hmacFile))
+            return false;
 
-        if(!new File(messages).exists()) {
-            try {
-                new File(messages).createNewFile();
-            } catch (IOException e) {
-                System.out.println("File was not created");
-            }
-        }
+        if(!createFile(wine_sellers, 3, mac, hmacFile))
+            return false;
 
-        if(!new File(imgsDir).exists())
-            try {
-                new File(imgsDir).mkdir();
-            } catch (Exception e) {
-                System.out.println("Directory was not created");
-            }
+        if(!createFile(messages, 4, mac, hmacFile))
+            return false;
 
-        if(!new File(currentBlk).exists())
-            try {
-                new File(currentBlk).createNewFile();
-                FileWriter fw = new FileWriter(currentBlk);
-                fw.write("1");
-                fw.close();
-            } catch (Exception e) {
-                System.out.println("File was not created");
-            }
+        if(!createFile(currentBlk, 5, mac, hmacFile))
+            return false;
+
+        createDirectory(imgsDir);
 
         if(!new File(logs).exists())
             try {
@@ -378,6 +365,65 @@ public class TintolmarketServer {
                 ObjectOutputStream out3 = new ObjectOutputStream(fos2);
                 out3.writeObject(newBlock);
 
+            } catch (Exception e) {
+                System.out.println("Directory was not created");
+            }
+
+        return true;
+    }
+
+    private static boolean createFile(String fileName, int hmacLine, Mac mac, String hmacFile) {
+        if(!new File(fileName).exists()) {
+            try {
+                new File(fileName).createNewFile();
+
+                if(fileName.equals("currBlk")) {
+                    FileWriter fw = new FileWriter(fileName);
+                    fw.write("1");
+                    fw.close();
+                }
+
+                BufferedWriter bw = new BufferedWriter(new FileWriter(hmacFile, true));
+
+                bw.write(Base64.getEncoder().encodeToString(mac.doFinal(new FileInputStream(fileName).readAllBytes())) + "\n");
+
+                bw.close();
+            } catch (IOException e) {
+                System.out.println("File was not created");
+            }
+        }
+        else {
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(hmacFile));
+
+                String hmacFromFile = "";
+
+                for(int i = 0; i < hmacLine; i++) {
+                    hmacFromFile = br.readLine();
+                }
+
+                br.close();
+
+                String currentHmac = Base64.getEncoder().encodeToString(mac.doFinal(new FileInputStream(fileName).readAllBytes()));
+
+                if(!hmacFromFile.equals(currentHmac)) {
+                    System.out.println("File integrity violated!");
+                    return false;
+                }
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return true;
+    }
+
+    private static void createDirectory(String directoryName) {
+        if(!new File(directoryName).exists())
+            try {
+                new File(directoryName).mkdir();
             } catch (Exception e) {
                 System.out.println("Directory was not created");
             }

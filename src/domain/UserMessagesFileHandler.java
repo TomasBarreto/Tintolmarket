@@ -40,6 +40,9 @@ public class UserMessagesFileHandler {
                     bw1.write(message);
                     bw1.close();
                     fw1.close();
+
+                    new HMacHandler().updateHMac(MESSAGES_FILE);
+
                     break;
 
                 case "removeMsg":
@@ -61,6 +64,8 @@ public class UserMessagesFileHandler {
                     }
                     fw2.close();
                     sc.close();
+
+                    new HMacHandler().updateHMac(MESSAGES_FILE);
 
                     break;
 
