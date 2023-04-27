@@ -24,13 +24,9 @@ public class PBEDUsers {
     private final int INTERATION_COUNT = 20;
     private final byte[] SALT = {(byte) 0xc9, (byte) 0x36, (byte) 0x78, (byte) 0x99, (byte) 0x52, (byte) 0x3e, (byte) 0xea, (byte) 0xf2};
     private SecretKey key;
-    private String password;
-    private PBEParameterSpec pbeParameterSpec;
 
     private final byte[] IV = {(byte) 0xc9, (byte) 0x36, (byte) 0x78, (byte) 0x99, (byte) 0x52, (byte) 0x3e, (byte) 0xea, (byte) 0xf2, (byte) 0xc9, (byte) 0x36, (byte) 0x78, (byte) 0x99, (byte) 0x52, (byte) 0x3e, (byte) 0xea, (byte) 0xf2};
 
-    private FileWriter fileWriter;
-    private BufferedWriter writer;
 
     /**
      * Constructor for PBEDUsers. Initializes the secret key from keystore if it exists, or generates a new one if it doesn't.
@@ -43,8 +39,6 @@ public class PBEDUsers {
     public PBEDUsers(String password, String keystorePath, String keystorePass) {
 
         try {
-
-            this.password = password;
 
             KeyStore keyStore = KeyStore.getInstance("JCEKS");
             FileInputStream fis = new FileInputStream(keystorePath);
@@ -68,10 +62,7 @@ public class PBEDUsers {
                 FileOutputStream fos = new FileOutputStream(keystorePath);
                 keyStore.store(fos, password.toCharArray());
             }
-
-            this.fileWriter = new FileWriter("users.cif", true);
-            this.writer = new BufferedWriter(this.fileWriter);
-
+            
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         } catch (InvalidKeySpecException e) {
