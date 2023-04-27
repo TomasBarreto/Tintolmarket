@@ -314,7 +314,8 @@ public class TintolmarketServer {
     }
 
     /**
-     * This method creates the necessary directories for the server.
+     * This method creates directories and files required for the system to function.
+     * @return true if all directories and files are successfully created, false otherwise
      */
     private static boolean createDirectoriesAndFiles() {
 
@@ -384,6 +385,15 @@ public class TintolmarketServer {
         return true;
     }
 
+    /**
+     * This method creates a new file or verifies the integrity of an existing one, by calculating
+     its HMAC and comparing it to the HMAC stored in a separate HMAC file.
+     * @param fileName the name of the file to be created or verified
+     * @param hmacLine the line number in the HMAC file where the corresponding HMAC is stored
+     * @param mac the Mac object used to calculate the HMAC
+     * @param hmacFile the name of the file where HMACs are stored
+     * @return true if the file is successfully created or verified, false otherwise
+     */
     private static boolean createFile(String fileName, int hmacLine, Mac mac, String hmacFile) {
         if(!new File(fileName).exists()) {
             try {
@@ -432,6 +442,10 @@ public class TintolmarketServer {
         return true;
     }
 
+    /**
+     * This method creates a new directory with the specified name if it does not already exist.
+     * @param directoryName the name of the directory to be created
+     */
     private static void createDirectory(String directoryName) {
         if(!new File(directoryName).exists())
             try {
