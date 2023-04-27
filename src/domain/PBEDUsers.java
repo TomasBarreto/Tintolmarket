@@ -35,7 +35,8 @@ public class PBEDUsers {
     /**
      * Constructor for PBEDUsers. Initializes the secret key from keystore if it exists, or generates a new one if it doesn't.
      * Also initializes the PBEParameterSpec, FileWriter and BufferedWriter.
-     * @param password The password for the secret key.
+     *
+     * @param password     The password for the secret key.
      * @param keystorePath The path of the keystore file.
      * @param keystorePass The password for the keystore file.
      */
@@ -55,7 +56,7 @@ public class PBEDUsers {
                 throw new RuntimeException(e);
             }
 
-            if(this.key == null) {
+            if (this.key == null) {
                 PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(), SALT, INTERATION_COUNT, 128);
                 SecretKeyFactory kf = SecretKeyFactory.getInstance("PBEWithHmacSHA256AndAES_128");
                 this.key = kf.generateSecret(keySpec);
@@ -67,8 +68,6 @@ public class PBEDUsers {
                 FileOutputStream fos = new FileOutputStream(keystorePath);
                 keyStore.store(fos, password.toCharArray());
             }
-
-            this.pbeParameterSpec = new PBEParameterSpec(SALT, INTERATION_COUNT, new IvParameterSpec(IV));
 
             this.fileWriter = new FileWriter("users.cif", true);
             this.writer = new BufferedWriter(this.fileWriter);
@@ -90,20 +89,42 @@ public class PBEDUsers {
 
     /**
      * Encrypts the given string and writes it to the "users.cif" file.
+     *
      * @param newLine The string to be encrypted and written to the file.
      * @throws RuntimeException if there is an error during the encryption or file writing process.
      */
     public void encrypt(String newLine) {
 
         try {
+            List<String> allLines = decrypt();
+
             Cipher encrypt = Cipher.getInstance("PBEWithHmacSHA256AndAES_128");
-            encrypt.init(Cipher.ENCRYPT_MODE, this.key, this.pbeParameterSpec);
+            encrypt.init(Cipher.ENCRYPT_MODE, this.key);
 
-            String result = Base64.getEncoder().encodeToString(encrypt.doFinal(newLine.getBytes()));
+            CipherOutputStream out = new CipherOutputStream(new FileOutputStream("users.cif"), encrypt);
 
-            FileWriter fw = new FileWriter("users.cif", true);
-            fw.write(result + '\n');
-            fw.close();
+            String fileContent = "";
+
+            for(String line : allLines)
+                fileContent += line + '\n';
+
+            fileContent += newLine + '\n';
+
+            out.write(fileContent.getBytes());
+
+            out.close();
+
+            if (!new File("params").exists()) {
+                new File("params").createNewFile();
+                FileOutputStream fos = new FileOutputStream("params");
+                fos.write(encrypt.getParameters().getEncoded());
+                fos.close();
+            }
+            else {
+                FileOutputStream fos = new FileOutputStream("params");
+                fos.write(encrypt.getParameters().getEncoded());
+                fos.close();
+            }
 
             new HMacHandler().updateHMac("users.cif");
         } catch (NoSuchAlgorithmException e) {
@@ -112,13 +133,7 @@ public class PBEDUsers {
             throw new RuntimeException(e);
         } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         }
 
@@ -126,6 +141,7 @@ public class PBEDUsers {
 
     /**
      * Decrypts the strings in the "users.cif" file and returns them as a list of strings.
+     *
      * @return A list of decrypted strings read from the "users.cif" file.
      * @throws RuntimeException if there is an error during the decryption or file reading process.
      */
@@ -134,15 +150,43 @@ public class PBEDUsers {
         try {
             List<String> result = new ArrayList<>();
 
-            Cipher decrypt = Cipher.getInstance("PBEWithHmacSHA256AndAES_128");
-            decrypt.init(Cipher.DECRYPT_MODE, this.key, this.pbeParameterSpec);
+            if (new File("params").exists()) {
+                FileInputStream fis = new FileInputStream("params");
+                byte[] params = fis.readAllBytes();
+                fis.close();
 
-            BufferedReader br = new BufferedReader(new FileReader("users.cif"));
-            String line = "";
+                AlgorithmParameters p = AlgorithmParameters.getInstance("PBEWithHmacSHA256AndAES_128");
+                p.init(params);
+                Cipher decrypt = Cipher.getInstance("PBEWithHmacSHA256AndAES_128");
+                decrypt.init(Cipher.DECRYPT_MODE, this.key, p);
 
-            while ((line = br.readLine()) != null) {
-                byte [] lineBytes = Base64.getDecoder().decode(line.getBytes(StandardCharsets.UTF_8));
-                result.add(new String(decrypt.doFinal(lineBytes), StandardCharsets.UTF_8));
+                CipherInputStream in = new CipherInputStream(new FileInputStream("users.cif"), decrypt);
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                byte[] b = new byte[16];
+                int numberOfBytedRead;
+                while ((numberOfBytedRead = in.read(b)) >= 0) {
+                    baos.write(b, 0, numberOfBytedRead);
+                }
+
+                String fileContent = new String(baos.toByteArray());
+
+                in.close();
+
+                System.out.println(fileContent);
+
+                StringBuilder sb = new StringBuilder();
+
+                for(char c : fileContent.toCharArray())
+                    if(c == '\n') {
+                        result.add(sb.toString());
+                        sb.delete(0, sb.length());
+                    }
+                    else {
+                        sb.append(c);
+                    }
+
             }
 
             return result;
@@ -157,10 +201,6 @@ public class PBEDUsers {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
-        } catch (BadPaddingException e) {
             throw new RuntimeException(e);
         }
 
