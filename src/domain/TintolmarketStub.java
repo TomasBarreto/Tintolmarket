@@ -155,10 +155,12 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	/**
-	 * Sells a wine in the server.
-	 * @param wine      the wine name.
-	 * @param value     the wine value.
-	 * @param quantity  the wine quantity.
+	 * Sells the specified quantity of the specified wine for the specified value.
+	 * @param wine the name of the wine to be sold
+	 * @param value the price of the wine
+	 * @param quantity the quantity of wine to be sold
+	 * @param keyStorePath the path to the keystore file containing the private key used to sign the command
+	 * @param keyStorePass the password to access the keystore
 	 */
 	public void sellWine(String wine, int value, int quantity, String keyStorePath, String keyStorePass){
 		Command cmd = new Command();
@@ -237,11 +239,14 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	/**
-	 * Sends a "buy" command to the server with the specified wine, seller and quantity to buy.
-	 * Displays a message indicating whether the purchase was successful or not.
+	 * Buys the specified quantity of the specified wine from the specified seller.
 	 * @param wine the name of the wine to buy
-	 * @param seller the seller of the wine
+	 * @param seller the name of the seller to buy from
 	 * @param quantity the quantity of wine to buy
+	 * @param userID the ID of the user buying the wine
+	 * @param keyStorePath the path of the user's keystore
+	 * @param keyStorePass the password of the user's keystore
+	 * @throws RuntimeException if there is a problem with the command execution
 	 */
 	public void buyWine(String wine, String seller, int quantity, String userID, String keyStorePath, String keyStorePass){
 		Command cmd = new Command();
@@ -309,8 +314,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	/**
-	 * Sends a "talk" command to the server with the specified user and message to send.
-	 * Displays a message indicating whether the message was sent successfully or not.
+	 * Sends a message to the specified user.
 	 * @param user the name of the user to send the message to
 	 * @param message the message to send
 	 * @param trustStorePath the path to the truststore file containing the receiver's public key
@@ -382,8 +386,7 @@ public class TintolmarketStub implements ITintolmarketStub {
 	}
 
 	/**
-	 * Sends a "read" command to the server and displays all messages addressed to the user.
-	 Decrypts the messages with the user's private key before displaying them.
+	 * Reads the user's messages.
 	 * @param trustStorePath the path to the truststore containing the user's private key
 	 * @param trustStorePassword the password to the truststore
 	 */

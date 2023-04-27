@@ -17,12 +17,14 @@ public interface ITintolmarketServerSkel {
 	public String addWine(String wine, String imageName, byte[] imageBuffer);
 
 	/**
-	 * Sells a wine from the Tintolmarket server.
-	 * @param wine the name of the wine to sell
-	 * @param value the value of the wine
-	 * @param quantity the quantity of the wine
-	 * @param seller the name of the seller
-	 * @return a message indicating whether the operation was successful or not
+	 * Puts a wine up for sale.
+	 * @param wine The name of the wine to put up for sale.
+	 * @param value The price of the wine.
+	 * @param quantity The quantity of the wine.
+	 * @param seller The name of the seller.
+	 * @param keyStorePath The path of the keystore file.
+	 * @param keyStorePass The password for the keystore file.
+	 * @return A message indicating whether the wine was successfully put up for sale or if it doesn't exist in the catalog.
 	 */
 	public String sellWine(String wine, int value, int quantity, String seller, String keyStorePath, String keyStorePass);
 
@@ -34,12 +36,14 @@ public interface ITintolmarketServerSkel {
 	public String viewWine(String wine);
 
 	/**
-	 * Buys a wine from the Tintolmarket server.
-	 * @param wine the name of the wine to buy
-	 * @param seller the name of the seller
-	 * @param quantity the quantity of the wine to buy
-	 * @param userID the ID of the user who is buying the wine
-	 * @return a message indicating whether the operation was successful or not
+	 * Buys a wine.
+	 * @param wine The name of the wine to buy.
+	 * @param seller The name of the seller.
+	 * @param quantity The quantity of the wine to buy.
+	 * @param userID The ID of the buyer.
+	 * @param keyStorePath The path of the keystore file.
+	 * @param keyStorePass The password for the keystore file.
+	 * @return A message indicating whether the purchase was successful and updating the wallets of the buyer and seller.
 	 */
 	public String buyWine(String wine, String seller, int quantity, String userID, String keyStorePath, String keyStorePass);
 
