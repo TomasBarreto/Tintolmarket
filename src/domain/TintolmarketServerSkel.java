@@ -317,7 +317,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	 * @param keyStorePass a String representing the password to the keystore file.
 	 * @throws RuntimeException if there is an issue with file input/output or if there is an issue with the message digest algorithm.
 	 */
-	private void writeTransaction(String transaction, String keyStorePath, String keyStorePass) {
+	private synchronized void writeTransaction(String transaction, String keyStorePath, String keyStorePass) {
 		String currentBlockPath = "logs/block_" + this.currentBlock + ".blk";
 
 		try {
@@ -427,7 +427,7 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 	 * @param keyStorePass the password to access the keystore file
 	 * @return a string with all transactions stored in the blockchain
 	*/
- 	public String getAllTransactions(String keyStorePath, String keyStorePass) {
+ 	public synchronized String getAllTransactions(String keyStorePath, String keyStorePass) {
 		List<String> transactions = new ArrayList<>();
 
 		try {
