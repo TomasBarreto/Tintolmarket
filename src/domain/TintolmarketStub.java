@@ -22,6 +22,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.imageio.ImageIO;
+import javax.net.ssl.SSLException;
 
 
 /**
@@ -78,6 +79,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 
 			outStream.writeObject(signedNonce);
 
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (KeyStoreException e) {
 			throw new RuntimeException(e);
 		} catch (CertificateException e) {
@@ -100,6 +103,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 				Certificate certificate = keyStore.getCertificate(userID);
 				outStream.writeObject(certificate);
 
+			} catch (SSLException e) {
+				throw new RuntimeException(e);
 			} catch (SocketException e) {
 				throw new RuntimeException(e);
 			} catch (KeyStoreException e) {
@@ -145,6 +150,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			outStream.writeObject(cmd);
 			System.out.println((String)inStream.readObject());
 
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (SocketException e) {
 			throw new RuntimeException(e);
 		} catch (FileNotFoundException e) {
@@ -179,6 +186,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			outStream.writeObject(signedObject);
 			System.out.println((String)inStream.readObject());
 
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (SocketException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -230,6 +239,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 				}
 			}
 
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (SocketException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -263,6 +274,9 @@ public class TintolmarketStub implements ITintolmarketStub {
 			outStream.writeObject(signedObject);
 			System.out.println((String)inStream.readObject());
 
+
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (SocketException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -284,6 +298,9 @@ public class TintolmarketStub implements ITintolmarketStub {
 			outStream.writeObject(0);
 			outStream.writeObject(cmd);
 			System.out.println((String) inStream.readObject());
+
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (SocketException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -310,6 +327,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			outStream.writeObject(cmd);
 			System.out.println((String)inStream.readObject());
 
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (SocketException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -340,6 +359,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			outStream.writeObject(cmd);
 			System.out.println((String)inStream.readObject());
 
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (SocketException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -372,6 +393,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 
 			return Base64.getEncoder().encodeToString(cipher.doFinal(message.getBytes()));
 
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (KeyStoreException e) {
 			throw new RuntimeException(e);
 		} catch (FileNotFoundException e) {
@@ -426,6 +449,9 @@ public class TintolmarketStub implements ITintolmarketStub {
 			}
 
 			System.out.println(result);
+
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (SocketException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -456,6 +482,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			byte [] messageBytes = Base64.getDecoder().decode(message.getBytes(StandardCharsets.UTF_8));
 
 			return new String(cipher.doFinal(messageBytes), StandardCharsets.UTF_8);
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (KeyStoreException e) {
 			throw new RuntimeException(e);
 		} catch (FileNotFoundException e) {
@@ -489,6 +517,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			cmd.setCommand("stop");
 			outStream.writeObject(0);
 			outStream.writeObject(cmd);
+		} catch (SSLException e) {
+			throw new RuntimeException(e);
 		} catch (SocketException e) {
 			System.out.println("Server Offline");
 		}
