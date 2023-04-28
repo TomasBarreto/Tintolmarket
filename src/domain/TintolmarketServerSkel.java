@@ -131,22 +131,12 @@ public class TintolmarketServerSkel implements ITintolmarketServerSkel {
 					}
 				}
 
-				FileOutputStream fos = new FileOutputStream(USERS, false);
-
-				for(int i = 0; i < lines.size(); i++){
-					this.pbedUsers.encrypt(lines.get(i) + "\n");
-				}
-
-				fos.close();
+				this.pbedUsers.encryptAllLines(lines);
 
 				String transaction = "buy:" + wine + ":" + quantity + ":" + winePrice + ":" + userID;
 
 				writeTransaction(transaction, keyStorePath, keyStorePass);
 
-			} catch (FileNotFoundException e){
-				System.out.println("Users file not found\n");
-			} catch (IOException e) {
-				throw new RuntimeException(e);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

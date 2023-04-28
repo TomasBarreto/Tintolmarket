@@ -165,8 +165,6 @@ public class PBEDUsers {
 
                 in.close();
 
-                System.out.println(fileContent);
-
                 StringBuilder sb = new StringBuilder();
 
                 for(char c : fileContent.toCharArray())
@@ -190,6 +188,49 @@ public class PBEDUsers {
         } catch (InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public void encryptAllLines(List<String> allLines) {
+
+        try {
+
+            Cipher encrypt = Cipher.getInstance("PBEWithHmacSHA256AndAES_128");
+            encrypt.init(Cipher.ENCRYPT_MODE, this.key);
+
+            CipherOutputStream out = new CipherOutputStream(new FileOutputStream("users.cif"), encrypt);
+
+            String fileContent = "";
+
+            for(String line : allLines)
+                fileContent += line + '\n';
+
+            out.write(fileContent.getBytes());
+
+            out.close();
+
+            if (!new File("params").exists()) {
+                new File("params").createNewFile();
+                FileOutputStream fos = new FileOutputStream("params");
+                fos.write(encrypt.getParameters().getEncoded());
+                fos.close();
+            }
+            else {
+                FileOutputStream fos = new FileOutputStream("params");
+                fos.write(encrypt.getParameters().getEncoded());
+                fos.close();
+            }
+
+            new HMacHandler().updateHMac("users.cif");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
