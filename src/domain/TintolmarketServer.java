@@ -407,7 +407,11 @@ public class TintolmarketServer {
 
                 BufferedWriter bw = new BufferedWriter(new FileWriter(hmacFile, true));
 
-                bw.write(Base64.getEncoder().encodeToString(mac.doFinal(new FileInputStream(fileName).readAllBytes())) + "\n");
+                byte[] bytes = new byte[(int) new File(fileName).length()];
+                DataInputStream dataInputStream = new DataInputStream(new FileInputStream(fileName));
+                dataInputStream.readFully(bytes);
+
+                bw.write(Base64.getEncoder().encodeToString(mac.doFinal(bytes)) + "\n");
 
                 bw.close();
             } catch (IOException e) {
@@ -426,7 +430,11 @@ public class TintolmarketServer {
 
                 br.close();
 
-                String currentHmac = Base64.getEncoder().encodeToString(mac.doFinal(new FileInputStream(fileName).readAllBytes()));
+                byte[] bytes = new byte[(int) new File(fileName).length()];
+                DataInputStream dataInputStream = new DataInputStream(new FileInputStream(fileName));
+                dataInputStream.readFully(bytes);
+
+                String currentHmac = Base64.getEncoder().encodeToString(mac.doFinal(bytes));
 
                 if(!hmacFromFile.equals(currentHmac)) {
                     System.out.println("File integrity violated!");

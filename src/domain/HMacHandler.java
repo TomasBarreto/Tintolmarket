@@ -60,7 +60,12 @@ public class HMacHandler {
             for(int i = 0; i < this.indexes.size(); i++) {
                 if(i == index - 1) {
                     br.readLine();
-                    hmacs.add(Base64.getEncoder().encodeToString(this.mac.doFinal(new FileInputStream(filename).readAllBytes())));
+
+                    byte[] bytes = new byte[(int) new File(filename).length()];
+                    DataInputStream dataInputStream = new DataInputStream(new FileInputStream(filename));
+                    dataInputStream.readFully(bytes);
+
+                    hmacs.add(Base64.getEncoder().encodeToString(this.mac.doFinal(bytes)));
                 }
                 else
                     hmacs.add(br.readLine());

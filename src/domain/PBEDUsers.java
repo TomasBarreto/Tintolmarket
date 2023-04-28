@@ -142,9 +142,10 @@ public class PBEDUsers {
             List<String> result = new ArrayList<>();
 
             if (new File("params").exists()) {
-                FileInputStream fis = new FileInputStream("params");
-                byte[] params = fis.readAllBytes();
-                fis.close();
+
+                byte[] params = new byte[(int) new File("params").length()];
+                DataInputStream dataInputStream = new DataInputStream(new FileInputStream("params"));
+                dataInputStream.readFully(params);
 
                 AlgorithmParameters p = AlgorithmParameters.getInstance("PBEWithHmacSHA256AndAES_128");
                 p.init(params);
