@@ -90,7 +90,9 @@ public class TintolmarketStub implements ITintolmarketStub {
 			throw new RuntimeException(e);
 		} catch (SignatureException e) {
 			throw new RuntimeException(e);
-		}
+		} catch (SocketException e) {
+			throw new RuntimeException(e);
+		};
 
 		if (!isRegistered) {
 			try {
@@ -98,6 +100,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 				Certificate certificate = keyStore.getCertificate(userID);
 				outStream.writeObject(certificate);
 
+			} catch (SocketException e) {
+				throw new RuntimeException(e);
 			} catch (KeyStoreException e) {
 				throw new RuntimeException(e);
 			}
@@ -136,19 +140,18 @@ public class TintolmarketStub implements ITintolmarketStub {
 			cmd.setImageName(imageName[imageName.length - 1]);
 			cmd.setImageBuffer(bytes);
 
-			try {
-				outStream.writeObject(0);
-				outStream.writeObject(cmd);
-				System.out.println((String)inStream.readObject());
 
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
-			}
+			outStream.writeObject(0);
+			outStream.writeObject(cmd);
+			System.out.println((String)inStream.readObject());
+
+		} catch (SocketException e) {
+			throw new RuntimeException(e);
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 
@@ -176,6 +179,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			outStream.writeObject(signedObject);
 			System.out.println((String)inStream.readObject());
 
+		} catch (SocketException e) {
+			throw new RuntimeException(e);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -203,19 +208,13 @@ public class TintolmarketStub implements ITintolmarketStub {
 
 			imageUrl = "client" + imageUrl;
 
-			try {
-				ByteArrayInputStream bs = new ByteArrayInputStream(imageBuffer);
+			ByteArrayInputStream bs = new ByteArrayInputStream(imageBuffer);
 
-				bs.read(imageBuffer);
+			bs.read(imageBuffer);
 
-				File newFile = new File(imageUrl);
-				FileOutputStream fo = new FileOutputStream(newFile);
-				fo.write(imageBuffer);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			File newFile = new File(imageUrl);
+			FileOutputStream fo = new FileOutputStream(newFile);
+			fo.write(imageBuffer);
 
 			Scanner sc = new Scanner(System.in);
 			System.out.println("Open image? (y/n)\n");
@@ -231,6 +230,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 				}
 			}
 
+		} catch (SocketException e) {
+			throw new RuntimeException(e);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -262,6 +263,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			outStream.writeObject(signedObject);
 			System.out.println((String)inStream.readObject());
 
+		} catch (SocketException e) {
+			throw new RuntimeException(e);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -280,8 +283,9 @@ public class TintolmarketStub implements ITintolmarketStub {
 		try {
 			outStream.writeObject(0);
 			outStream.writeObject(cmd);
-			System.out.println((String)inStream.readObject());
-
+			System.out.println((String) inStream.readObject());
+		} catch (SocketException e) {
+			throw new RuntimeException(e);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -306,6 +310,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			outStream.writeObject(cmd);
 			System.out.println((String)inStream.readObject());
 
+		} catch (SocketException e) {
+			throw new RuntimeException(e);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -334,6 +340,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			outStream.writeObject(cmd);
 			System.out.println((String)inStream.readObject());
 
+		} catch (SocketException e) {
+			throw new RuntimeException(e);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -418,7 +426,8 @@ public class TintolmarketStub implements ITintolmarketStub {
 			}
 
 			System.out.println(result);
-
+		} catch (SocketException e) {
+			throw new RuntimeException(e);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -468,19 +477,6 @@ public class TintolmarketStub implements ITintolmarketStub {
 		} catch (UnrecoverableKeyException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	/**
-	 * Concatenates two byte arrays into a single byte array.
-	 * @param a the first byte array
-	 * @param b the second byte array
-	 * @return a byte array resulting from the concatenation of a and b
-	 */
-	private byte[] concatenateByteArrays(byte[] a, byte[] b) {
-		byte[] result = new byte[a.length + b.length];
-		System.arraycopy(a, 0, result, 0, a.length);
-		System.arraycopy(b, 0, result, a.length, b.length);
-		return result;
 	}
 
 	/**
